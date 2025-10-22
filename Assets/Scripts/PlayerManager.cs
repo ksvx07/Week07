@@ -10,7 +10,7 @@ public class PlayerManager : MonoBehaviour
     private int currentPlayer = 0;
     private int selectPlayer = 0;
     private int highlightPlayer = 0;
-    private bool isSelectUIActive = false;  // UI�� ���� Ȱ��ȭ�Ǿ� �ִ��� ����
+    private bool isSelectUIActive = false;  
 
     [SerializeField] private int startPlayer = 0;
     [SerializeField] private List<GameObject> players;
