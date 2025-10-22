@@ -26,8 +26,9 @@ public class GameLog : MonoBehaviour
 
     #region /// 편의성을 위한 정적 메서드 ///
 
-    // --- 다른 스크립트에서는 이 메서드들을 사용합니다! ---
-    public static void Log(string message) => Instance?.Log(message, LogLevel.Info);
+    // --- 다른 스크립트에서 사용! ---
+    public static void Log(string message) => Instance?.Log(message, LogLevel.Debug);
+    public static void Info(string message) => Instance?.Log(message, LogLevel.Info);
     public static void Warn(string message) => Instance?.Log(message, LogLevel.Warning);
     public static void Error(string message) => Instance?.Log(message, LogLevel.Error);
 
@@ -75,21 +76,25 @@ public class GameLog : MonoBehaviour
 
     public void Log(string message, LogLevel level = LogLevel.Info)
     {
-        string formattedMessage = $"[{DateTime.Now:HH:mm:ss}] {message}";
+        // 파일에 기록될 메시지 형식: [시간] [로그레벨] 메시지
+        string fileLogMessage = $"[{DateTime.Now:HH:mm:ss}] [{level.ToString().ToUpper()}] {message}";
+        // 유니티 콘솔에 출력될 메시지 형식: [시간] 메시지
+        string consoleLogMessage = $"[{DateTime.Now:HH:mm:ss}] {message}";
 
         switch (level)
         {
+            case LogLevel.Debug:
             case LogLevel.Info:
-                Debug.Log(formattedMessage);
+                Debug.Log(consoleLogMessage);
                 break;
             case LogLevel.Warning:
-                Debug.LogWarning(formattedMessage);
+                Debug.LogWarning(consoleLogMessage);
                 break;
             case LogLevel.Error:
-                Debug.LogError(formattedMessage);
+                Debug.LogError(consoleLogMessage);
                 break;
         }
-        File.AppendAllText(logFilePath, formattedMessage + Environment.NewLine); // 파일에도 출력
+        File.AppendAllText(logFilePath, fileLogMessage + Environment.NewLine); // 파일에도 출력
     }
 
     [Button("로그 파일 열기")]
