@@ -59,32 +59,21 @@ public class PlayerManager : MonoBehaviour
     {
         inputActions.UI.Enable();
 
-        /*        inputActions.UI.QuickSwitchRight.started += SlowTimeScale; // �ϴ� ������ �ð� ������
-                inputActions.UI.QuickSwitchLeft.started += SlowTimeScale;*/
-
-        /*        inputActions.UI.QuickSwitchRight.performed += QuickSwitchPlayerRight; // 0.2�� ���� ���� QuickSwitch ȣ��
-                inputActions.UI.QuickSwitchLeft.performed += QuickSwitchPlayerLeft;*/
-
-        inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; // 0.2�� �̻� ������ OnSwithPlayerHold ȣ��
+        inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; 
 
         inputActions.UI.SwitchHold.canceled += OnSwitchPlayerCancled;
 
-        inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;// ���� �Ϸ��ϸ� ȣ��
+        inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;
     }
 
     private void OnDisable()
     {
 
-        /*        inputActions.UI.QuickSwitchLeft.started -= SlowTimeScale;*/
-
-        /*        inputActions.UI.QuickSwitchRight.performed -= QuickSwitchPlayerRight; // 0.2�� ���� ���� QuickSwitch ȣ��
-                inputActions.UI.QuickSwitchLeft.performed -= QuickSwitchPlayerLeft;*/
-
-        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 0.2�� �̻� ������ OnSwithPlayerHold ȣ��
+        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; 
 
         inputActions.UI.SwitchHold.canceled -= OnSwitchPlayerCancled;
 
-        inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;// ���� �Ϸ��ϸ� ȣ��
+        inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;
         inputActions.UI.Disable();
     }
 
@@ -154,7 +143,7 @@ public class PlayerManager : MonoBehaviour
         }
         pannelActive = StartCoroutine(ScaleOverTime());
         selectPlayerPanel.SetActive(true);
-        isSelectUIActive = true;  // UI�� ���� Ȱ��ȭ�Ǿ� �ִ��� ����
+        isSelectUIActive = true; 
     }
 
     private void DeActiveSelectUI()
@@ -175,11 +164,9 @@ public class PlayerManager : MonoBehaviour
 
         if (context.phase == InputActionPhase.Performed)
         {
-            // ���� UI�� Ȱ��ȭ ���� �ʾ�����
             if (!isSelectUIActive)
             {
                 IsHold = true;
-                // 0.2�� �̻� Ȧ�� Ű�� ������ ��, ���� UI Ȱ��ȭ
                 AcitveSelectUI();
             }
         }
@@ -187,45 +174,21 @@ public class PlayerManager : MonoBehaviour
 
     public void OnSwitchPlayerCancled(InputAction.CallbackContext context)
     {
-        // ����â�� Ȱ��ȭ �� ���¿��ٸ�
         if (isSelectUIActive)
         {
-            //���� UI��Ȱ��ȭ
             DeActiveSelectUI();
-            // ĳ���� ����
             ActiveSelectPlayer(currentPlayer, selectPlayer);
         }
     }
 
     public void OnPlayerDead()
     {
-        // ����â�� Ȱ��ȭ �� ���¿��ٸ�
         if (isSelectUIActive)
         {
-            //���� UI��Ȱ��ȭ
             DeActiveSelectUI();
             ActiveSelectPlayer(currentPlayer, selectPlayer);
         }
     }
-
-    /*    private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
-            {
-                // ����â Ȱ��ȭ�� ���¸� ���� �Ұ���
-                if (IsHold) return;
-                // ���� �÷��̾� �ε����� 1 ������Ű��, �÷��̾� �� �̻��̸� 0���� ��ȯ
-                selectPlayer = (currentPlayer + 1) % players.Count;
-
-                ActiveSelectPlayer(currentPlayer, selectPlayer);
-            }
-            private void QuickSwitchPlayerLeft(InputAction.CallbackContext context)
-            {
-                // ����â Ȱ��ȭ�� ���¸� ���� �Ұ���
-                if (IsHold) return;
-
-                // ���� �÷��̾� �ε����� 1 ���ҽ�Ű��, 0 �̸��̸� ������ �ε����� ��ȯ
-                selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
-                ActiveSelectPlayer(currentPlayer, selectPlayer);
-            }*/
 
     private void HighLightSelectPlayer(int oldPlayer, int newPlayer)
     {
@@ -236,7 +199,7 @@ public class PlayerManager : MonoBehaviour
     {
         _currentPlayerPrefab = players[starstPlayer];
         _currentPlayerPrefab.SetActive(true);
-        currentPlayer = selectPlayer; // �ε��� ����ȭ
+        currentPlayer = selectPlayer;
     }
 
     public void PlayerSetActive(bool isAcitve)
@@ -247,11 +210,8 @@ public class PlayerManager : MonoBehaviour
     {
         OriginalTimeScale();
 
-        // ���� ĳ���ͷιٲٷ��� return
-        //if (oldPlayer == newPlayer) return;
         HighLightSelectPlayer(oldPlayer, newPlayer);
         if (oldPlayer == 2 && newPlayer == 2) return;
-        // print($"{oldPlayer}, {newPlayer}");
 
         GameObject oldPlayerPrefab = players[oldPlayer];
         Transform lastPos = oldPlayerPrefab.transform;
@@ -263,7 +223,7 @@ public class PlayerManager : MonoBehaviour
         _currentPlayerPrefab.SetActive(true);
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
-        currentPlayer = selectPlayer; // �ε��� ����ȭ
+        currentPlayer = selectPlayer;
         highlightPlayer = currentPlayer;
     }
 
@@ -275,25 +235,18 @@ public class PlayerManager : MonoBehaviour
         Vector3 initialScale = selectPlayerPanel.transform.localScale;
         float elapsedTime = 0f;
 
-        // ��� �ð��� ������ ���� �ð����� ���� ������ �ݺ�
         while (elapsedTime < _selectPanelSpeed)
         {
-            // �� �����Ӹ��� ���� �÷��̾��� ��ġ�� ����
             selectPlayerPanel.transform.position = _currentPlayerPrefab.transform.position;
 
-            // Time.deltaTime�� ����Ͽ� ��� �ð� ��� (Time.timeScale�� ���� ����)
             elapsedTime += Time.deltaTime;
 
-            // ������� 0.0���� 1.0 ���̷� ���
             float t = Mathf.Clamp01(elapsedTime / _selectPanelSpeed);
 
-            // Lerp �Լ��� ũ�⸦ �ε巴�� ����
             selectPlayerPanel.transform.localScale = Vector3.Lerp(initialScale, _MaxScale, t);
 
-            // ���� �����ӱ��� ���
             yield return null;
         }
-        // �� �������ʹ� �г��� ��ġ�� �����ϰ� ũ�� �ִϸ��̼��� ����
         while (true)
         {
             selectPlayerPanel.transform.position = _currentPlayerPrefab.transform.position;
