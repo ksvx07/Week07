@@ -179,7 +179,7 @@ public class GameLog : MonoBehaviour
     {
         if (!enableFileLogging) return;
         // 파일에 기록될 메시지 형식: [시간] [로그레벨] 메시지
-        string fileLogMessage = $"[{DateTime.Now:HH:mm:ss}] {"==============북마크=============="}";
+        string fileLogMessage = $"[{DateTime.Now:HH:mm:ss}] {"=================북마크================="}";
         File.AppendAllText(logFilePath, fileLogMessage + Environment.NewLine); // 파일에도 출력
         Debug.LogWarning(fileLogMessage);
     }

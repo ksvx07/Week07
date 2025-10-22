@@ -163,7 +163,7 @@
             "id": "e142499f-d016-4315-a8c5-9a3f1230dd8c",
             "actions": [
                 {
-                    "name": "SwitchHold",
+                    "name": "SelectMode",
                     "type": "Button",
                     "id": "ec5f559a-98e6-436d-b349-67a679262710",
                     "expectedControlType": "",
@@ -179,24 +179,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "QuickSwitchRight",
-                    "type": "Button",
-                    "id": "cb062c4c-a003-4e1a-8aff-81b9c739e522",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "QuickSwitchLeft",
-                    "type": "Button",
-                    "id": "c89ba81a-3054-4657-adfd-3bab1f791632",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -207,7 +189,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SwitchHold",
+                    "action": "SelectMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -218,7 +200,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SwitchHold",
+                    "action": "SelectMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -296,17 +278,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "SelectPlayer",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "86700d91-9702-4eb5-93b5-00002e6152fe",
-                    "path": "<Keyboard>/d",
-                    "interactions": "Tap",
-                    "processors": "",
-                    "groups": "",
-                    "action": "QuickSwitchRight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -4,20 +4,28 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+// Hack: enum으로 전면 수술하기
+public enum PlayerShape
+{
+    Circle,
+    Star,
+    Square,
+    Triangle
+}
+
 public class PlayerManager : MonoBehaviour
 {
-    // Hack ;Input ����
+    public static PlayerManager Instance;
+
     private int currentPlayer = 0;
     private int selectPlayer = 0;
     private int highlightPlayer = 0;
-    private bool isSelectUIActive = false;  
-
+    private bool isSelectUIActive = false;
     [SerializeField] private int startPlayer = 0;
     [SerializeField] private List<GameObject> players;
     [SerializeField] private List<Image> pannels;
     [SerializeField] private Color originColor;
     [SerializeField] private Color highLightColor;
-
 
     [SerializeField] private CameraController camControlelr;
     [SerializeField] private GameObject selectPlayerPanel;
@@ -26,12 +34,22 @@ public class PlayerManager : MonoBehaviour
     private PlayerInput inputActions;
 
     public bool IsHold { get; private set; }
+    public bool IsSelectMode { get; private set; }
     public bool IsTimeSlow { get; private set; }
     private Vector3 _MaxScale = new Vector3(1.2f, 1.2f, 1.2f);
     [SerializeField] private float _selectPanelSpeed = 60f;
     private Coroutine pannelActive;
 
-    public static PlayerManager Instance;
+    #region 게임 로그용 변수
+
+    private int triangleMode;
+    private int squareMode;
+    private int circleMode;
+    private int starMode;
+    private int selectModeLog;
+
+    private int deadAmount;
+    #endregion
 
     private void Awake()
     {
@@ -59,9 +77,8 @@ public class PlayerManager : MonoBehaviour
     {
         inputActions.UI.Enable();
 
-        inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; 
+        inputActions.UI.SelectMode.performed += OnSelectModeActive;
 
-        inputActions.UI.SwitchHold.canceled += OnSwitchPlayerCancled;
 
         inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;
     }
@@ -69,17 +86,14 @@ public class PlayerManager : MonoBehaviour
     private void OnDisable()
     {
 
-        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; 
-
-        inputActions.UI.SwitchHold.canceled -= OnSwitchPlayerCancled;
-
+        inputActions.UI.SelectMode.performed -= OnSelectModeActive;
         inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;
         inputActions.UI.Disable();
     }
 
     private void ChangeSelectPlayer(InputAction.CallbackContext context)
     {
-        if (!isSelectUIActive) return;
+        if (IsSelectMode == false) return;
 
         Vector2 inputVector = context.ReadValue<Vector2>();
 
@@ -96,7 +110,7 @@ public class PlayerManager : MonoBehaviour
             }
             else // 아래쪽
             {
-                selectPlayer = 2;
+                selectPlayer = 2; // 네모
             }
         }
         else
@@ -143,7 +157,7 @@ public class PlayerManager : MonoBehaviour
         }
         pannelActive = StartCoroutine(ScaleOverTime());
         selectPlayerPanel.SetActive(true);
-        isSelectUIActive = true; 
+        isSelectUIActive = true;
     }
 
     private void DeActiveSelectUI()
@@ -158,21 +172,32 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    public void OnSwithPlayerHold(InputAction.CallbackContext context)
+    public void OnSelectModeActive(InputAction.CallbackContext context)
     {
-        SlowTimeScale();
-
-        if (context.phase == InputActionPhase.Performed)
+        if (IsSelectMode == false)
         {
-            if (!isSelectUIActive)
-            {
-                IsHold = true;
-                AcitveSelectUI();
-            }
+            IsSelectMode = true;
+            OnSwithPlayerActive();
+        }
+        else
+        {
+            OnSwitchPlayerCancled();
+            IsSelectMode = false;
         }
     }
 
-    public void OnSwitchPlayerCancled(InputAction.CallbackContext context)
+    public void OnSwithPlayerActive()
+    {
+        SlowTimeScale();
+
+        if (!isSelectUIActive)
+        {
+            IsHold = true;
+            AcitveSelectUI();
+        }
+    }
+
+    public void OnSwitchPlayerCancled()
     {
         if (isSelectUIActive)
         {
@@ -183,6 +208,7 @@ public class PlayerManager : MonoBehaviour
 
     public void OnPlayerDead()
     {
+        PlayerDeadLog();
         if (isSelectUIActive)
         {
             DeActiveSelectUI();
@@ -225,6 +251,7 @@ public class PlayerManager : MonoBehaviour
 
         currentPlayer = selectPlayer;
         highlightPlayer = currentPlayer;
+        PlayerSwitchLog();
     }
 
     IEnumerator ScaleOverTime()
@@ -254,4 +281,32 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    #region GameLog용 함수
+
+    // Hack: 나중에 어떤 도형으로 변신 했는지 추가하기
+    private void PlayerSwitchLog()
+    {
+        selectModeLog++;
+        GameLog.Log($"플레이어 변신 횟수: {selectModeLog}번");
+    }
+
+    private void PlayerDeadLog()
+    {
+        deadAmount++;
+        GameLog.Log($"플레이어 죽음 횟수: {deadAmount}번");
+    }
+
+    private void PlayerLogResult()
+    {
+        GameLog.Info($"---------최종 플레이어 데이터---------");
+        GameLog.Info($"플레이어 변신 횟수: {selectModeLog}번");
+        GameLog.Info($"죽음 횟수: {deadAmount}번");
+    }
+
+    // Hack : 게임 종료 시 확인을 위한 임시함수
+    private void OnApplicationQuit()
+    {
+        PlayerLogResult();
+    }
+    #endregion
 }
