@@ -285,6 +285,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d745e5190d54e842acf55a32340739d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enableFileLogging: 0
+  minimumLogLevel: 0
   setFileName: 0
   logFileName: 
 --- !u!4 &1972396329

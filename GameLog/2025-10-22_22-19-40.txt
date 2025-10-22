@@ -1,5 +1,0 @@
-[22:19:40] [INFO] === Game Session Started ===
-[22:19:40] [DEBUG] 콘솔창에 일반적인 Log로 표시됨
-[22:19:40] [WARNING] 콘솔창에 LogWarning로 표시됨
-[22:19:40] [ERROR] 콘솔창에 LogError로 표시됨
-[22:19:40] [DEBUG] dfdf
