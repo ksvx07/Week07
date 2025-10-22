@@ -1,0 +1,4 @@
+[21:43:48] === Game Session Started ===
+[21:43:48] dfdf 콘솔창에 일반적인 Log로 표시됨
+[21:43:48] 콘솔창에 LogWarning로 표시됨
+[21:43:48] 콘솔창에 LogError로 표시됨

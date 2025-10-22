@@ -4,17 +4,25 @@ using UnityEngine;
 
 public enum LogLevel
 {
-    Info,  // 일반 정보
+    Debug, // 디버깅용
+    Info,  // 게임 정보
     Warning, // 잠재적 문제
     Error  // 심각한 오류
 }
-
 public class GameLog : MonoBehaviour
 {
     public static GameLog Instance { get; private set; }
 
     private string logFilePath;
     public string LogFilePath => logFilePath;
+
+    public bool setFileName = false;
+
+    [SerializeField]
+    [InfoBox("원하는 파일 이름을 설정하세요", InfoBoxType.Warning, VisibleIf = "IsLogFileNameEmpty")]
+    [ShowIf("setFileName")]
+    private string logFileName = null;
+
 
     #region /// 편의성을 위한 정적 메서드 ///
 
@@ -39,7 +47,27 @@ public class GameLog : MonoBehaviour
         string logDir = Path.Combine(exeDir, "GameLog");
         Directory.CreateDirectory(logDir);
 
-        string fileName = $"GameLog_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+        // 파일 이름 결정 로직
+        string fileName;
+
+        if (setFileName)
+        {
+            if (!string.IsNullOrEmpty(logFileName))
+            {
+                fileName = $"{logFileName}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+                logFileName = string.Empty;
+            }
+            else
+            {
+                Debug.LogWarning("로그파일 이름이 없습니다");
+                fileName = $"Null_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+            }
+        }
+        else
+        {
+            fileName = $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+        }
+
         logFilePath = Path.Combine(logDir, fileName);
 
         this.Log("=== Game Session Started ===");
@@ -84,19 +112,10 @@ public class GameLog : MonoBehaviour
         }
     }
 
-
-    // 모든 Debug 이벤트 등록용
-    private void HandleUnityLog(string logString, string stackTrace, LogType type)
+    #region 인스펙터용 함수
+    private bool IsLogFileNameEmpty()
     {
-        // 직접 출력한 로그는 이미 파일에 썼으므로, 중복 방지
-        if (logString.StartsWith("["))
-            return;
-
-        string formatted = $"[{DateTime.Now:HH:mm:ss}] [{type}] {logString}";
-        if (type == LogType.Error || type == LogType.Exception)
-            formatted += $"\\n{stackTrace}";
-
-        File.AppendAllText(logFilePath, formatted + Environment.NewLine);
+        return string.IsNullOrEmpty(logFileName);
     }
-
+    #endregion
 }
