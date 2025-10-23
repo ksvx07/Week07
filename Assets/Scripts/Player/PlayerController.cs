@@ -300,13 +300,11 @@ public class PlayerController : MonoBehaviour, IPlayerController
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, newY);
     }
 
-    // ????
     private void Jump()
     {
         if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
             // +y?? linearVelocity ????
-            Debug.Log("Jump!");
             IsJumping = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             jumpBufferCounter = 0;
@@ -345,7 +343,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
     }
 
-    // ?????? ? ??? ??? ???? linearVelocity ????
+
     private void WallJump()
     {
         if ((isTouchingWallRight || isTouchingWallLeft) && jumpBufferCounter > 0 && !IsGrounded)
@@ -358,11 +356,10 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
             IsJumping = true;
             rb.linearVelocity = new Vector2(wallJumpXSpeed * wallJumpDir, wallJumpYSpeed);
-            Debug.Log("Wall Jump");
+            //Debug.Log("Wall Jump");
         }
     }
 
-    // ???, ??? ?? ??? ???? ??????? linearVelocity?? ?????? moveInput.normalized * dashSpeed??.
     private void Dash()
     {
         if (dashCount <= 0) return;
