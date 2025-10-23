@@ -373,7 +373,10 @@ public class PlayerController : MonoBehaviour, IPlayerController
         dashCooldownCounter = dashCooldown;
 
         // ?��?�� 바라보는 방향?���? ????��
-        rb.linearVelocity = new Vector2(facingDirection * dashSpeed, 0);
+        if (moveInput == Vector2.zero)
+            rb.linearVelocity = new Vector2(facingDirection * dashSpeed, 0);
+        else
+            rb.linearVelocity = moveInput.normalized * dashSpeed;
     }
 
     // ??? ?? ????, ??? ?????? ????? ????
