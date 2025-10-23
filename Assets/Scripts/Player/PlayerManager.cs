@@ -74,21 +74,25 @@ public class PlayerManager : MonoBehaviour
     {
         inputActions.UI.Enable();
 
-        inputActions.UI.SelectMode.performed += OnSelectModeActive;
+        inputActions.UI.SelectMode.performed += OnSwitchModeActive;
+        inputActions.UI.SelectPlayer.performed += OnChangeSelectPlayer;
 
-
-        inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;
+        inputActions.UI.QuickSwitch.performed += OnQuickSwitch;
     }
 
     private void OnDisable()
     {
 
-        inputActions.UI.SelectMode.performed -= OnSelectModeActive;
-        inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;
+        inputActions.UI.SelectMode.performed -= OnSwitchModeActive;
+        inputActions.UI.SelectPlayer.performed -= OnChangeSelectPlayer;
+        inputActions.UI.QuickSwitch.performed -= OnQuickSwitch;
         inputActions.UI.Disable();
     }
 
-    private void ChangeSelectPlayer(InputAction.CallbackContext context)
+    #region InputAction 콜백 함수
+
+    // 새로운 모양을 정하는 입력값
+    private void OnChangeSelectPlayer(InputAction.CallbackContext context)
     {
         if (IsSelectMode == false) return;
 
@@ -126,64 +130,63 @@ public class PlayerManager : MonoBehaviour
         HighLightSelectShape(highlightPlayer, selectPlayer);
         highlightPlayer = selectPlayer;
     }
-
-    private void SlowTimeScale()
-    {
-        if (IsTimeSlow) return;
-        IsTimeSlow = true;
-        Time.timeScale = 0.1f;
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
-    }
-
-    private void OriginalTimeScale()
-    {
-        IsTimeSlow = false;
-        Time.timeScale = 1f;
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
-    }
-
-    private void AcitveSelectUI()
-    {
-        HighLightSelectShape(highlightPlayer, selectPlayer);
-        Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
-        selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
-
-        if (pannelActive != null)
-        {
-            StopCoroutine(pannelActive);
-        }
-        pannelActive = StartCoroutine(ScaleOverTime());
-        selectPlayerPanel.SetActive(true);
-        isSelectUIActive = true;
-    }
-
-    private void DeActiveSelectUI()
-    {
-        if (pannelActive != null)
-        {
-            StopCoroutine(pannelActive);
-        }
-        IsHold = false;
-        selectPlayerPanel.SetActive(false);
-        isSelectUIActive = false;
-    }
-
-
-    public void OnSelectModeActive(InputAction.CallbackContext context)
+    public void OnSwitchModeActive(InputAction.CallbackContext context)
     {
         if (IsSelectMode == false)
         {
             IsSelectMode = true;
-            OnSwithPlayerActive();
+            OnSwithModeStart();
         }
         else
         {
-            OnSwitchPlayerCancled();
+            OnSwitchModeEnd();
             IsSelectMode = false;
         }
     }
 
-    public void OnSwithPlayerActive()
+    public void OnQuickSwitch(InputAction.CallbackContext context)
+    {
+        Vector2 inputVector = context.ReadValue<Vector2>();
+
+        // 가장 강한 축을 기준으로 방향 결정
+        if (Mathf.Abs(inputVector.y) > Mathf.Abs(inputVector.x))
+        {
+            // 세로 축이 더 강함
+            if (inputVector.y > 0) // 위쪽
+            {
+                selectPlayer = PlayerShape.Circle;
+            }
+            else // 아래쪽
+            {
+                selectPlayer = PlayerShape.Square; // 네모
+            }
+        }
+        else
+        {
+            // 가로 축이 더 강함
+            if (inputVector.x > 0) // 오른쪽
+            {
+                selectPlayer = PlayerShape.Star;
+            }
+            else // 왼쪽
+            {
+                selectPlayer = PlayerShape.Triangle;
+            }
+        }
+
+        ActiveSelectShape(currentPlayer, selectPlayer);
+
+        // 선택모드 활성화 중에 Qucik Switch 했으면
+        if(IsSelectMode == true)
+        {
+            DeActiveSelectUI();
+            IsSelectMode = false;
+        }
+
+    }
+    #endregion
+
+    public void OnSwithModeStart()
     {
         SlowTimeScale();
 
@@ -194,7 +197,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void OnSwitchPlayerCancled()
+    public void OnSwitchModeEnd()
     {
         if (isSelectUIActive)
         {
@@ -229,6 +232,7 @@ public class PlayerManager : MonoBehaviour
     {
         _currentPlayerPrefab.SetActive(isAcitve);
     }
+    // 새 모양으로 변신하기
     private void ActiveSelectShape(PlayerShape oldShape, PlayerShape newShape)
     {
         OriginalTimeScale();
@@ -251,7 +255,50 @@ public class PlayerManager : MonoBehaviour
         playerDataLog.OnPlayerShapeChange(newShape);
     }
 
-    IEnumerator ScaleOverTime()
+    #region Switch Mode UI 함수
+    private void AcitveSelectUI()
+    {
+        HighLightSelectShape(highlightPlayer, selectPlayer);
+        Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
+        selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
+
+        if (pannelActive != null)
+        {
+            StopCoroutine(pannelActive);
+        }
+        pannelActive = StartCoroutine(ScaleOverTime());
+        selectPlayerPanel.SetActive(true);
+        isSelectUIActive = true;
+    }
+
+    private void DeActiveSelectUI()
+    {
+        if (pannelActive != null)
+        {
+            StopCoroutine(pannelActive);
+        }
+        IsHold = false;
+        selectPlayerPanel.SetActive(false);
+        isSelectUIActive = false;
+    }
+    // 게임 시간 느리게 하기
+    private void SlowTimeScale()
+    {
+        if (IsTimeSlow) return;
+        IsTimeSlow = true;
+        Time.timeScale = 0.1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+    }
+
+    // 게임 시간 원래대로 되돌리기
+    private void OriginalTimeScale()
+    {
+        IsTimeSlow = false;
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+    }
+
+    private IEnumerator ScaleOverTime()
     {
         selectPlayerPanel.SetActive(true);
         selectPlayerPanel.transform.localScale = Vector3.zero;
@@ -277,5 +324,5 @@ public class PlayerManager : MonoBehaviour
             yield return null;
         }
     }
-
+    #endregion
 }

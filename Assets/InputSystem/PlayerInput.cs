@@ -223,7 +223,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""4b06ce23-eae0-4767-84e5-6bfc1de70d7b"",
-                    ""path"": ""<Keyboard>/s"",
+                    ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -265,13 +265,22 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""QuickSwitch"",
+                    ""type"": ""Value"",
+                    ""id"": ""08df15ac-9c5b-4081-ae81-2364a3124a4a"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
                 {
                     ""name"": """",
                     ""id"": ""ace45573-8401-4c92-bdc4-ae86b281bee6"",
-                    ""path"": ""<Keyboard>/d"",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -366,6 +375,61 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""SelectPlayer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""e5c3b01d-3c95-4d5c-aca7-c22bfaf46085"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuickSwitch"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""e84afe7b-7318-46f1-8833-87f68c54f12b"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuickSwitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""de0f582b-dd5e-43ee-9393-428cb86a587a"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuickSwitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""9b656844-805b-4ef1-ac84-0f6cff5aaaaf"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuickSwitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""8283d9b3-ceb3-40dc-8e9d-f9c6dbacad2f"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuickSwitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -381,6 +445,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_SelectMode = m_UI.FindAction("SelectMode", throwIfNotFound: true);
         m_UI_SelectPlayer = m_UI.FindAction("SelectPlayer", throwIfNotFound: true);
+        m_UI_QuickSwitch = m_UI.FindAction("QuickSwitch", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -582,6 +647,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
     private readonly InputAction m_UI_SelectMode;
     private readonly InputAction m_UI_SelectPlayer;
+    private readonly InputAction m_UI_QuickSwitch;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -601,6 +667,10 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/SelectPlayer".
         /// </summary>
         public InputAction @SelectPlayer => m_Wrapper.m_UI_SelectPlayer;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/QuickSwitch".
+        /// </summary>
+        public InputAction @QuickSwitch => m_Wrapper.m_UI_QuickSwitch;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -633,6 +703,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @SelectPlayer.started += instance.OnSelectPlayer;
             @SelectPlayer.performed += instance.OnSelectPlayer;
             @SelectPlayer.canceled += instance.OnSelectPlayer;
+            @QuickSwitch.started += instance.OnQuickSwitch;
+            @QuickSwitch.performed += instance.OnQuickSwitch;
+            @QuickSwitch.canceled += instance.OnQuickSwitch;
         }
 
         /// <summary>
@@ -650,6 +723,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @SelectPlayer.started -= instance.OnSelectPlayer;
             @SelectPlayer.performed -= instance.OnSelectPlayer;
             @SelectPlayer.canceled -= instance.OnSelectPlayer;
+            @QuickSwitch.started -= instance.OnQuickSwitch;
+            @QuickSwitch.performed -= instance.OnQuickSwitch;
+            @QuickSwitch.canceled -= instance.OnQuickSwitch;
         }
 
         /// <summary>
@@ -733,5 +809,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSelectPlayer(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "QuickSwitch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnQuickSwitch(InputAction.CallbackContext context);
     }
 }
