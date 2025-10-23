@@ -439,10 +439,15 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     {
         if (isDashingToSwing) return;
 
-        Vector2 bestPoint = FindBestSwingPoint();
+        RaycastHit2D hit = FindBestSwingPoint();
 
-        if (bestPoint != Vector2.zero)
+        if (hit.collider != null)
         {
+            if (hit.collider.TryGetComponent<CrumbleTileHandler>(out CrumbleTileHandler crumbleTile))
+            {
+                crumbleTile.GroundFall();
+            }
+            Vector2 bestPoint = hit.point;
             isSwinging = true;
             swingJoint.connectedAnchor = bestPoint;
             lineRenderer.enabled = true;
@@ -566,7 +571,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         }
     }
 
-    private Vector2 FindBestSwingPoint()
+    private RaycastHit2D FindBestSwingPoint()
     {
         Vector2 rayOrigin = transform.position;
         float playerY = rayOrigin.y;
@@ -576,7 +581,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
         if (hit45.collider != null && hit45.point.y > playerY)
         {
-            return hit45.point;
+            return hit45;
         }
 
         for (float deltaAngle = 5f; deltaAngle <= 40f; deltaAngle += 5f)
@@ -587,7 +592,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
             if (hitUp.collider != null && hitUp.point.y > playerY)
             {
-                return hitUp.point;
+                return hitUp;
             }
 
             float angleDown = 45f - deltaAngle;
@@ -596,11 +601,11 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
             if (hitDown.collider != null && hitDown.point.y > playerY)
             {
-                return hitDown.point;
+                return hitDown;
             }
         }
 
-        return Vector2.zero;
+        return new RaycastHit2D();
     }
 
     private void SwingMovement()
