@@ -332,9 +332,14 @@ public class StarController : MonoBehaviour, IPlayerController
         {
             if (Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(moveInput.x))
             {
-                if (Mathf.Abs(rb.linearVelocity.x) < maxSpeed)
+                if (Mathf.Abs(rb.linearVelocity.x) <= maxSpeed + 0.01f)
                 {
-                    rb.linearVelocityX += accel * moveInput.x * Time.fixedDeltaTime;
+                    if (Mathf.Abs(rb.linearVelocity.x + accel * moveInput.x * Time.fixedDeltaTime) >= maxSpeed)
+                    {
+                        rb.linearVelocityX = maxSpeed * Mathf.Sign(moveInput.x);
+                    }
+                    else
+                        rb.linearVelocityX += accel * moveInput.x * Time.fixedDeltaTime;
                 }
                 else
                 {

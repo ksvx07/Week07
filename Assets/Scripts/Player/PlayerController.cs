@@ -37,11 +37,11 @@ public class PlayerController : MonoBehaviour, IPlayerController
     [SerializeField] private float wallJumpYSpeed = 5f;
     [SerializeField] private float wallSlideMaxSpeed = 5f;
 
-    [Header("Wall Jump Options")]
-    [SerializeField] private float wallJumpStaggerDuration = 0.15f;
-    [SerializeField] private float wallJumpCurveDuration = 0.2f;      // 곡선으로 속도변화하는 시간
-    [SerializeField] private AnimationCurve wallJumpSpeedCurveX = AnimationCurve.Linear(0, 1, 1, 0);  // X축 커브
-    [SerializeField] private AnimationCurve wallJumpSpeedCurveY = AnimationCurve.EaseInOut(0, 1, 1, 0);  // Y축 커브
+    // [Header("Wall Jump Options")]
+    // [SerializeField] private float wallJumpStaggerDuration = 0.15f;
+    // [SerializeField] private float wallJumpCurveDuration = 0.2f;      // 곡선으로 속도변화하는 시간
+    // [SerializeField] private AnimationCurve wallJumpSpeedCurveX = AnimationCurve.Linear(0, 1, 1, 0);  // X축 커브
+    // [SerializeField] private AnimationCurve wallJumpSpeedCurveY = AnimationCurve.EaseInOut(0, 1, 1, 0);  // Y축 커브
 
     [Header("Dash")]
     [SerializeField] private float dashSpeed = 5f;
@@ -78,10 +78,10 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private int facingDirection = 1; // 1: ?��른쪽, -1: ?���?
     private Vector3 originalScale; // ?���? ?���? ????��
 
-    // ========== 벽점프 발딛움 상태 변수 ==========
-    private bool isWallJumping = false;
-    private float wallJumpElapsedTime = 0f;
-    private float wallJumpInitialVelX = 0f;
+    // // ========== 벽점프 발딛움 상태 변수 ==========
+    // private bool isWallJumping = false;
+    // private float wallJumpElapsedTime = 0f;
+    // private float wallJumpInitialVelX = 0f;
     // ============================================
     [Header("Game Log 용")]
     [SerializeField] PlayerDataLog playerDataLog;
@@ -377,9 +377,14 @@ public class PlayerController : MonoBehaviour, IPlayerController
         {
             if (Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(moveInput.x))
             {
-                if (Mathf.Abs(rb.linearVelocity.x) < maxSpeed)
+                if (Mathf.Abs(rb.linearVelocity.x) <= maxSpeed + 0.01f)
                 {
-                    rb.linearVelocityX += accel * moveInput.x * Time.fixedDeltaTime;
+                    if (Mathf.Abs(rb.linearVelocity.x + accel * moveInput.x * Time.fixedDeltaTime) >= maxSpeed)
+                    {
+                        rb.linearVelocityX = maxSpeed * Mathf.Sign(moveInput.x);
+                    }
+                    else
+                        rb.linearVelocityX += accel * moveInput.x * Time.fixedDeltaTime;
                 }
                 else
                 {

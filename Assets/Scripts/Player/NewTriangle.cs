@@ -194,6 +194,14 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         TimeCounters();
         // DrawRope(); // LateUpdate에서 처리
         HandleRotation();
+
+        if (swingHitCollider != null && isSwinging)
+        {
+            if (!swingHitCollider.enabled)
+            {
+                StopSwing();
+            }
+        }
     }
 
     /// <summary>
@@ -274,14 +282,18 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         }
 
 
-
         if (moveInput.x != 0)
         {
             if (Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(moveInput.x))
             {
-                if (Mathf.Abs(rb.linearVelocity.x) < maxSpeed)
+                if (Mathf.Abs(rb.linearVelocity.x) <= maxSpeed + 0.01f)
                 {
-                    rb.linearVelocityX += accel * moveInput.x * Time.fixedDeltaTime;
+                    if (Mathf.Abs(rb.linearVelocity.x + accel * moveInput.x * Time.fixedDeltaTime) >= maxSpeed)
+                    {
+                        rb.linearVelocityX = maxSpeed * Mathf.Sign(moveInput.x);
+                    }
+                    else
+                        rb.linearVelocityX += accel * moveInput.x * Time.fixedDeltaTime;
                 }
                 else
                 {
@@ -437,10 +449,12 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         lineRenderer.enabled = false;
     }
 
+    private Collider2D swingHitCollider;
+
     private void StartSwing()
     {
         if (isDashingToSwing) return;
-
+        swingHitCollider = null;
         RaycastHit2D hit = FindBestSwingPoint();
 
         if (hit.collider != null)
@@ -448,6 +462,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             if (hit.collider.TryGetComponent<BreakablePlatform>(out BreakablePlatform crumbleTile))
             {
                 crumbleTile.TriggerBreak();
+                swingHitCollider = hit.collider;
             }
             playerDataLog.OnPlayerUseAbility();
             Vector2 bestPoint = hit.point;
