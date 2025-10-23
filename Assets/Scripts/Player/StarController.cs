@@ -105,7 +105,6 @@ public class StarController : MonoBehaviour, IPlayerController
     private void OnMove(InputAction.CallbackContext ctx)
     {
         if (PlayerManager.Instance.IsHold) return;
-        print("Move Input");
         moveInput = ctx.ReadValue<Vector2>();
     }
 

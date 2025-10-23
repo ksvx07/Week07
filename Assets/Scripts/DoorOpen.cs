@@ -13,7 +13,7 @@ public class DoorOpen : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Trigger Entered");
+        //Debug.Log("Trigger Entered");
         if (collision.CompareTag("Player"))
         {
             if (opened) return;
