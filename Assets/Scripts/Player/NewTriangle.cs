@@ -52,7 +52,6 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private Material ropeMaterial;
     [SerializeField] private float ropeWidth = 0.1f;
     [SerializeField] private float swingRayDistance = 7f;
-    [SerializeField] private float maxSwingDistance = 15f;
     [SerializeField] private Transform spriteChild;
     [SerializeField] private float rotationResetSpeed = 20f;
     [SerializeField] private float swingRotationSpeed = 15f;
