@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3be35d7407d4eb545885102775eb30e6, type: 3}
-  m_Name: Stage ID 5
+  m_Name: Stage2
   m_EditorClassIdentifier: 
-  Id: 5
-  minX: 623.51483
-  maxX: 690.4348
-  minY: 51.03888
-  maxY: 79.06861
+  Id: 2
+  minX: 65.06031
+  maxX: 118.4
+  minY: -7.8
+  maxY: 14.58
