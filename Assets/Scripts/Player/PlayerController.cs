@@ -190,13 +190,18 @@ public class PlayerController : MonoBehaviour, IPlayerController
             }
         }
         dashCooldownCounter -= Time.deltaTime;
+        // walljumpTimerCounter -= Time.deltaTime;
+        // if (walljumpTimerCounter < 0)
+        // {
+        //     isWallJumping = false;
+        // }
     }
 
     private void FixedUpdate()
     {
         WallCheck();
         DetectGround();
-        UpdateWallJumpState(); // 벽점프 지속시간 중 관리용
+        // UpdateWallJumpState(); // 벽점프 지속시간 중 관리용
         if (!isDashing)
         {
             Jump();
@@ -207,7 +212,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         }
 
 
-        //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
+        Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
 
@@ -233,6 +238,26 @@ public class PlayerController : MonoBehaviour, IPlayerController
         }
     }
 
+    [SerializeField] private float walljumpTime = 0.2f;
+    private float walljumpTimerCounter = 0f;
+
+    private void WallJump()
+    {
+        if ((isTouchingWallRight || isTouchingWallLeft) && jumpBufferCounter > 0 && !IsGrounded)
+        {
+            int wallJumpDir;
+            if (isTouchingWallRight)
+                wallJumpDir = -1;
+            else
+                wallJumpDir = 1;
+
+            // isWallJumping = true;
+            // walljumpTimerCounter = walljumpTime;
+            IsJumping = true;
+            rb.linearVelocity = new Vector2(wallJumpXSpeed * wallJumpDir, wallJumpYSpeed);
+            Debug.Log("Wall Jump");
+        }
+    }
 
     /// <summary>
     /// 벽점프 발딛움 상태 관리
@@ -240,79 +265,79 @@ public class PlayerController : MonoBehaviour, IPlayerController
     /// - 발딛움 시간 종료 감지
     /// - 반대 벽 충돌 시 즉시 중단
     /// </summary>
-    private void UpdateWallJumpState()
-    {
-        if (!isWallJumping)
-            return;
+    // private void UpdateWallJumpState()
+    // {
+    //     if (!isWallJumping)
+    //         return;
 
-        wallJumpElapsedTime += Time.fixedDeltaTime;
+    //     wallJumpElapsedTime += Time.fixedDeltaTime;
 
-        // ===== Phase 1: 발딛움 단계 (벽에 붙어있음) =====
-        if (wallJumpElapsedTime < wallJumpStaggerDuration)
-        {
-            rb.linearVelocity = Vector2.zero;
-            return;
-        }
+    //     // ===== Phase 1: 발딛움 단계 (벽에 붙어있음) =====
+    //     if (wallJumpElapsedTime < wallJumpStaggerDuration)
+    //     {
+    //         rb.linearVelocity = Vector2.zero;
+    //         return;
+    //     }
 
-        // ===== Phase 2: 곡선 적용 단계 =====
-        float curveElapsedTime = wallJumpElapsedTime - wallJumpStaggerDuration;
+    //     // ===== Phase 2: 곡선 적용 단계 =====
+    //     float curveElapsedTime = wallJumpElapsedTime - wallJumpStaggerDuration;
 
-        // 0~1로 정규화
-        float normalizedTime = Mathf.Clamp01(curveElapsedTime / wallJumpCurveDuration);
+    //     // 0~1로 정규화
+    //     float normalizedTime = Mathf.Clamp01(curveElapsedTime / wallJumpCurveDuration);
 
-        // X, Y 각각 커브로 관리
-        float velocityMultiplierX = wallJumpSpeedCurveX.Evaluate(normalizedTime);
-        float velocityMultiplierY = wallJumpSpeedCurveY.Evaluate(normalizedTime);
+    //     // X, Y 각각 커브로 관리
+    //     float velocityMultiplierX = wallJumpSpeedCurveX.Evaluate(normalizedTime);
+    //     float velocityMultiplierY = wallJumpSpeedCurveY.Evaluate(normalizedTime);
 
-        // X, Y 속도 각각 계산
-        float adjustedVelX = wallJumpInitialVelX * velocityMultiplierX;
-        float adjustedVelY = wallJumpYSpeed * velocityMultiplierY;
+    //     // X, Y 속도 각각 계산
+    //     float adjustedVelX = wallJumpInitialVelX * velocityMultiplierX;
+    //     float adjustedVelY = wallJumpYSpeed * velocityMultiplierY;
 
-        rb.linearVelocity = new Vector2(adjustedVelX, adjustedVelY);
+    //     rb.linearVelocity = new Vector2(adjustedVelX, adjustedVelY);
 
-        // 곡선 단계가 끝나면 상태 해제
-        if (curveElapsedTime >= wallJumpCurveDuration)
-        {
-            isWallJumping = false;
-            canMove = true;
+    //     // 곡선 단계가 끝나면 상태 해제
+    //     if (curveElapsedTime >= wallJumpCurveDuration)
+    //     {
+    //         isWallJumping = false;
+    //         canMove = true;
 
-            // ✨ Y 속도가 음수면 IsJumping을 false로 해서 강한 중력 자동 적용
-            if (rb.linearVelocity.y < 0)
-            {
-                IsJumping = false;
-            }
+    //         // ✨ Y 속도가 음수면 IsJumping을 false로 해서 강한 중력 자동 적용
+    //         if (rb.linearVelocity.y < 0)
+    //         {
+    //             IsJumping = false;
+    //         }
 
-            return;
-        }
+    //         return;
+    //     }
 
-        // 반대 벽 감지 시 즉시 중단
-        if (isTouchingWallRight && rb.linearVelocity.x > 0)
-        {
-            isWallJumping = false;
-            canMove = true;
-            rb.linearVelocityY = 0;  // ✨ Y 속도 제거 (벽에 붙게 함)
-            // ✨ Y 속도가 음수면 IsJumping을 false로
-            if (rb.linearVelocity.y < 0)
-            {
-                IsJumping = false;
-            }
+    //     // 반대 벽 감지 시 즉시 중단
+    //     if (isTouchingWallRight && rb.linearVelocity.x > 0)
+    //     {
+    //         isWallJumping = false;
+    //         canMove = true;
+    //         rb.linearVelocityY = 0;  // ✨ Y 속도 제거 (벽에 붙게 함)
+    //         // ✨ Y 속도가 음수면 IsJumping을 false로
+    //         if (rb.linearVelocity.y < 0)
+    //         {
+    //             IsJumping = false;
+    //         }
 
-            return;
-        }
-        if (isTouchingWallLeft && rb.linearVelocity.x < 0)
-        {
-            isWallJumping = false;
-            canMove = true;
-            rb.linearVelocityY = 0;  // ✨ Y 속도 제거 (벽에 붙게 함)
-            // ✨ Y 속도가 음수면 IsJumping을 false로
-            if (rb.linearVelocity.y < 0)
-            {
-                IsJumping = false;
-            }
+    //         return;
+    //     }
+    //     if (isTouchingWallLeft && rb.linearVelocity.x < 0)
+    //     {
+    //         isWallJumping = false;
+    //         canMove = true;
+    //         rb.linearVelocityY = 0;  // ✨ Y 속도 제거 (벽에 붙게 함)
+    //         // ✨ Y 속도가 음수면 IsJumping을 false로
+    //         if (rb.linearVelocity.y < 0)
+    //         {
+    //             IsJumping = false;
+    //         }
 
-            return;
-        }
-    }
+    //         return;
+    //     }
+    // }
 
     // ???
     private void Move()
@@ -341,6 +366,12 @@ public class PlayerController : MonoBehaviour, IPlayerController
             transform.localScale = flippedScale; // ?���? (X�? 반전)
         }
 
+        // if (isWallJumping)
+        // {
+        //     rb.linearVelocityX -= decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime;
+        // // }
+        // else
+        // {
         if (moveInput.x != 0)
         {
             if (Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(moveInput.x))
@@ -368,6 +399,9 @@ public class PlayerController : MonoBehaviour, IPlayerController
                 rb.linearVelocityX = 0;
             }
         }
+        // }
+
+
     }
 
     // ??? ???? (BoxCast)
@@ -465,30 +499,30 @@ public class PlayerController : MonoBehaviour, IPlayerController
     }
 
 
-    private void WallJump()
-    {
-        if ((isTouchingWallRight || isTouchingWallLeft) && jumpBufferCounter > 0 && !IsGrounded)
-        {
-            int wallJumpDir;
-            if (isTouchingWallRight)
-                wallJumpDir = -1;
-            else
-                wallJumpDir = 1;
+    // private void WallJump()
+    // {
+    //     if ((isTouchingWallRight || isTouchingWallLeft) && jumpBufferCounter > 0 && !IsGrounded)
+    //     {
+    //         int wallJumpDir;
+    //         if (isTouchingWallRight)
+    //             wallJumpDir = -1;
+    //         else
+    //             wallJumpDir = 1;
 
-            IsJumping = true;
-            // ✨ 초기값만 저장, 실제 속도는 설정하지 않음
-            wallJumpInitialVelX = wallJumpXSpeed * wallJumpDir;
+    //         IsJumping = true;
+    //         // ✨ 초기값만 저장, 실제 속도는 설정하지 않음
+    //         wallJumpInitialVelX = wallJumpXSpeed * wallJumpDir;
 
-            // ========== 벽점프 발딛움 시작 ==========
-            isWallJumping = true;
-            canMove = false;  // Move() 스킵
-            wallJumpElapsedTime = 0f;  // 타이머 리셋
-                                       // =====================================
+    //         // ========== 벽점프 발딛움 시작 ==========
+    //         isWallJumping = true;
+    //         canMove = false;  // Move() 스킵
+    //         wallJumpElapsedTime = 0f;  // 타이머 리셋
+    //                                    // =====================================
 
-            Debug.Log("Wall Jump");
-            jumpBufferCounter = 0;  // 연속 점프 방지
-        }
-    }
+    //         Debug.Log("Wall Jump");
+    //         jumpBufferCounter = 0;  // 연속 점프 방지
+    //     }
+    // }
 
     private void Dash()
     {

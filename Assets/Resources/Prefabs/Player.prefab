@@ -1272,8 +1272,8 @@ MonoBehaviour:
   cornerRayOffsetX: 0.12
   cornerRayLength: 0.5
   wallCheckDistance: 0.4
-  wallJumpXSpeed: 10
-  wallJumpYSpeed: 7
+  wallJumpXSpeed: 0
+  wallJumpYSpeed: 0
   wallSlideMaxSpeed: 2
   airAccelMulti: 0.3
   airDecelMulti: 0.3
@@ -1742,6 +1742,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d34992bdc33aca41871d6e1cd075dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerDataLog: {fileID: 0}
   maxSpeed: 10
   maxAcceleration: 7
   maxDecceleration: 10
@@ -2362,27 +2363,45 @@ MonoBehaviour:
   cornerRayOffsetX: 0.12
   cornerRayLength: 0.5
   wallCheckDistance: 0.4
-  wallJumpXSpeed: 25
-  wallJumpYSpeed: 15
+  wallJumpXSpeed: 10
+  wallJumpYSpeed: 7
   wallSlideMaxSpeed: 2
-  wallJumpStaggerDuration: 0.15
-  wallJumpCurveDuration: 0.2
+  wallJumpStaggerDuration: 0.075
+  wallJumpCurveDuration: 0.25
   wallJumpSpeedCurveX:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
-      inSlope: 0
-      outSlope: -1
+      value: 0.65
+      inSlope: 1.7314274
+      outSlope: 1.7314274
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.42592597
+    - serializedVersion: 3
+      time: 0.8
+      value: 0.8
+      inSlope: -1.3064973
+      outSlope: -1.3064973
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.10185188
+      outWeight: 0.09374992
     - serializedVersion: 3
       time: 1
-      value: 0
-      inSlope: -1
+      value: 0.5
+      inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
@@ -2397,15 +2416,33 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: -0.02779874
+      outSlope: -0.02779874
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.61652005
+    - serializedVersion: 3
+      time: 0.25
+      value: 1
+      inSlope: -0.05716895
+      outSlope: -0.05716895
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.41941622
+    - serializedVersion: 3
+      time: 0.6
+      value: 0.4
+      inSlope: -5.0285683
+      outSlope: -5.0285683
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.07142867
+      outWeight: 0.09374992
     - serializedVersion: 3
       time: 1
-      value: 0
+      value: -0.2
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -2425,7 +2462,8 @@ MonoBehaviour:
   afterImageLifetime: 0.3
   afterImageSpawnRate: 0.05
   airAccelMulti: 0.3
-  airDecelMulti: 0.65
+  airDecelMulti: 0.3
+  walljumpTime: 0
 --- !u!61 &4782539506400394416
 BoxCollider2D:
   m_ObjectHideFlags: 0
