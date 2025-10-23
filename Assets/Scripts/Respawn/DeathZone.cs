@@ -20,7 +20,7 @@ public class DeathZone : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[DeathZone] Player entered death zone at {transform.position}");
+        // Debug.Log($"[DeathZone] Player entered death zone at {transform.position}");
 
         // 플레이어 리스폰
         GameManager.Instance.RespawnPlayer();

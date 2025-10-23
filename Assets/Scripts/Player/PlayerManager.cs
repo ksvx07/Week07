@@ -12,16 +12,16 @@ public enum PlayerShape
     Square,
     Triangle
 }
-
+[RequireComponent(typeof(PlayerDataLog))] // Hack : 데이터 로그 참고용 제거예정
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
 
-    private int currentPlayer = 0;
-    private int selectPlayer = 0;
-    private int highlightPlayer = 0;
+    private PlayerShape currentPlayer;
+    private PlayerShape selectPlayer;
+    private PlayerShape highlightPlayer;
     private bool isSelectUIActive = false;
-    [SerializeField] private int startPlayer = 0;
+    [SerializeField] private PlayerShape startPlayer = PlayerShape.Circle;
     [SerializeField] private List<GameObject> players;
     [SerializeField] private List<Image> pannels;
     [SerializeField] private Color originColor;
@@ -40,19 +40,13 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private float _selectPanelSpeed = 60f;
     private Coroutine pannelActive;
 
-    #region 게임 로그용 변수
-
-    private int triangleMode;
-    private int squareMode;
-    private int circleMode;
-    private int starMode;
-    private int selectModeLog;
-
-    private int deadAmount;
+    #region 게임 로그용
+    PlayerDataLog playerDataLog;
     #endregion
 
     private void Awake()
     {
+
         if (null == Instance)
         {
             Instance = this;
@@ -63,14 +57,17 @@ public class PlayerManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        playerDataLog = GetComponent<PlayerDataLog>();
 
         inputActions = new PlayerInput();
 
         selectPlayer = startPlayer;
         currentPlayer = selectPlayer;
         highlightPlayer = selectPlayer;
-        _currentPlayerPrefab = players[currentPlayer];
+        _currentPlayerPrefab = players[(int)currentPlayer];
+
         ActiveStartPlayer(startPlayer);
+        playerDataLog.PlayerLogStart(startPlayer); // Log 데이터 수집 시작
     }
 
     private void OnEnable()
@@ -106,11 +103,11 @@ public class PlayerManager : MonoBehaviour
             // 세로 축이 더 강함
             if (inputVector.y > 0) // 위쪽
             {
-                selectPlayer = 0;
+                selectPlayer = PlayerShape.Circle;
             }
             else // 아래쪽
             {
-                selectPlayer = 2; // 네모
+                selectPlayer = PlayerShape.Square; // 네모
             }
         }
         else
@@ -118,15 +115,15 @@ public class PlayerManager : MonoBehaviour
             // 가로 축이 더 강함
             if (inputVector.x > 0) // 오른쪽
             {
-                selectPlayer = 1;
+                selectPlayer = PlayerShape.Star;
             }
             else // 왼쪽
             {
-                selectPlayer = 3;
+                selectPlayer = PlayerShape.Triangle;
             }
         }
 
-        HighLightSelectPlayer(highlightPlayer, selectPlayer);
+        HighLightSelectShape(highlightPlayer, selectPlayer);
         highlightPlayer = selectPlayer;
     }
 
@@ -147,7 +144,7 @@ public class PlayerManager : MonoBehaviour
 
     private void AcitveSelectUI()
     {
-        HighLightSelectPlayer(highlightPlayer, selectPlayer);
+        HighLightSelectShape(highlightPlayer, selectPlayer);
         Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
         selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
 
@@ -202,28 +199,28 @@ public class PlayerManager : MonoBehaviour
         if (isSelectUIActive)
         {
             DeActiveSelectUI();
-            ActiveSelectPlayer(currentPlayer, selectPlayer);
+            ActiveSelectShape(currentPlayer, selectPlayer);
         }
     }
 
     public void OnPlayerDead()
     {
-        PlayerDeadLog();
+        playerDataLog.PlayerDeadLog();
         if (isSelectUIActive)
         {
             DeActiveSelectUI();
-            ActiveSelectPlayer(currentPlayer, selectPlayer);
+            ActiveSelectShape(currentPlayer, selectPlayer);
         }
     }
 
-    private void HighLightSelectPlayer(int oldPlayer, int newPlayer)
+    private void HighLightSelectShape(PlayerShape oldShape, PlayerShape newShape)
     {
-        pannels[oldPlayer].color = originColor;
-        pannels[newPlayer].color = highLightColor;
+        pannels[(int)oldShape].color = originColor;
+        pannels[(int)newShape].color = highLightColor;
     }
-    private void ActiveStartPlayer(int starstPlayer)
+    private void ActiveStartPlayer(PlayerShape starstPlayer)
     {
-        _currentPlayerPrefab = players[starstPlayer];
+        _currentPlayerPrefab = players[(int)starstPlayer];
         _currentPlayerPrefab.SetActive(true);
         currentPlayer = selectPlayer;
     }
@@ -232,26 +229,26 @@ public class PlayerManager : MonoBehaviour
     {
         _currentPlayerPrefab.SetActive(isAcitve);
     }
-    private void ActiveSelectPlayer(int oldPlayer, int newPlayer)
+    private void ActiveSelectShape(PlayerShape oldShape, PlayerShape newShape)
     {
         OriginalTimeScale();
 
-        HighLightSelectPlayer(oldPlayer, newPlayer);
-        if (oldPlayer == 2 && newPlayer == 2) return;
+        HighLightSelectShape(oldShape, newShape);
+        if (oldShape == PlayerShape.Square && newShape == PlayerShape.Square) return;
 
-        GameObject oldPlayerPrefab = players[oldPlayer];
+        GameObject oldPlayerPrefab = players[(int)oldShape];
         Transform lastPos = oldPlayerPrefab.transform;
         Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
         oldPlayerPrefab.SetActive(false);
 
-        _currentPlayerPrefab = players[newPlayer];
+        _currentPlayerPrefab = players[(int)newShape];
         _currentPlayerPrefab.transform.position = lastPos.position;
         _currentPlayerPrefab.SetActive(true);
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
         currentPlayer = selectPlayer;
         highlightPlayer = currentPlayer;
-        PlayerSwitchLog();
+        playerDataLog.OnPlayerShapeChange(newShape);
     }
 
     IEnumerator ScaleOverTime()
@@ -281,32 +278,4 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    #region GameLog용 함수
-
-    // Hack: 나중에 어떤 도형으로 변신 했는지 추가하기
-    private void PlayerSwitchLog()
-    {
-        selectModeLog++;
-        GameLog.Log($"플레이어 변신 횟수: {selectModeLog}번");
-    }
-
-    private void PlayerDeadLog()
-    {
-        deadAmount++;
-        GameLog.Log($"플레이어 죽음 횟수: {deadAmount}번");
-    }
-
-    private void PlayerLogResult()
-    {
-        GameLog.Info($"---------최종 플레이어 데이터---------");
-        GameLog.Info($"플레이어 변신 횟수: {selectModeLog}번");
-        GameLog.Info($"죽음 횟수: {deadAmount}번");
-    }
-
-    // Hack : 게임 종료 시 확인을 위한 임시함수
-    private void OnApplicationQuit()
-    {
-        PlayerLogResult();
-    }
-    #endregion
 }
