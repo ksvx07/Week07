@@ -60,7 +60,6 @@ public class RespawnManager : MonoBehaviour
     public void RegisterCheckpoint(int checkpointId, Vector3 position)
     {
         checkpoints[checkpointId] = position;
-        Debug.Log($"[RespawnManager] Checkpoint {checkpointId} registered at {position}");
     }
 
     public void ActivateCheckpoint(int checkpointId)
@@ -85,7 +84,7 @@ public class RespawnManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[RespawnManager] Already at checkpoint {checkpointId}");
+            //Debug.Log($"[RespawnManager] Already at checkpoint {checkpointId}");
         }
     }
 
@@ -106,7 +105,7 @@ public class RespawnManager : MonoBehaviour
         ResetPlayerPhysics();
         SpawnPlayerAtCheckpoint();
         PlayerManager.Instance.PlayerSetActive(true); // ���� �ʱ�ȭ�� ���� ���� �ѱ�
-        Debug.Log($"[RespawnManager] Player respawned at checkpoint {currentCheckpointId}: {currentSpawnPosition}");
+        // Debug.Log($"[RespawnManager] Player respawned at checkpoint {currentCheckpointId}: {currentSpawnPosition}");
     }
 
 
