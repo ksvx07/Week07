@@ -137,8 +137,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 2
-  speedAcceleration: 100
-  SpeedDeceleration: 100
+  wallClimbSpeedAcceleration: 100
+  wallClimbSpeedDeceleration: 100
+  starNormalAccel: 20
+  starNormalDecel: 50
+  TurningSpeedAcceleration: 150
   maxJumpSpeed: 5
   jumpDcceleration: 20
   maxGravity: 50
@@ -147,18 +150,14 @@ MonoBehaviour:
   coyoteTime: 0.1
   jumpBufferTime: 0.1
   wallSlideMaxSpeed: 2
-  airAccelMulti: 0.05
-  airDecelMulti: 0.1
+  airAccelMulti: 0.3
+  airDecelMulti: 0.3
   starRayGravityDistance: 0.4
   starWallJumpSpeed: 5
   starPivotTransform: {fileID: 8737585654859554741}
   starWallGravity: 2
   starMaxWallGravityDistance: 0.34
   starNormalMaxSpeed: 3.5
-  starNormalAccel: 10
-  starNormalDecel: 10
-  starNormalairAccelMulti: 0.5
-  starNormalairDecelMulti: 0.5
   abilityOnObject: {fileID: 2237681633736548133}
   abilityOffObject: {fileID: 8121962595680718066}
 --- !u!50 &1617188163437989074
@@ -1273,8 +1272,8 @@ MonoBehaviour:
   cornerRayOffsetX: 0.12
   cornerRayLength: 0.5
   wallCheckDistance: 0.4
-  wallJumpXSpeed: 25
-  wallJumpYSpeed: 15
+  wallJumpXSpeed: 10
+  wallJumpYSpeed: 7
   wallSlideMaxSpeed: 2
   airAccelMulti: 0.3
   airDecelMulti: 0.3
@@ -2349,7 +2348,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 5
   speedAcceleration: 20
-  SpeedDeceleration: 20
+  SpeedDeceleration: 50
+  TurningSpeedAcceleration: 80
   canMove: 1
   maxJumpSpeed: 10
   jumpDcceleration: 20

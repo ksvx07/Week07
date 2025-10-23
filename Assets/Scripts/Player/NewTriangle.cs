@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System;
 using System.Collections;
 
 [RequireComponent(typeof(DistanceJoint2D))]
@@ -11,14 +10,13 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     private Vector2 moveInput;
     private Rigidbody2D rb;
     private Collider2D col;
-    private SpriteRenderer spriteRenderer;
 
     // --- (기존 Inspector 변수들은 동일) ---
     [Header("Move")]
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float speedAcceleration = 5f;
     [SerializeField] private float SpeedDeceleration = 5f;
-    [SerializeField] private float TurningSpeedAcceleration = 5f;
+    [SerializeField] private float TurningSpeedAcceleration = 80f;
 
     [Header("Jump / Gravity")]
     [SerializeField] private float maxJumpSpeed = 5f;
@@ -91,7 +89,6 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         inputActions = new PlayerInput();
         col = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
-        // spriteRenderer = GetComponent<SpriteRenderer>(); 
         currentGravity = jumpDcceleration;
         currentJumpDcceleration = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
@@ -228,7 +225,6 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         {
             if (rb.gravityScale != 0f) rb.gravityScale = 0f;
             Jump();
-            CornerCorrection();
             WallJump();
             ApplyGravity();
             Move();
@@ -249,26 +245,6 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     // --- (CornerCorrection, Move, DetectGround... 함수들은 동일합니다) ---
     // (이전 코드와 동일한 부분은 생략)
 
-    private void CornerCorrection()
-    {
-        RaycastHit2D CornerHitRight = Physics2D.Raycast(transform.position + new Vector3(cornerRayPosX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
-        RaycastHit2D CornerHitRightOffset = Physics2D.Raycast(transform.position + new Vector3(cornerRayPosX + cornerRayOffsetX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
-        RaycastHit2D CornerHitLeft = Physics2D.Raycast(transform.position + new Vector3(-cornerRayPosX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
-        RaycastHit2D CornerHitLeftOffset = Physics2D.Raycast(transform.position + new Vector3(-cornerRayPosX - cornerRayOffsetX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
-        Debug.DrawRay(transform.position + new Vector3(cornerRayPosX, 0, 0), Vector2.up * cornerRayLength, Color.red);
-        Debug.DrawRay(transform.position + new Vector3(cornerRayPosX + cornerRayOffsetX, 0, 0), Vector2.up * cornerRayLength, Color.red);
-        Debug.DrawRay(transform.position + new Vector3(-cornerRayPosX, 0, 0), Vector2.up * cornerRayLength, Color.red);
-        Debug.DrawRay(transform.position + new Vector3(-cornerRayPosX - cornerRayOffsetX, 0, 0), Vector2.up * cornerRayLength, Color.red);
-
-        if (!CornerHitRight && CornerHitRightOffset && moveInput.x <= 0)
-        {
-            rb.MovePosition(rb.position + new Vector2(-cornerRayPosX + cornerRayOffsetX, 0));
-        }
-        else if (!CornerHitLeft && CornerHitLeftOffset && moveInput.x >= 0)
-        {
-            rb.MovePosition(rb.position + new Vector2(cornerRayPosX - cornerRayOffsetX, 0));
-        }
-    }
 
     private void Move()
     {
@@ -295,17 +271,11 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             transform.localScale = flippedScale;
         }
 
-        // float targetX = moveInput.x * maxSpeed;
-
-
-        // float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        // float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-        // rb.linearVelocityX = newX;
 
 
         if (moveInput.x != 0)
         {
-            if (Math.Sign(rb.linearVelocity.x) == Mathf.Sign(moveInput.x))
+            if (Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(moveInput.x))
             {
                 if (Mathf.Abs(rb.linearVelocity.x) < maxSpeed)
                 {
@@ -394,7 +364,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     private void FastFall()
     {
-        if (IsJumping && currentJumpDcceleration != swingJumpDcceleration)
+        if (IsJumping)
         {
             IsJumping = false;
         }
@@ -444,7 +414,6 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         Debug.Log("Set Velocity Called");
         col = GetComponent<PolygonCollider2D>();
         rb = GetComponent<Rigidbody2D>();
-        // spriteRenderer = GetComponent<SpriteRenderer>();
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
 

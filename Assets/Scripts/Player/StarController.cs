@@ -12,8 +12,11 @@ public class StarController : MonoBehaviour, IPlayerController
     // Inspector ���� ���� ������
     [Header("Move")]
     [SerializeField] private float maxSpeed = 2f;
-    [SerializeField] private float speedAcceleration = 100f;
-    [SerializeField] private float SpeedDeceleration = 100f;
+    [SerializeField] private float wallClimbSpeedAcceleration = 100f;
+    [SerializeField] private float wallClimbSpeedDeceleration = 100f;
+    [SerializeField] private float starNormalAccel = 40f;
+    [SerializeField] private float starNormalDecel = 40f;
+    [SerializeField] private float TurningSpeedAcceleration = 80f;
 
     [Header("Jump / Gravity")]
     [SerializeField] private float maxJumpSpeed = 5f;
@@ -38,10 +41,7 @@ public class StarController : MonoBehaviour, IPlayerController
     [SerializeField] private float starWallGravity = 2f;
     [SerializeField] private float starMaxWallGravityDistance = 0.34f;
     [SerializeField] private float starNormalMaxSpeed = 8f;
-    [SerializeField] private float starNormalAccel = 40f;
-    [SerializeField] private float starNormalDecel = 40f;
-    [SerializeField] private float starNormalairAccelMulti = 0.05f;
-    [SerializeField] private float starNormalairDecelMulti = 0.1f;
+
 
     [SerializeField] private GameObject abilityOnObject;
     [SerializeField] private GameObject abilityOffObject;
@@ -167,7 +167,7 @@ public class StarController : MonoBehaviour, IPlayerController
         StarRoll();
         StarDetectGround();
         StarApplyGravity();
-        StarAirControl();
+        // StarAirControl();
         StarMove();
         StarWallClimbing();
         StarJump();
@@ -182,7 +182,7 @@ public class StarController : MonoBehaviour, IPlayerController
         if (isJumping) return;
 
         // �浹 ������ ����
-        if (hitWalls.All(hit => hit.collider == null))
+        if (!isStarClimbing)
             return;
 
         // �� normal ��� ���ϱ�
@@ -217,13 +217,9 @@ public class StarController : MonoBehaviour, IPlayerController
         Vector2 moveDir = tangent.normalized;
 
         // ����/���� ���
-        float accel = speedAcceleration;
-        float decel = SpeedDeceleration;
-        if (!isStarClimbing)
-        {
-            accel *= airAccelMulti;
-            decel *= airDecelMulti;
-        }
+        float accel = wallClimbSpeedAcceleration;
+        float decel = wallClimbSpeedDeceleration;
+
 
         // ��ǥ �ӵ�
         Vector2 targetVel = moveDir * maxSpeed * Mathf.Abs(moveInput.x);
@@ -303,41 +299,62 @@ public class StarController : MonoBehaviour, IPlayerController
     }
 
 
-    private void StarAirControl()
-    {
-        if (isActiveAbility)
-        {
-            float accel = speedAcceleration;
-            float decel = SpeedDeceleration;
-            if (!isStarClimbing)
-            {
-                accel *= airAccelMulti;
-                decel *= airDecelMulti;
-            }
-            float targetX = moveInput.x * maxSpeed;
-            float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-            // �ӵ��� �������� ���ӵ� ����
-            float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-            rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y);
-        }
-    }
+    // private void StarAirControl()
+    // {
+    //     if (isActiveAbility)
+    //     {
+    //         float accel = speedAcceleration;
+    //         float decel = SpeedDeceleration;
+    //         if (!isStarClimbing)
+    //         {
+    //             accel *= airAccelMulti;
+    //             decel *= airDecelMulti;
+    //         }
+    //         float targetX = moveInput.x * maxSpeed;
+    //         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
+    //         // �ӵ��� �������� ���ӵ� ����
+    //         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
+    //         rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y);
+    //     }
+    // }
 
     private void StarMove()
     {
-        if (!isActiveAbility)
+        float accel = starNormalAccel;
+        float decel = starNormalDecel;
+        float turnAccel = TurningSpeedAcceleration;
+        if (!isStarClimbing)
         {
-            float accel = starNormalAccel;
-            float decel = starNormalDecel;
-            if (!isStarClimbing)
+            accel *= airAccelMulti;
+            decel *= airDecelMulti;
+            turnAccel *= airAccelMulti;
+        }
+        if (moveInput.x != 0)
+        {
+            if (Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(moveInput.x))
             {
-                accel *= starNormalairAccelMulti;
-                decel *= starNormalairDecelMulti;
+                if (Mathf.Abs(rb.linearVelocity.x) < maxSpeed)
+                {
+                    rb.linearVelocityX += accel * moveInput.x * Time.fixedDeltaTime;
+                }
+                else
+                {
+                    rb.linearVelocityX -= decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime;
+                }
             }
-            float targetX = moveInput.x * starNormalMaxSpeed;
-            float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-            // �ӵ��� �������� ���ӵ� ����
-            float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-            rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y);
+            else
+            {
+                rb.linearVelocityX += turnAccel * moveInput.x * Time.fixedDeltaTime;
+            }
+
+        }
+        else
+        {
+            rb.linearVelocityX -= decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime;
+            if (Mathf.Sign(rb.linearVelocity.x) != Mathf.Sign(rb.linearVelocity.x - decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime))
+            {
+                rb.linearVelocityX = 0;
+            }
         }
     }
 

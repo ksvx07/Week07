@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
 public class PlayerController : MonoBehaviour, IPlayerController
 {
     private PlayerInput inputActions;
@@ -14,6 +15,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float speedAcceleration = 5f;
     [SerializeField] private float SpeedDeceleration = 5f;
+    [SerializeField] private float TurningSpeedAcceleration = 80f;
     [SerializeField] private bool canMove = true;
 
     [Header("Jump / Gravity")]
@@ -257,7 +259,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
         // 0~1로 정규화
         float normalizedTime = Mathf.Clamp01(curveElapsedTime / wallJumpCurveDuration);
-        
+
         // X, Y 각각 커브로 관리
         float velocityMultiplierX = wallJumpSpeedCurveX.Evaluate(normalizedTime);
         float velocityMultiplierY = wallJumpSpeedCurveY.Evaluate(normalizedTime);
@@ -273,13 +275,13 @@ public class PlayerController : MonoBehaviour, IPlayerController
         {
             isWallJumping = false;
             canMove = true;
-            
+
             // ✨ Y 속도가 음수면 IsJumping을 false로 해서 강한 중력 자동 적용
             if (rb.linearVelocity.y < 0)
             {
                 IsJumping = false;
             }
-            
+
             return;
         }
 
@@ -294,7 +296,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
             {
                 IsJumping = false;
             }
-            
+
             return;
         }
         if (isTouchingWallLeft && rb.linearVelocity.x < 0)
@@ -307,7 +309,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
             {
                 IsJumping = false;
             }
-            
+
             return;
         }
     }
@@ -318,10 +320,12 @@ public class PlayerController : MonoBehaviour, IPlayerController
         if (!canMove) return;
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
+        float turnAccel = TurningSpeedAcceleration;
         if (!IsGrounded) // ??????? ??? ????
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
+            turnAccel *= airAccelMulti;
         }
         // 바라보는 방향 ?��?��?��?�� �? ?��?��?��?��?�� ?��?��
         if (moveInput.x > 0)
@@ -337,11 +341,33 @@ public class PlayerController : MonoBehaviour, IPlayerController
             transform.localScale = flippedScale; // ?���? (X�? 반전)
         }
 
-        float targetX = moveInput.x * maxSpeed;
-        float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        // ?��?�� 방향?�� ?���? ?��로운 X�? ?��?�� 계산
-        float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-        rb.linearVelocityX = newX;
+        if (moveInput.x != 0)
+        {
+            if (Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(moveInput.x))
+            {
+                if (Mathf.Abs(rb.linearVelocity.x) < maxSpeed)
+                {
+                    rb.linearVelocityX += accel * moveInput.x * Time.fixedDeltaTime;
+                }
+                else
+                {
+                    rb.linearVelocityX -= decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime;
+                }
+            }
+            else
+            {
+                rb.linearVelocityX += turnAccel * moveInput.x * Time.fixedDeltaTime;
+            }
+
+        }
+        else
+        {
+            rb.linearVelocityX -= decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime;
+            if (Mathf.Sign(rb.linearVelocity.x) != Mathf.Sign(rb.linearVelocity.x - decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime))
+            {
+                rb.linearVelocityX = 0;
+            }
+        }
     }
 
     // ??? ???? (BoxCast)
@@ -454,13 +480,13 @@ public class PlayerController : MonoBehaviour, IPlayerController
             IsJumping = true;
             // ✨ 초기값만 저장, 실제 속도는 설정하지 않음
             wallJumpInitialVelX = wallJumpXSpeed * wallJumpDir;
-            
+
             // ========== 벽점프 발딛움 시작 ==========
             isWallJumping = true;
             canMove = false;  // Move() 스킵
             wallJumpElapsedTime = 0f;  // 타이머 리셋
-            // =====================================
-            
+                                       // =====================================
+
             Debug.Log("Wall Jump");
             jumpBufferCounter = 0;  // 연속 점프 방지
         }

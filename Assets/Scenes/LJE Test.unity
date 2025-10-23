@@ -1552,9 +1552,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 7186000537919112133, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+    - target: {fileID: 5607275775916330275, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: airAccelMulti
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607275775916330275, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: airDecelMulti
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607275775916330275, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: starNormalAccel
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607275775916330275, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: starNormalDecel
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607275775916330275, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
       propertyPath: TurningSpeedAcceleration
-      value: 80
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 8692969605352230766, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: SpeedDeceleration
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

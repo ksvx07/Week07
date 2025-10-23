@@ -184,28 +184,31 @@ public class KirbyController : MonoBehaviour, IPlayerController
         // �̵�Ű�� ��������
         if (pressingKey)
         {
-            //���� �̵� x �����, �������� �ϴ� ���� x���� ��ȣ�� �ٸ��ٴ� ����. ����Ű�� �ٲ�ٴ� ������, turnSpeed�� �����Ѵ�
-            if (Mathf.Sign(directionX) != Mathf.Sign(moveVelocity.x))
+            if (Mathf.Sign(directionX) == Mathf.Sign(moveVelocity.x))
             {
-                maxSpeedChangeAmount = turnSpeed * Time.deltaTime;
+                if (Mathf.Abs(_rb.linearVelocity.x) < maxSpeed)
+                {
+                    _rb.linearVelocityX += acceleration * directionX * Time.deltaTime;
+                }
+                else
+                {
+                    _rb.linearVelocityX -= deceleration * Mathf.Sign(_rb.linearVelocity.x) * Time.deltaTime;
+                }
+
             }
             else
             {
-                //���ٸ�, ������ ���� �������� ���� �ִٴ� ������, acceleration�� �����Ѵ�
-                maxSpeedChangeAmount = acceleration * Time.deltaTime;
+                _rb.linearVelocityX += turnSpeed * directionX * Time.deltaTime;
             }
         }
         else
         {
-            //����Ű�� ������ �ִ� ���°� �ƴϸ�, �����ؾ� �ϹǷ�, deceleration�� �����Ѵ�
-            maxSpeedChangeAmount = deceleration * Time.deltaTime;
+            _rb.linearVelocityX -= deceleration * Mathf.Sign(_rb.linearVelocity.x) * Time.deltaTime;
+            if (Mathf.Sign(_rb.linearVelocity.x) != Mathf.Sign(_rb.linearVelocity.x - deceleration * Mathf.Sign(_rb.linearVelocity.x) * Time.fixedDeltaTime))
+            {
+                _rb.linearVelocityX = 0;
+            }
         }
-
-        //���� velocity ����, ���� �Ǵ� velocity ���� ���̸� ���ϵ�, ���� �ִ� �ӵ����淮�� ���� ���� ���� ��ȯ
-        moveVelocity.x = Mathf.MoveTowards(moveVelocity.x, desiredVelocity.x, maxSpeedChangeAmount);
-
-        //���� ����� moveVelocity ���� Update�� �����Ѵ�
-        _rb.linearVelocity = moveVelocity;
     }
 
     // ���ӵ� ���� ���� �ٷ� �ְ� �ӵ��� �̵�
