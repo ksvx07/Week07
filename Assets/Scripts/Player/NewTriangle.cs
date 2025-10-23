@@ -445,9 +445,9 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
         if (hit.collider != null)
         {
-            if (hit.collider.TryGetComponent<CrumbleTileHandler>(out CrumbleTileHandler crumbleTile))
+            if (hit.collider.TryGetComponent<BreakablePlatform>(out BreakablePlatform crumbleTile))
             {
-                crumbleTile.GroundFall();
+                crumbleTile.TriggerBreak();
             }
             playerDataLog.OnPlayerUseAbility();
             Vector2 bestPoint = hit.point;
