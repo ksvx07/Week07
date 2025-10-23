@@ -173,8 +173,10 @@ public class PlayerManager : MonoBehaviour
 
         ActiveSelectShape(currentPlayer, selectPlayer);
 
+        playerDataLog.OnPlayerQuickSwitch(selectPlayer); // Hack : 게임 Log 용
+
         // 선택모드 활성화 중에 Qucik Switch 했으면
-        if(IsSelectMode == true)
+        if (IsSelectMode == true)
         {
             DeActiveSelectUI();
             IsSelectMode = false;
@@ -200,6 +202,7 @@ public class PlayerManager : MonoBehaviour
         {
             DeActiveSelectUI();
             ActiveSelectShape(currentPlayer, selectPlayer);
+            playerDataLog.OnPlayerModeSwitch(selectPlayer); // Hack : 게임 Log 용
         }
     }
 
@@ -251,7 +254,6 @@ public class PlayerManager : MonoBehaviour
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
         currentPlayer = selectPlayer;
-        playerDataLog.OnPlayerShapeChange(newShape);
     }
 
     #region Switch Mode UI 함수
