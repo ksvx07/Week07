@@ -17,7 +17,7 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
 
-    private PlayerShape currentPlayer;
+    public PlayerShape CurrentPlayer { get; private set; }
     private PlayerShape selectPlayer;
     private bool isSelectUIActive = false;
     [SerializeField] private PlayerShape startPlayer = PlayerShape.Circle;
@@ -61,10 +61,11 @@ public class PlayerManager : MonoBehaviour
         inputActions = new PlayerInput();
 
         selectPlayer = startPlayer;
-        currentPlayer = selectPlayer;
-        _currentPlayerPrefab = players[(int)currentPlayer];
+        CurrentPlayer = selectPlayer;
+        _currentPlayerPrefab = players[(int)CurrentPlayer];
 
         ActiveStartPlayer(startPlayer);
+        ShapeUnlockSystem.Initialize(startPlayer); // 시작 도형 잠금 해제
         playerDataLog.PlayerLogStart(startPlayer); // Log 데이터 수집 시작
     }
 
@@ -171,9 +172,13 @@ public class PlayerManager : MonoBehaviour
             }
         }
 
-        ActiveSelectShape(currentPlayer, selectPlayer);
+        ActiveSelectShape(CurrentPlayer, selectPlayer);
 
-        playerDataLog.OnPlayerQuickSwitch(selectPlayer); // Hack : 게임 Log 용
+        // 잠금된 도형이 아니면 로그 기록
+        if (ShapeUnlockSystem.IsUnlocked(selectPlayer) == true)
+        {
+            playerDataLog.OnPlayerQuickSwitch(selectPlayer); // Hack : 게임 Log 용
+        }
 
         // 선택모드 활성화 중에 Qucik Switch 했으면
         if (IsSelectMode == true)
@@ -201,8 +206,13 @@ public class PlayerManager : MonoBehaviour
         if (isSelectUIActive)
         {
             DeActiveSelectUI();
-            ActiveSelectShape(currentPlayer, selectPlayer);
-            playerDataLog.OnPlayerModeSwitch(selectPlayer); // Hack : 게임 Log 용
+            ActiveSelectShape(CurrentPlayer, selectPlayer);
+
+            // 잠금된 도형이 아니면 로그 기록
+            if (ShapeUnlockSystem.IsUnlocked(selectPlayer) == true)
+            {
+                playerDataLog.OnPlayerModeSwitch(selectPlayer); // Hack : 게임 Log 용
+            }
         }
     }
 
@@ -212,7 +222,7 @@ public class PlayerManager : MonoBehaviour
         if (isSelectUIActive)
         {
             DeActiveSelectUI();
-            ActiveSelectShape(currentPlayer, selectPlayer);
+            ActiveSelectShape(CurrentPlayer, selectPlayer);
         }
     }
 
@@ -228,7 +238,7 @@ public class PlayerManager : MonoBehaviour
     {
         _currentPlayerPrefab = players[(int)starstPlayer];
         _currentPlayerPrefab.SetActive(true);
-        currentPlayer = selectPlayer;
+        CurrentPlayer = selectPlayer;
     }
 
     public void PlayerSetActive(bool isAcitve)
@@ -239,6 +249,13 @@ public class PlayerManager : MonoBehaviour
     private void ActiveSelectShape(PlayerShape oldShape, PlayerShape newShape)
     {
         OriginalTimeScale();
+
+        // 잠금된 도형으로 변경 불가능
+        if (ShapeUnlockSystem.IsUnlocked(newShape) == false)
+        {
+            Debug.Log($"{newShape}은 잠금 상태입니다");
+            return;
+        }
 
         HighLightSelectShape(newShape);
         if (oldShape == PlayerShape.Square && newShape == PlayerShape.Square) return;
@@ -253,8 +270,39 @@ public class PlayerManager : MonoBehaviour
         _currentPlayerPrefab.SetActive(true);
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
-        currentPlayer = selectPlayer;
+        CurrentPlayer = selectPlayer;
     }
+
+    /// <summary>
+    /// 플레이어랑 상관없이 강제로 도형 변경하기
+    /// </summary>
+    public void ForceToChangeShape(PlayerShape newShape)
+    {
+        OriginalTimeScale();
+
+        // 잠금된 도형으로 변경 불가능
+        if (ShapeUnlockSystem.IsUnlocked(newShape) == false)
+        {
+            Debug.Log($"{newShape}은 잠금 상태입니다");
+            return;
+        }
+
+        HighLightSelectShape(newShape);
+
+        GameObject oldPlayerPrefab = players[(int)CurrentPlayer];
+
+        Transform lastPos = oldPlayerPrefab.transform;
+        Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
+        oldPlayerPrefab.SetActive(false);
+
+        _currentPlayerPrefab = players[(int)newShape];
+        _currentPlayerPrefab.transform.position = lastPos.position;
+        _currentPlayerPrefab.SetActive(true);
+        _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
+
+        CurrentPlayer = newShape;
+    }
+
 
     #region Switch Mode UI 함수
     private void AcitveSelectUI()

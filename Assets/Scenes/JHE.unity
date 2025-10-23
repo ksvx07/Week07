@@ -3568,6 +3568,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7664280408074721054, guid: a4cf5bb69b0638b4ca01a9a369f05b88, type: 3}
   m_PrefabInstance: {fileID: 1062543115}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1073592792 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1888020421528319932, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+  m_PrefabInstance: {fileID: 829252639711806625}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f22dd52b0dcb7b84fb9b532a953bb389, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1075303612
 GameObject:
   m_ObjectHideFlags: 0
@@ -51260,6 +51271,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2575406721597680265, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: playerDataLog
+      value: 
+      objectReference: {fileID: 1073592792}
     - target: {fileID: 3488460858095630380, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -51272,6 +51287,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7186000537919112133, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: playerDataLog
+      value: 
+      objectReference: {fileID: 1073592792}
+    - target: {fileID: 8692969605352230766, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: playerDataLog
+      value: 
+      objectReference: {fileID: 1073592792}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
