@@ -31819,8 +31819,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableFileLogging: 1
   minimumLogLevel: 0
-  setFileName: 1
-  logFileName: "\uC774\uAC70\uB3C4 \uB428"
+  setFileName: 0
+  logFileName: 
 --- !u!1001 &1678117122
 PrefabInstance:
   m_ObjectHideFlags: 0

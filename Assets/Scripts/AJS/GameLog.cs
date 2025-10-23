@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public enum LogLevel
@@ -31,6 +32,7 @@ public class GameLog : MonoBehaviour
 
     [SerializeField]
     [InfoBox("원하는 파일 이름을 설정하세요", InfoBoxType.Warning, VisibleIf = "IsLogFileNameEmpty")]
+    [InfoBox("사용할 수 없는 특수문자(<, >, :, \", /, \\, |, ?, *)가 포함되어 있습니다.", InfoBoxType.Error, VisibleIf = "IsFileNameInvalid")]
     [ShowIf("setFileName")]
     private string logFileName = null;
 
@@ -228,5 +230,18 @@ public class GameLog : MonoBehaviour
     {
         return string.IsNullOrEmpty(logFileName);
     }
+
+    /// <summary>
+    /// 파일 이름이 유효하지 '않을' 경우 true를 반환합니다. (InfoBox 표시에 사용)
+    /// </summary>
+    private bool IsFileNameInvalid()
+    {
+        // 파일 이름이 비어있거나 null이면 유효하지 않은 상태가 아니므로 false 반환
+        if (string.IsNullOrEmpty(logFileName)) return false;
+
+        // 유효하지 않은 문자가 '하나라도' 포함되어 있으면 true 반환
+        return logFileName.ToCharArray().Intersect(Path.GetInvalidFileNameChars()).Any();
+    }
+    //
     #endregion
 }
