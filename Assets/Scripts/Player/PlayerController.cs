@@ -83,7 +83,8 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private float wallJumpElapsedTime = 0f;
     private float wallJumpInitialVelX = 0f;
     // ============================================
-
+    [Header("Game Log 용")]
+    [SerializeField] PlayerDataLog playerDataLog;
     private void Awake()
     {
         inputActions = new PlayerInput();
@@ -212,7 +213,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         }
 
 
-        Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
+        // Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
 
@@ -532,6 +533,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         dashCount -= 1;
         dashTimeCounter = dashTime;
         dashCooldownCounter = dashCooldown;
+        playerDataLog.OnPlayerUseAbility();
 
         // ?��?�� 바라보는 방향?���? ????��
         if (moveInput == Vector2.zero)

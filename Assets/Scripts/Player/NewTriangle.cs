@@ -83,6 +83,8 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     private DistanceJoint2D swingJoint;
     private LineRenderer lineRenderer;
+    [Header("Game Log 용")]
+    [SerializeField] PlayerDataLog playerDataLog;
 
     private void Awake()
     {
@@ -447,6 +449,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             {
                 crumbleTile.GroundFall();
             }
+            playerDataLog.OnPlayerUseAbility();
             Vector2 bestPoint = hit.point;
             isSwinging = true;
             swingJoint.connectedAnchor = bestPoint;
