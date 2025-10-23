@@ -1258,7 +1258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d745e5190d54e842acf55a32340739d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableFileLogging: 1
+  enableFileLogging: 0
   minimumLogLevel: 0
   setFileName: 0
   logFileName: 
@@ -1688,6 +1688,10 @@ PrefabInstance:
       propertyPath: playerDataLog
       value: 
       objectReference: {fileID: 1964745383}
+    - target: {fileID: 8692969605352230766, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: playerSpriteRenderer
+      value: 
+      objectReference: {fileID: 4786138254855408596}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1733,6 +1737,11 @@ MonoBehaviour:
 --- !u!1 &4786138254855408591 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4983962846033551737, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+  m_PrefabInstance: {fileID: 2158819792337474491}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &4786138254855408596 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 785413187326716397, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
   m_PrefabInstance: {fileID: 2158819792337474491}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &6937331272893801117 stripped
