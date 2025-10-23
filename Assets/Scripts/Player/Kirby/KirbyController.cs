@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class KirbyController : MonoBehaviour, IPlayerController
 {
+    // Hack: 능력 Data log 용
+    [Header("Game Log 용")]
+    [SerializeField] PlayerDataLog playerDataLog;
+
     #region References
     Rigidbody2D _rb;
     KirbyGroundCheck _groundCheck;
@@ -282,6 +286,11 @@ public class KirbyController : MonoBehaviour, IPlayerController
         // �ٿ ���¿����� TurboMode �Ұ���
         if (isBouncing) return;
 
+        if (turboMode == false)
+        {
+            // 터보 모드는 비활성화는 능력 사용으로 보지 않음
+            playerDataLog.OnPlayerUseAbility(); // Hack : 원 능력 사용 로그
+        }
         turboMode = !turboMode;
     }
 

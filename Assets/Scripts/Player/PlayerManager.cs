@@ -12,16 +12,15 @@ public enum PlayerShape
     Square,
     Triangle
 }
-
+[RequireComponent(typeof(PlayerDataLog))] // Hack : 데이터 로그 참고용 제거예정
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
 
-    private int currentPlayer = 0;
-    private int selectPlayer = 0;
-    private int highlightPlayer = 0;
+    private PlayerShape currentPlayer;
+    private PlayerShape selectPlayer;
     private bool isSelectUIActive = false;
-    [SerializeField] private int startPlayer = 0;
+    [SerializeField] private PlayerShape startPlayer = PlayerShape.Circle;
     [SerializeField] private List<GameObject> players;
     [SerializeField] private List<Image> pannels;
     [SerializeField] private Color originColor;
@@ -40,19 +39,13 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private float _selectPanelSpeed = 60f;
     private Coroutine pannelActive;
 
-    #region 게임 로그용 변수
-
-    private int triangleMode;
-    private int squareMode;
-    private int circleMode;
-    private int starMode;
-    private int selectModeLog;
-
-    private int deadAmount;
+    #region 게임 로그용
+    PlayerDataLog playerDataLog;
     #endregion
 
     private void Awake()
     {
+
         if (null == Instance)
         {
             Instance = this;
@@ -63,35 +56,41 @@ public class PlayerManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        playerDataLog = GetComponent<PlayerDataLog>();
 
         inputActions = new PlayerInput();
 
         selectPlayer = startPlayer;
         currentPlayer = selectPlayer;
-        highlightPlayer = selectPlayer;
-        _currentPlayerPrefab = players[currentPlayer];
+        _currentPlayerPrefab = players[(int)currentPlayer];
+
         ActiveStartPlayer(startPlayer);
+        playerDataLog.PlayerLogStart(startPlayer); // Log 데이터 수집 시작
     }
 
     private void OnEnable()
     {
         inputActions.UI.Enable();
 
-        inputActions.UI.SelectMode.performed += OnSelectModeActive;
+        inputActions.UI.SelectMode.performed += OnSwitchModeActive;
+        inputActions.UI.SelectPlayer.performed += OnChangeSelectPlayer;
 
-
-        inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;
+        inputActions.UI.QuickSwitch.performed += OnQuickSwitch;
     }
 
     private void OnDisable()
     {
 
-        inputActions.UI.SelectMode.performed -= OnSelectModeActive;
-        inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;
+        inputActions.UI.SelectMode.performed -= OnSwitchModeActive;
+        inputActions.UI.SelectPlayer.performed -= OnChangeSelectPlayer;
+        inputActions.UI.QuickSwitch.performed -= OnQuickSwitch;
         inputActions.UI.Disable();
     }
 
-    private void ChangeSelectPlayer(InputAction.CallbackContext context)
+    #region InputAction 콜백 함수
+
+    // 새로운 모양을 정하는 입력값
+    private void OnChangeSelectPlayer(InputAction.CallbackContext context)
     {
         if (IsSelectMode == false) return;
 
@@ -106,11 +105,11 @@ public class PlayerManager : MonoBehaviour
             // 세로 축이 더 강함
             if (inputVector.y > 0) // 위쪽
             {
-                selectPlayer = 0;
+                selectPlayer = PlayerShape.Circle;
             }
             else // 아래쪽
             {
-                selectPlayer = 2; // 네모
+                selectPlayer = PlayerShape.Square; // 네모
             }
         }
         else
@@ -118,36 +117,147 @@ public class PlayerManager : MonoBehaviour
             // 가로 축이 더 강함
             if (inputVector.x > 0) // 오른쪽
             {
-                selectPlayer = 1;
+                selectPlayer = PlayerShape.Star;
             }
             else // 왼쪽
             {
-                selectPlayer = 3;
+                selectPlayer = PlayerShape.Triangle;
             }
         }
 
-        HighLightSelectPlayer(highlightPlayer, selectPlayer);
-        highlightPlayer = selectPlayer;
+        HighLightSelectShape(selectPlayer);
     }
-
-    private void SlowTimeScale()
+    public void OnSwitchModeActive(InputAction.CallbackContext context)
     {
-        if (IsTimeSlow) return;
-        IsTimeSlow = true;
-        Time.timeScale = 0.1f;
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+        if (IsSelectMode == false)
+        {
+            IsSelectMode = true;
+            OnSwithModeStart();
+        }
+        else
+        {
+            OnSwitchModeEnd();
+            IsSelectMode = false;
+        }
     }
 
-    private void OriginalTimeScale()
+    public void OnQuickSwitch(InputAction.CallbackContext context)
     {
-        IsTimeSlow = false;
-        Time.timeScale = 1f;
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+        Vector2 inputVector = context.ReadValue<Vector2>();
+
+        // 가장 강한 축을 기준으로 방향 결정
+        if (Mathf.Abs(inputVector.y) > Mathf.Abs(inputVector.x))
+        {
+            // 세로 축이 더 강함
+            if (inputVector.y > 0) // 위쪽
+            {
+                selectPlayer = PlayerShape.Circle;
+            }
+            else // 아래쪽
+            {
+                selectPlayer = PlayerShape.Square; // 네모
+            }
+        }
+        else
+        {
+            // 가로 축이 더 강함
+            if (inputVector.x > 0) // 오른쪽
+            {
+                selectPlayer = PlayerShape.Star;
+            }
+            else // 왼쪽
+            {
+                selectPlayer = PlayerShape.Triangle;
+            }
+        }
+
+        ActiveSelectShape(currentPlayer, selectPlayer);
+
+        // 선택모드 활성화 중에 Qucik Switch 했으면
+        if(IsSelectMode == true)
+        {
+            DeActiveSelectUI();
+            IsSelectMode = false;
+        }
+
+    }
+    #endregion
+
+    public void OnSwithModeStart()
+    {
+        SlowTimeScale();
+
+        if (!isSelectUIActive)
+        {
+            IsHold = true;
+            AcitveSelectUI();
+        }
     }
 
+    public void OnSwitchModeEnd()
+    {
+        if (isSelectUIActive)
+        {
+            DeActiveSelectUI();
+            ActiveSelectShape(currentPlayer, selectPlayer);
+        }
+    }
+
+    public void OnPlayerDead()
+    {
+        playerDataLog.PlayerDeadLog();
+        if (isSelectUIActive)
+        {
+            DeActiveSelectUI();
+            ActiveSelectShape(currentPlayer, selectPlayer);
+        }
+    }
+
+    private void HighLightSelectShape(PlayerShape newShape)
+    {
+        foreach (var pannel in pannels)
+        {
+            pannel.color = originColor;
+        }
+        pannels[(int)newShape].color = highLightColor;
+    }
+    private void ActiveStartPlayer(PlayerShape starstPlayer)
+    {
+        _currentPlayerPrefab = players[(int)starstPlayer];
+        _currentPlayerPrefab.SetActive(true);
+        currentPlayer = selectPlayer;
+    }
+
+    public void PlayerSetActive(bool isAcitve)
+    {
+        _currentPlayerPrefab.SetActive(isAcitve);
+    }
+    // 새 모양으로 변신하기
+    private void ActiveSelectShape(PlayerShape oldShape, PlayerShape newShape)
+    {
+        OriginalTimeScale();
+
+        HighLightSelectShape(newShape);
+        if (oldShape == PlayerShape.Square && newShape == PlayerShape.Square) return;
+
+        GameObject oldPlayerPrefab = players[(int)oldShape];
+        Transform lastPos = oldPlayerPrefab.transform;
+        Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
+        oldPlayerPrefab.SetActive(false);
+
+        _currentPlayerPrefab = players[(int)newShape];
+        _currentPlayerPrefab.transform.position = lastPos.position;
+        _currentPlayerPrefab.SetActive(true);
+        _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
+
+        currentPlayer = selectPlayer;
+        playerDataLog.OnPlayerShapeChange(newShape);
+    }
+
+    #region Switch Mode UI 함수
     private void AcitveSelectUI()
     {
-        HighLightSelectPlayer(highlightPlayer, selectPlayer);
+        HighLightSelectShape(selectPlayer);
         Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
         selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
 
@@ -170,91 +280,24 @@ public class PlayerManager : MonoBehaviour
         selectPlayerPanel.SetActive(false);
         isSelectUIActive = false;
     }
-
-
-    public void OnSelectModeActive(InputAction.CallbackContext context)
+    // 게임 시간 느리게 하기
+    private void SlowTimeScale()
     {
-        if (IsSelectMode == false)
-        {
-            IsSelectMode = true;
-            OnSwithPlayerActive();
-        }
-        else
-        {
-            OnSwitchPlayerCancled();
-            IsSelectMode = false;
-        }
+        if (IsTimeSlow) return;
+        IsTimeSlow = true;
+        Time.timeScale = 0.1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
     }
 
-    public void OnSwithPlayerActive()
+    // 게임 시간 원래대로 되돌리기
+    private void OriginalTimeScale()
     {
-        SlowTimeScale();
-
-        if (!isSelectUIActive)
-        {
-            IsHold = true;
-            AcitveSelectUI();
-        }
+        IsTimeSlow = false;
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
     }
 
-    public void OnSwitchPlayerCancled()
-    {
-        if (isSelectUIActive)
-        {
-            DeActiveSelectUI();
-            ActiveSelectPlayer(currentPlayer, selectPlayer);
-        }
-    }
-
-    public void OnPlayerDead()
-    {
-        PlayerDeadLog();
-        if (isSelectUIActive)
-        {
-            DeActiveSelectUI();
-            ActiveSelectPlayer(currentPlayer, selectPlayer);
-        }
-    }
-
-    private void HighLightSelectPlayer(int oldPlayer, int newPlayer)
-    {
-        pannels[oldPlayer].color = originColor;
-        pannels[newPlayer].color = highLightColor;
-    }
-    private void ActiveStartPlayer(int starstPlayer)
-    {
-        _currentPlayerPrefab = players[starstPlayer];
-        _currentPlayerPrefab.SetActive(true);
-        currentPlayer = selectPlayer;
-    }
-
-    public void PlayerSetActive(bool isAcitve)
-    {
-        _currentPlayerPrefab.SetActive(isAcitve);
-    }
-    private void ActiveSelectPlayer(int oldPlayer, int newPlayer)
-    {
-        OriginalTimeScale();
-
-        HighLightSelectPlayer(oldPlayer, newPlayer);
-        if (oldPlayer == 2 && newPlayer == 2) return;
-
-        GameObject oldPlayerPrefab = players[oldPlayer];
-        Transform lastPos = oldPlayerPrefab.transform;
-        Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
-        oldPlayerPrefab.SetActive(false);
-
-        _currentPlayerPrefab = players[newPlayer];
-        _currentPlayerPrefab.transform.position = lastPos.position;
-        _currentPlayerPrefab.SetActive(true);
-        _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
-
-        currentPlayer = selectPlayer;
-        highlightPlayer = currentPlayer;
-        PlayerSwitchLog();
-    }
-
-    IEnumerator ScaleOverTime()
+    private IEnumerator ScaleOverTime()
     {
         selectPlayerPanel.SetActive(true);
         selectPlayerPanel.transform.localScale = Vector3.zero;
@@ -279,34 +322,6 @@ public class PlayerManager : MonoBehaviour
             selectPlayerPanel.transform.position = _currentPlayerPrefab.transform.position;
             yield return null;
         }
-    }
-
-    #region GameLog용 함수
-
-    // Hack: 나중에 어떤 도형으로 변신 했는지 추가하기
-    private void PlayerSwitchLog()
-    {
-        selectModeLog++;
-        GameLog.Log($"플레이어 변신 횟수: {selectModeLog}번");
-    }
-
-    private void PlayerDeadLog()
-    {
-        deadAmount++;
-        GameLog.Log($"플레이어 죽음 횟수: {deadAmount}번");
-    }
-
-    private void PlayerLogResult()
-    {
-        GameLog.Info($"---------최종 플레이어 데이터---------");
-        GameLog.Info($"플레이어 변신 횟수: {selectModeLog}번");
-        GameLog.Info($"죽음 횟수: {deadAmount}번");
-    }
-
-    // Hack : 게임 종료 시 확인을 위한 임시함수
-    private void OnApplicationQuit()
-    {
-        PlayerLogResult();
     }
     #endregion
 }
