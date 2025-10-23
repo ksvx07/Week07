@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using UnityEngine;
 
 public class PatrolEnemy : MonoBehaviour
@@ -66,24 +65,24 @@ public class PatrolEnemy : MonoBehaviour
         transform.Translate(transform.right * currentSpeed * Mathf.Sign(transform.localScale.x) * Time.fixedDeltaTime);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            // Triangle 내려찍기 중이면 미사일만 사라지게
-            var triangle = collision.GetComponent<TrianglePlayerController>();
-            if (triangle != null && triangle.IsDownDash)
-            {
-                gameObject.SetActive(false);
-                Instantiate(particleEffect, transform.position, Quaternion.identity);
+    // private void OnTriggerEnter2D(Collider2D collision)
+    // {
+    //     if (collision.gameObject.CompareTag("Player"))
+    //     {
+    //         // Triangle 내려찍기 중이면 미사일만 사라지게
+    //         var triangle = collision.GetComponent<TrianglePlayerController>();
+    //         if (triangle != null && triangle.IsDownDash)
+    //         {
+    //             gameObject.SetActive(false);
+    //             Instantiate(particleEffect, transform.position, Quaternion.identity);
 
-                return;
-            }
+    //             return;
+    //         }
 
-            // 그 외에는 플레이어 리스폰 처리
-            GameManager.Instance.RespawnPlayer();
-        }
-    }
+    //         // 그 외에는 플레이어 리스폰 처리
+    //         GameManager.Instance.RespawnPlayer();
+    //     }
+    // }
 
     private void PlayerSpawned(Vector3 _noNeed)
     {

@@ -3,10 +3,10 @@ using UnityEngine;
 public class DeathZone : MonoBehaviour
 {
     #region 상태변수
-    [Header("Death Zone Settings")]
-    [SerializeField] private float respawnDelay = 0.5f;
+    // [Header("Death Zone Settings")]
+    // [SerializeField] private float respawnDelay = 0.5f;
     #endregion
-    
+
     #region 플레이어 감지
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -40,9 +40,9 @@ public class DeathZone : MonoBehaviour
 
         Debug.Log($"[DeathZone] Player entered death zone at {transform.position}");
 
-        if(transform.parent.name == "Spike")
+        if (transform.parent.name == "Spike")
         {
-            if(collision.gameObject.name == "Triangle")
+            if (collision.gameObject.name == "Triangle")
             {
                 return;
             }
@@ -77,4 +77,4 @@ public class DeathZone : MonoBehaviour
         }
     }
 }
-    #endregion
+#endregion
