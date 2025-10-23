@@ -47,7 +47,7 @@ public class CrumbleTileHandler : MonoBehaviour
     private GameObject shakingSprite;
     private Vector3 originalTilePosition;
     private Sprite cachedSprite;  // ✅ 스프라이트를 미리 저장
-    
+
     // 콜라이더 관리용
     private BoxCollider2D myCollider;
 
@@ -72,7 +72,7 @@ public class CrumbleTileHandler : MonoBehaviour
         this.fadeDuration = fadeDuration;
         this.crumbleEffectPrefab = crumbleEffectPrefab;
         this.tileSplitterPrefab = tileSplitterPrefab;
-        
+
         myCollider = GetComponent<BoxCollider2D>();
     }
 
@@ -87,6 +87,12 @@ public class CrumbleTileHandler : MonoBehaviour
         if (currentCoroutine != null)
             return;
 
+        GroundFall();
+    }
+
+
+    public void GroundFall()
+    {
         // 떨림 효과 시작
         if (shakeCoroutine == null)
         {
@@ -141,7 +147,7 @@ public class CrumbleTileHandler : MonoBehaviour
             float offsetX = Mathf.Sin(Time.time * shakeSpeed) * shakeIntensity;
             // 위아래 흔들림 (cos 파동으로 다른 패턴)
             float offsetY = Mathf.Cos(Time.time * shakeSpeed * 1.3f) * shakeIntensity;
-            
+
             shakingSprite.transform.position = originalTilePosition + new Vector3(offsetX, offsetY, 0);
 
             elapsedTime += Time.deltaTime;
@@ -207,10 +213,10 @@ public class CrumbleTileHandler : MonoBehaviour
 
         // 부서짐 이펙트 재생
         PlayCrumbleEffect();
-        
+
         // ✅ 이미지를 잘라서 터뜨리는 조각 효과 생성 (캐시된 스프라이트 사용)
         PlayTileSplitterEffect();
-        
+
         isDestroyed = true;
 
         yield return new WaitForSeconds(respawnDelay);
@@ -233,11 +239,11 @@ public class CrumbleTileHandler : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float progress = elapsed / scaleDuration;
-            
+
             // Ease-in 효과 (Mathf.Pow로 비선형 감소)
             float easeProgress = Mathf.Pow(progress, 2f);
             transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, easeProgress);
-            
+
             yield return null;
         }
 

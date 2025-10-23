@@ -32,7 +32,7 @@ public class CrumbleTileSplitter : MonoBehaviour
         }
         else
         {
-            Debug.LogError("[CrumbleTileSplitter] 타일 스프라이트가 설정되지 않았습니다!");
+            tileSprite = GetComponent<SpriteRenderer>()?.sprite;
             Destroy(gameObject);
             return;
         }
