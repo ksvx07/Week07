@@ -12,16 +12,15 @@ public enum PlayerShape
     Square,
     Triangle
 }
-
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
 
-    private int currentPlayer = 0;
-    private int selectPlayer = 0;
-    private int highlightPlayer = 0;
+    private PlayerShape currentPlayer;
+    private PlayerShape selectPlayer;
+    private PlayerShape highlightPlayer;
     private bool isSelectUIActive = false;
-    [SerializeField] private int startPlayer = 0;
+    [SerializeField] private PlayerShape startPlayer = PlayerShape.Circle;
     [SerializeField] private List<GameObject> players;
     [SerializeField] private List<Image> pannels;
     [SerializeField] private Color originColor;
@@ -69,7 +68,7 @@ public class PlayerManager : MonoBehaviour
         selectPlayer = startPlayer;
         currentPlayer = selectPlayer;
         highlightPlayer = selectPlayer;
-        _currentPlayerPrefab = players[currentPlayer];
+        _currentPlayerPrefab = players[(int)currentPlayer];
         ActiveStartPlayer(startPlayer);
     }
 
@@ -106,11 +105,11 @@ public class PlayerManager : MonoBehaviour
             // 세로 축이 더 강함
             if (inputVector.y > 0) // 위쪽
             {
-                selectPlayer = 0;
+                selectPlayer = PlayerShape.Circle;
             }
             else // 아래쪽
             {
-                selectPlayer = 2; // 네모
+                selectPlayer = PlayerShape.Square; // 네모
             }
         }
         else
@@ -118,11 +117,11 @@ public class PlayerManager : MonoBehaviour
             // 가로 축이 더 강함
             if (inputVector.x > 0) // 오른쪽
             {
-                selectPlayer = 1;
+                selectPlayer = PlayerShape.Star;
             }
             else // 왼쪽
             {
-                selectPlayer = 3;
+                selectPlayer = PlayerShape.Triangle;
             }
         }
 
@@ -216,14 +215,14 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void HighLightSelectPlayer(int oldPlayer, int newPlayer)
+    private void HighLightSelectPlayer(PlayerShape oldPlayer, PlayerShape newPlayer)
     {
-        pannels[oldPlayer].color = originColor;
-        pannels[newPlayer].color = highLightColor;
+        pannels[(int)oldPlayer].color = originColor;
+        pannels[(int)newPlayer].color = highLightColor;
     }
-    private void ActiveStartPlayer(int starstPlayer)
+    private void ActiveStartPlayer(PlayerShape starstPlayer)
     {
-        _currentPlayerPrefab = players[starstPlayer];
+        _currentPlayerPrefab = players[(int)starstPlayer];
         _currentPlayerPrefab.SetActive(true);
         currentPlayer = selectPlayer;
     }
@@ -232,19 +231,19 @@ public class PlayerManager : MonoBehaviour
     {
         _currentPlayerPrefab.SetActive(isAcitve);
     }
-    private void ActiveSelectPlayer(int oldPlayer, int newPlayer)
+    private void ActiveSelectPlayer(PlayerShape oldPlayer, PlayerShape newPlayer)
     {
         OriginalTimeScale();
 
         HighLightSelectPlayer(oldPlayer, newPlayer);
-        if (oldPlayer == 2 && newPlayer == 2) return;
+        if (oldPlayer == PlayerShape.Square && newPlayer == PlayerShape.Square) return;
 
-        GameObject oldPlayerPrefab = players[oldPlayer];
+        GameObject oldPlayerPrefab = players[(int)oldPlayer];
         Transform lastPos = oldPlayerPrefab.transform;
         Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
         oldPlayerPrefab.SetActive(false);
 
-        _currentPlayerPrefab = players[newPlayer];
+        _currentPlayerPrefab = players[(int)newPlayer];
         _currentPlayerPrefab.transform.position = lastPos.position;
         _currentPlayerPrefab.SetActive(true);
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);

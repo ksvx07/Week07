@@ -34974,7 +34974,7 @@ PrefabInstance:
     - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
       propertyPath: 'players.Array.data[3]'
       value: 
-      objectReference: {fileID: 2553587820636458503}
+      objectReference: {fileID: 2158819792337474492}
     - target: {fileID: 7826722241867851921, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
       propertyPath: m_Name
       value: PlayerManager
@@ -35041,9 +35041,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
---- !u!1 &2553587820636458503 stripped
+--- !u!1 &2158819792337474492 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 6595865885029164611, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+  m_CorrespondingSourceObject: {fileID: 3488460858095630380, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
   m_PrefabInstance: {fileID: 2158819792337474491}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2838019288967511636 stripped
