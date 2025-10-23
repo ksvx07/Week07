@@ -1,19 +1,10 @@
 fileFormatVersion: 2
-guid: b28e11b78e3f84b40a11747ccbe6a05c
+guid: 730f80f62c61a4a4d98c82a948ac26d7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4167663028475635082
-    second: telescope_0
-  - first:
-      213: -4824559387663813016
-    second: telescope_1
-  - first:
-      213: -3396238548122523337
-    second: telescope_2
-  - first:
-      213: 1559605331347984750
-    second: telescope_3
+      213: -5348169343561530819
+    second: letter-s (1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -60,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 512
+  spritePixelsToUnits: 300
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -122,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: telescope_0
+      name: letter-s (1)_0
       rect:
         serializedVersion: 2
-        x: 31
-        y: 132
-        width: 118
-        height: 100
+        x: 78
+        y: 66
+        width: 356
+        height: 379
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,74 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 67a5e2c8e8c7926c0800000000000000
-      internalID: -4167663028475635082
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: telescope_1
-      rect:
-        serializedVersion: 2
-        x: 145
-        y: 165
-        width: 141
-        height: 132
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 866b58c6cc8bb0db0800000000000000
-      internalID: -4824559387663813016
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: telescope_2
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 182
-        width: 133
-        height: 170
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7392ba6d8032ed0d0800000000000000
-      internalID: -3396238548122523337
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: telescope_3
-      rect:
-        serializedVersion: 2
-        x: 349
-        y: 198
-        width: 132
-        height: 182
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e615dc429c4d4a510800000000000000
-      internalID: 1559605331347984750
+      spriteID: d32816e515c77c5b0800000000000000
+      internalID: -5348169343561530819
       vertices: []
       indices: 
       edges: []
@@ -223,10 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      telescope_0: -4167663028475635082
-      telescope_1: -4824559387663813016
-      telescope_2: -3396238548122523337
-      telescope_3: 1559605331347984750
+      letter-s (1)_0: -5348169343561530819
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

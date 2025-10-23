@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     public RespawnManager RespawnManager => respawnManager;
     #endregion
 
+    [SerializeField] private StageManager stageManager;
+
     private bool _isDestroyManager;
 
     private void Awake()

@@ -1,19 +1,10 @@
 fileFormatVersion: 2
-guid: 0042fd7454b5af84e97c0bf814ddda11
+guid: 4e1f441c9eb83604c8d970bcff9c240b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6515049014816251716
-    second: flyEnemy_0
-  - first:
-      213: 9207943129532326571
-    second: flyEnemy_1
-  - first:
-      213: -1422238519280547984
-    second: flyEnemy_2
-  - first:
-      213: 6669161095154257903
-    second: flyEnemy_3
+      213: -8844887246336103106
+    second: letter-e (1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -55,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 128
+  spritePixelsToUnits: 300
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -122,89 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: flyEnemy_0
+      name: letter-e (1)_0
       rect:
         serializedVersion: 2
-        x: 514
-        y: 819
-        width: 493
-        height: 510
+        x: 78
+        y: 66
+        width: 356
+        height: 379
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 44f916e8f8a1a6a50800000000000000
-      internalID: 6515049014816251716
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: flyEnemy_1
-      rect:
-        serializedVersion: 2
-        x: 58
-        y: 948
-        width: 396
-        height: 409
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ba2e5c39d7f29cf70800000000000000
-      internalID: 9207943129532326571
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: flyEnemy_2
-      rect:
-        serializedVersion: 2
-        x: 562
-        y: 230
-        width: 462
-        height: 465
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 077c7602a91334ce0800000000000000
-      internalID: -1422238519280547984
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: flyEnemy_3
-      rect:
-        serializedVersion: 2
-        x: 19
-        y: 249
-        width: 489
-        height: 442
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fef468a6eae9d8c50800000000000000
-      internalID: 6669161095154257903
+      spriteID: e3de0c369e5a04580800000000000000
+      internalID: -8844887246336103106
       vertices: []
       indices: 
       edges: []
@@ -213,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 30df7d5542d96fb4bbbef791ee68a67c
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -223,10 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      flyEnemy_0: 6515049014816251716
-      flyEnemy_1: 9207943129532326571
-      flyEnemy_2: -1422238519280547984
-      flyEnemy_3: 6669161095154257903
+      letter-e (1)_0: -8844887246336103106
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

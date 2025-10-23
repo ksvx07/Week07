@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: cbca965957d24f940b906b2060d50a4b
+guid: f478a66c0acc56f42b99e756f4ff65be
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5890828503606760369
-    second: missile_0
+      213: 2632903617683801482
+    second: '{65FAA83E-B48F-452B-AD1F-24548626302B}-Photoroom_0'
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 1024
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: missile_0
+      name: '{65FAA83E-B48F-452B-AD1F-24548626302B}-Photoroom_0'
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1024
-        height: 1531
+        x: 24
+        y: 27
+        width: 86
+        height: 86
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f4ce5c9dfa29f3ea0800000000000000
-      internalID: -5890828503606760369
+      spriteID: a8542ebf3e3f98420800000000000000
+      internalID: 2632903617683801482
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      missile_0: -5890828503606760369
+      '{65FAA83E-B48F-452B-AD1F-24548626302B}-Photoroom_0': 2632903617683801482
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
