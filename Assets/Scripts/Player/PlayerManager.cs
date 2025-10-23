@@ -19,7 +19,6 @@ public class PlayerManager : MonoBehaviour
 
     private PlayerShape currentPlayer;
     private PlayerShape selectPlayer;
-    private PlayerShape highlightPlayer;
     private bool isSelectUIActive = false;
     [SerializeField] private PlayerShape startPlayer = PlayerShape.Circle;
     [SerializeField] private List<GameObject> players;
@@ -63,7 +62,6 @@ public class PlayerManager : MonoBehaviour
 
         selectPlayer = startPlayer;
         currentPlayer = selectPlayer;
-        highlightPlayer = selectPlayer;
         _currentPlayerPrefab = players[(int)currentPlayer];
 
         ActiveStartPlayer(startPlayer);
@@ -127,8 +125,7 @@ public class PlayerManager : MonoBehaviour
             }
         }
 
-        HighLightSelectShape(highlightPlayer, selectPlayer);
-        highlightPlayer = selectPlayer;
+        HighLightSelectShape(selectPlayer);
     }
     public void OnSwitchModeActive(InputAction.CallbackContext context)
     {
@@ -216,9 +213,12 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void HighLightSelectShape(PlayerShape oldShape, PlayerShape newShape)
+    private void HighLightSelectShape(PlayerShape newShape)
     {
-        pannels[(int)oldShape].color = originColor;
+        foreach (var pannel in pannels)
+        {
+            pannel.color = originColor;
+        }
         pannels[(int)newShape].color = highLightColor;
     }
     private void ActiveStartPlayer(PlayerShape starstPlayer)
@@ -237,7 +237,7 @@ public class PlayerManager : MonoBehaviour
     {
         OriginalTimeScale();
 
-        HighLightSelectShape(oldShape, newShape);
+        HighLightSelectShape(newShape);
         if (oldShape == PlayerShape.Square && newShape == PlayerShape.Square) return;
 
         GameObject oldPlayerPrefab = players[(int)oldShape];
@@ -251,14 +251,13 @@ public class PlayerManager : MonoBehaviour
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
         currentPlayer = selectPlayer;
-        highlightPlayer = currentPlayer;
         playerDataLog.OnPlayerShapeChange(newShape);
     }
 
     #region Switch Mode UI 함수
     private void AcitveSelectUI()
     {
-        HighLightSelectShape(highlightPlayer, selectPlayer);
+        HighLightSelectShape(selectPlayer);
         Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
         selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
 

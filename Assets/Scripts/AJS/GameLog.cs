@@ -13,7 +13,6 @@ public class GameLog : MonoBehaviour
 {
     public static GameLog Instance { get; private set; }
 
-
     [Tooltip("체크하면 게임 로그를 텍스트 파일로 저장합니다.")]
     [SerializeField]
     private bool enableFileLogging = true;
@@ -37,6 +36,10 @@ public class GameLog : MonoBehaviour
 
     private string logFilePath;
     public string LogFilePath => logFilePath;
+
+    // --- 파일 I/O 성능 개선을 위해 StreamWriter 사용 ---
+    private StreamWriter logWriter;
+
 
     #region /// 편의성을 위한 정적 메서드 ///
 
@@ -68,34 +71,7 @@ public class GameLog : MonoBehaviour
 
         if (!enableFileLogging) return;
 
-        string exeDir = Path.GetDirectoryName(Application.dataPath);
-        string logDir = Path.Combine(exeDir, "GameLog");
-        Directory.CreateDirectory(logDir);
-
-        // 파일 이름 결정 로직
-        string fileName;
-
-        if (setFileName)
-        {
-            if (!string.IsNullOrEmpty(logFileName))
-            {
-                fileName = $"{logFileName}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
-                logFileName = string.Empty;
-            }
-            else
-            {
-                Debug.LogWarning("로그파일 이름이 없습니다");
-                fileName = $"Null_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
-            }
-        }
-        else
-        {
-            fileName = $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
-        }
-
-        logFilePath = Path.Combine(logDir, fileName);
-
-        this.Log("=== Game Session Started ===");
+        InitializeLogFile();
     }
 
     public void Log(string message, LogLevel level = LogLevel.Debug)
@@ -105,10 +81,16 @@ public class GameLog : MonoBehaviour
             return;
         }
 
+        // Time.time 대신 Time.unscaledTime을 사용하고, 새로운 형식으로 변경
+        TimeSpan timeSpan = TimeSpan.FromSeconds(Time.unscaledTime);
+        // 분:초.십분의일초 형식 / 예시: - 총 유지 시간: 01:25.5
+        string timeStamp = $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}.{timeSpan.Milliseconds/100}";
+
+        // 결과: "02:05.500"
         // 파일에 기록될 메시지 형식: [시간] [로그레벨] 메시지
-        string fileLogMessage = $"[{DateTime.Now:HH:mm:ss}] [{level.ToString().ToUpper()}] {message}";
+        string fileLogMessage = $"[{timeStamp}] [{level.ToString().ToUpper()}] {message}";
         // 유니티 콘솔에 출력될 메시지 형식: [시간] 메시지
-        string consoleLogMessage = $"[{DateTime.Now:HH:mm:ss}] {message}";
+        string consoleLogMessage = $"[{timeStamp}] {message}";
 
         switch (level)
         {
@@ -125,8 +107,59 @@ public class GameLog : MonoBehaviour
         }
 
         if (!enableFileLogging) return;
-        File.AppendAllText(logFilePath, fileLogMessage + Environment.NewLine); // 파일에도 출력
+        if (enableFileLogging && logWriter != null)
+        {
+            logWriter.WriteLine(fileLogMessage);
+        }
     }
+
+    // --- 게임 종료 시 파일을 안전하게 닫도록 처리 ---
+    private void OnDestroy()
+    {
+        if (logWriter != null)
+        {
+            Log("=== Game Session Ended ===");
+            logWriter.Close();
+            logWriter = null;
+        }
+    }
+
+    private void InitializeLogFile()
+    {
+        try
+        {
+            string exeDir = Path.GetDirectoryName(Application.dataPath);
+            string logDir = Path.Combine(exeDir, "GameLog");
+            Directory.CreateDirectory(logDir);
+
+            string fileName;
+            if (setFileName && !string.IsNullOrEmpty(logFileName))
+            {
+                fileName = $"{logFileName}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+            }
+            else
+            {
+                if (setFileName && string.IsNullOrEmpty(logFileName))
+                {
+                    Debug.LogWarning("로그 파일 이름이 없어 기본 이름으로 생성됩니다.");
+                }
+                fileName = $"GameLog_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+            }
+
+            logFilePath = Path.Combine(logDir, fileName);
+
+            logWriter = new StreamWriter(logFilePath, true, System.Text.Encoding.UTF8);
+            logWriter.AutoFlush = true; // 자동으로 버퍼를 비워 파일에 즉시 쓰도록 설정
+
+            this.Log("=== Game Session Started ===");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"로그 파일 초기화 실패: {ex.Message}");
+            enableFileLogging = false; // 파일 쓰기 비활성화
+        }
+    }
+
 
     [Button("로그 파일 열기")]
     /// <summary>
@@ -178,10 +211,16 @@ public class GameLog : MonoBehaviour
     private void AddBookMarkLog()
     {
         if (!enableFileLogging) return;
-        // 파일에 기록될 메시지 형식: [시간] [로그레벨] 메시지
-        string fileLogMessage = $"[{DateTime.Now:HH:mm:ss}] {"=================북마크================="}";
-        File.AppendAllText(logFilePath, fileLogMessage + Environment.NewLine); // 파일에도 출력
-        Debug.LogWarning(fileLogMessage);
+
+        TimeSpan timeSpan = TimeSpan.FromSeconds(Time.unscaledTime);
+        string timeStamp = $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}.{timeSpan.Milliseconds/100}";
+
+        string fileLogMessage = $"[{timeStamp}] [BOOKMARK] {"====================================="}";
+        if (enableFileLogging && logWriter != null)
+        {
+            logWriter.WriteLine(fileLogMessage);
+        }
+        Debug.LogWarning(fileLogMessage); ;
     }
 
     #region 인스펙터용 함수

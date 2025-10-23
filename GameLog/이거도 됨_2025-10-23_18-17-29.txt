@@ -1,0 +1,28 @@
+﻿[00:0] [DEBUG] === Game Session Started ===
+[00:11] [INFO] 모양 변경: Square -> Star / Square 유지시간: 1.10
+[00:12] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 0.48
+[00:12] [INFO] 모양 변경: Circle -> Triangle / Circle 유지시간: 0.14
+[00:12] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 0.10
+[00:12] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.04
+[00:13] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 0.09
+[00:13] [INFO] 모양 변경: Circle -> Triangle / Circle 유지시간: 0.00
+[00:13] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 0.08
+[00:13] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 0.02
+[00:13] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 0.00
+[00:13] [DEBUG] Circle의 능력 사용 횟수: 1번
+[00:13] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 0.24
+[00:13] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 0.11
+[00:13] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 0.08
+[00:13] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.01
+[00:13] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 0.09
+[00:13] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 0.08
+[00:14] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 0.31
+[00:14] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 0.06
+[00:14] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 0.11
+[00:14] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 0.08
+[00:14] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 0.13
+[04:13] [BOOKMARK] =====================================
+[04:13] [BOOKMARK] =====================================
+[04:13] [BOOKMARK] =====================================
+[04:26] [BOOKMARK] =====================================
+[04:31] [DEBUG] === Game Session Ended ===

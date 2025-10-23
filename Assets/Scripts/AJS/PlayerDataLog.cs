@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,9 @@ public class PlayerDataLog : MonoBehaviour
     // 각 모양의 최대 유지 시간
     private Dictionary<PlayerShape, float> maxShapeStayTimes = new Dictionary<PlayerShape, float>();
 
+    // 각 모양으로 몇 번 능력 사용했는지 기록
+    private Dictionary<PlayerShape, int> shapeAbilityCounts = new Dictionary<PlayerShape, int>();
+
     // 현재 모양으로 변신한 시점의 시간 (연속 유지 시간 계산용)
     private float currentShapeStartTime;
 
@@ -33,6 +37,7 @@ public class PlayerDataLog : MonoBehaviour
             shapePlayTimes[shape] = 0f;
             shapeChangeCounts[shape] = 0;
             maxShapeStayTimes[shape] = 0f;
+            shapeAbilityCounts[shape] = 0;
         }
 
         // 초기 모양 설정
@@ -45,6 +50,10 @@ public class PlayerDataLog : MonoBehaviour
         deadAmount = 0;
     }
 
+    /// <summary>
+    /// 새 모양으로 변경시, 변신 횟수, 이전 모양의 유지 시간을 기록합니다
+    /// </summary>
+    /// <param name="newShape"></param>
     public void OnPlayerShapeChange(PlayerShape newShape)
     {
         if (newShape == currentShape) return; // 같은 모양으로 변경 요청 시 무시
@@ -60,8 +69,18 @@ public class PlayerDataLog : MonoBehaviour
         currentShapeStartTime = Time.time; // 새 모양의 유지 시간 측정을 위해 현재 시간 기록
         shapeChangeCounts[newShape]++;     // 새 모양의 변신 횟수 증가
         shapeChangeAmount++;               // 전체 변신 횟수 증가
+    }
 
-        // 3. 로그를 남깁니다.
+    public void PlayerDeadLog()
+    {
+        deadAmount++;
+        GameLog.Log($"플레이어 죽음 횟수: {deadAmount}번");
+    }
+
+    public void OnPlayerUseAbility()
+    {
+        shapeAbilityCounts[currentShape]++; // 현재 모양 능력 횟수 증가
+        GameLog.Log($"{currentShape}의 능력 사용 횟수: {shapeAbilityCounts[currentShape]}번");
     }
 
     /// <summary>
@@ -76,12 +95,7 @@ public class PlayerDataLog : MonoBehaviour
         }
     }
 
-    public void PlayerDeadLog()
-    {
-        deadAmount++;
-        GameLog.Log($"플레이어 죽음 횟수: {deadAmount}번");
-    }
-
+    // 게임 종료시 결과 Log 출력 함수
     private void PlayerLogResult()
     {
         // shapePlayTimes를 기준으로 내림차순 정렬
@@ -89,7 +103,7 @@ public class PlayerDataLog : MonoBehaviour
 
         // StringBuilder를 사용해 여러 줄의 문자열을 효율적으로 만듭니다.
         StringBuilder report = new StringBuilder();
-        report.AppendLine(); // 보기 좋게 한 줄 띄우기
+        report.AppendLine();
         report.AppendLine("--------- 최종 플레이어 데이터 ---------");
         report.AppendLine($"총 변신 횟수: {shapeChangeAmount}번");
         report.AppendLine($"총 죽음 횟수: {deadAmount}번");
@@ -103,11 +117,21 @@ public class PlayerDataLog : MonoBehaviour
             float totalTime = shapePlayTimes[shape];
             int changeCount = shapeChangeCounts[shape];
             float maxStayTime = maxShapeStayTimes[shape];
+            int abiltyCount = shapeAbilityCounts[shape];
+
+            // float 초 단위를 TimeSpan 객체로 변환합니다.
+            TimeSpan totalTimeSpan = TimeSpan.FromSeconds(totalTime);
+            TimeSpan maxStayTimeSpan = TimeSpan.FromSeconds(maxStayTime);
+
+            // TimeSpan 객체를 원하는 형식의 문자열로 만듭니다
+            string formattedTotalTime = $"{totalTimeSpan.Minutes:D2}:{totalTimeSpan.Seconds:D2}.{totalTimeSpan.Milliseconds/100}";
+            string formattedMaxStayTime = $"{maxStayTimeSpan.Minutes:D2}:{maxStayTimeSpan.Seconds:D2}.{maxStayTimeSpan.Milliseconds/100}";
 
             report.AppendLine($"{rank}. {shapeName}");
-            report.AppendLine($"   - 총 유지 시간: {totalTime:F2}초");
+            report.AppendLine($"   - 총 유지 시간: {formattedTotalTime}초");
             report.AppendLine($"   - 변신 횟수: {changeCount}회");
-            report.AppendLine($"   - 최대 연속 유지 시간: {maxStayTime:F2}초");
+            report.AppendLine($"   - 최대 연속 유지 시간: {formattedMaxStayTime}초");
+            report.AppendLine($"   - 능력 사용 횟수: {abiltyCount}회");
             rank++;
         }
         report.AppendLine("------------------------------------");
