@@ -3,19 +3,25 @@ using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 
 /// <summary>
-/// 부서지는 벽 타일을 관리하는 매니저
-/// 게임 시작 시 모든 부서지는 벽 타일을 찾아 자동으로 핸들러를 생성합니다.
+/// CrumbleTileManager - 콜라이더 설정 업데이트 버전
+/// - 콜라이더 크기: 0.98배로 축소
+/// - 콜라이더 오프셋: 위쪽으로 0.1 이동 (위쪽을 밟아야 부서지도록)
+/// - BrokenTilePrefab 자동 할당 기능
 /// </summary>
 public class CrumbleTileManager : MonoBehaviour
 {
     [Header("Tilemap 설정")]
     [SerializeField] private Tilemap tilemap;
-    [SerializeField] private TileBase crumbleTile; // 부서지는 벽 타일 에셋
+    [SerializeField] private TileBase crumbleTile;
 
     [Header("타임 설정")]
-    [SerializeField] private float destroyDelay = 2f;     // 밟은 후 부서질 때까지의 시간
-    [SerializeField] private float respawnDelay = 5f;     // 부서진 후 리스폰할 때까지의 시간
-    [SerializeField] private float fadeDuration = 1f;     // 리스폰 시 알파 페이드 시간
+    [SerializeField] private float destroyDelay = 2f;
+    [SerializeField] private float respawnDelay = 5f;
+    [SerializeField] private float fadeDuration = 1f;
+
+    [Header("이펙트 설정")]
+    [SerializeField] private GameObject crumbleEffectPrefab;
+    [SerializeField] private GameObject brokenTilePrefab;
 
     private Dictionary<Vector3Int, CrumbleTileHandler> tileHandlers = new();
 
@@ -39,6 +45,12 @@ public class CrumbleTileManager : MonoBehaviour
         {
             Debug.LogError("Crumble Tile이 할당되지 않았습니다!");
             return;
+        }
+
+        // 조각난 타일 프리팹 체크
+        if (brokenTilePrefab == null)
+        {
+            Debug.LogWarning("BrokenTilePrefab이 할당되지 않았습니다. 조각 효과가 작동하지 않습니다.");
         }
 
         // 타일맵의 모든 위치 스캔
@@ -71,11 +83,12 @@ public class CrumbleTileManager : MonoBehaviour
 
         // Rigidbody2D 추가 (OnTriggerEnter2D가 작동하기 위해 필수)
         Rigidbody2D rb = handler.AddComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Kinematic;  // 물리 영향 없음
+        rb.bodyType = RigidbodyType2D.Kinematic;
 
-        // Trigger 콜라이더 추가
+        // ✅ Trigger 콜라이더 추가 - 위쪽을 밟아야 부서지도록 설정
         BoxCollider2D collider = handler.AddComponent<BoxCollider2D>();
-        collider.size = tilemap.cellSize * 0.95f;
+        collider.size = tilemap.cellSize * 0.98f;
+        collider.offset = new Vector2(0f, 0.1f);  // 위쪽으로 0.1 이동
         collider.isTrigger = true;
 
         // CrumbleTileHandler 컴포넌트 추가 및 초기화
@@ -88,6 +101,12 @@ public class CrumbleTileManager : MonoBehaviour
             respawnDelay, 
             fadeDuration
         );
+
+        // BrokenTilePrefab 자동 할당
+        if (brokenTilePrefab != null)
+        {
+            tileHandler.SetBrokenTilePrefab(brokenTilePrefab);
+        }
 
         tileHandlers[gridPos] = tileHandler;
     }
