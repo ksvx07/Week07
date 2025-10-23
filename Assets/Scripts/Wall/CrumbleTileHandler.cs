@@ -3,11 +3,15 @@ using UnityEngine.Tilemaps;
 using System.Collections;
 
 /// <summary>
-/// CrumbleTileHandler - 떨림 효과 추가 버전
-/// 1. 플레이어 접촉 시 좌우로 떨리는 효과
+/// CrumbleTileHandler - 2D 떨림 효과 + 자동 이미지 분할 파편 효과 버전
+/// 1. 플레이어 접촉 시 좌우+위아래로 떨리는 효과
 /// 2. 간단한 스케일 축소 효과
-/// 3. 부숴져서 사라지는 조각 효과 추가
+/// 3. 이미지를 자동으로 잘라서 터뜨리는 조각 효과
 /// 4. 타일 생성 직전 0.1초 추가 대기로 안정성 강화
+/// 
+/// 수정사항: 
+/// - 떨림 효과 시 타일 제거 + Handler 콜라이더를 solid로 변경하여 플레이어 지탱
+/// - 스프라이트를 미리 캐싱하여 파편 효과에 사용
 /// </summary>
 public class CrumbleTileHandler : MonoBehaviour
 {
@@ -23,9 +27,9 @@ public class CrumbleTileHandler : MonoBehaviour
     private Coroutine currentCoroutine;
     private Coroutine shakeCoroutine;
 
-    [Header("이펙트 설정")]
-    [SerializeField] private GameObject crumbleEffectPrefab;
-    [SerializeField] private GameObject brokenTilePrefab;
+    // Manager로부터 전달받을 프리팹들
+    private GameObject crumbleEffectPrefab;
+    private GameObject tileSplitterPrefab;
 
     [Header("떨림 효과 설정")]
     [SerializeField] private float shakeIntensity = 0.1f;  // 떨림 강도
@@ -33,11 +37,6 @@ public class CrumbleTileHandler : MonoBehaviour
 
     [Header("축소 효과 설정")]
     [SerializeField] private float scaleDuration = 0.3f;
-
-    [Header("조각 효과 설정")]
-    [SerializeField] private int brokenTileCount = 5;
-    [SerializeField] private float brokenTileForce = 5f;
-    [SerializeField] private float brokenTileLifetime = 2f;
 
     [Header("리스폰 대기 설정")]
     [SerializeField] private float respawnCheckInterval = 0.1f;
@@ -47,15 +46,23 @@ public class CrumbleTileHandler : MonoBehaviour
     // 떨림 효과용 변수
     private GameObject shakingSprite;
     private Vector3 originalTilePosition;
-    private Color originalTileColor;
+    private Sprite cachedSprite;  // ✅ 스프라이트를 미리 저장
+    
+    // 콜라이더 관리용
+    private BoxCollider2D myCollider;
 
+    /// <summary>
+    /// 타일 핸들러 초기화 (Manager에서 호출)
+    /// </summary>
     public void Initialize(
         Vector3Int gridPos,
         Tilemap tilemap,
         TileBase crumbleTile,
         float destroyDelay,
         float respawnDelay,
-        float fadeDuration)
+        float fadeDuration,
+        GameObject crumbleEffectPrefab,
+        GameObject tileSplitterPrefab)
     {
         this.gridPos = gridPos;
         this.tilemap = tilemap;
@@ -63,14 +70,10 @@ public class CrumbleTileHandler : MonoBehaviour
         this.destroyDelay = destroyDelay;
         this.respawnDelay = respawnDelay;
         this.fadeDuration = fadeDuration;
-    }
-
-    /// <summary>
-    /// BrokenTilePrefab 설정 메서드
-    /// </summary>
-    public void SetBrokenTilePrefab(GameObject prefab)
-    {
-        brokenTilePrefab = prefab;
+        this.crumbleEffectPrefab = crumbleEffectPrefab;
+        this.tileSplitterPrefab = tileSplitterPrefab;
+        
+        myCollider = GetComponent<BoxCollider2D>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -84,7 +87,7 @@ public class CrumbleTileHandler : MonoBehaviour
         if (currentCoroutine != null)
             return;
 
-        // ✅ 떨림 효과 시작
+        // 떨림 효과 시작
         if (shakeCoroutine == null)
         {
             shakeCoroutine = StartCoroutine(ShakeEffect());
@@ -94,14 +97,14 @@ public class CrumbleTileHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// ✅ 새로 추가: 타일 떨림 효과
-    /// 실제 타일맵 위에 스프라이트를 오버레이하고 흔들기
+    /// 타일 떨림 효과 (2D)
+    /// 타일을 제거하고 Handler의 콜라이더를 solid로 변경하여 플레이어 지탱
     /// </summary>
     private IEnumerator ShakeEffect()
     {
-        // 1. 타일의 스프라이트 가져오기
-        Sprite tileSprite = GetTileSpriteAtPosition();
-        if (tileSprite == null)
+        // 1. 타일의 스프라이트 가져오기 및 캐싱
+        cachedSprite = GetTileSpriteAtPosition();
+        if (cachedSprite == null)
         {
             Debug.LogWarning("[CrumbleTile] 타일 스프라이트를 찾을 수 없습니다.");
             yield break;
@@ -115,28 +118,37 @@ public class CrumbleTileHandler : MonoBehaviour
 
         // 3. SpriteRenderer 추가
         SpriteRenderer sr = shakingSprite.AddComponent<SpriteRenderer>();
-        sr.sprite = tileSprite;
+        sr.sprite = cachedSprite;
         sr.sortingLayerName = tilemap.GetComponent<TilemapRenderer>().sortingLayerName;
         sr.sortingOrder = tilemap.GetComponent<TilemapRenderer>().sortingOrder;
 
-        // 4. 원본 타일을 투명하게 만들기 (떨리는 스프라이트만 보이도록)
-        originalTileColor = tilemap.GetColor(gridPos);
-        tilemap.SetColor(gridPos, new Color(1, 1, 1, 0));
+        // 4. ✅ 타일 완전히 제거 (중복 렌더링 방지)
+        tilemap.SetTile(gridPos, null);
 
-        // 5. destroyDelay 동안 좌우로 떨기
+        // 5. ✅ Handler의 BoxCollider2D를 solid로 변경 (플레이어를 지탱)
+        if (myCollider != null)
+        {
+            myCollider.isTrigger = false;
+        }
+
+        // 6. destroyDelay 동안 좌우 + 위아래로 떨기 (시각적 효과만)
         float elapsedTime = 0f;
         originalTilePosition = worldPos;
 
         while (elapsedTime < destroyDelay)
         {
-            float offset = Mathf.Sin(Time.time * shakeSpeed) * shakeIntensity;
-            shakingSprite.transform.position = originalTilePosition + new Vector3(offset, 0, 0);
+            // 좌우 흔들림 (sin 파동)
+            float offsetX = Mathf.Sin(Time.time * shakeSpeed) * shakeIntensity;
+            // 위아래 흔들림 (cos 파동으로 다른 패턴)
+            float offsetY = Mathf.Cos(Time.time * shakeSpeed * 1.3f) * shakeIntensity;
+            
+            shakingSprite.transform.position = originalTilePosition + new Vector3(offsetX, offsetY, 0);
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        // 6. 떨림 종료 - 원래 위치로 복귀
+        // 7. 떨림 종료 - 원래 위치로 복귀
         shakingSprite.transform.position = originalTilePosition;
 
         shakeCoroutine = null;
@@ -168,6 +180,7 @@ public class CrumbleTileHandler : MonoBehaviour
 
     private IEnumerator CrumbleSequence()
     {
+        // ✅ destroyDelay 동안 대기 (이 시간 동안 Handler 콜라이더로 플레이어 지탱)
         yield return new WaitForSeconds(destroyDelay);
 
         // 떨림 효과가 아직 실행 중이면 중지
@@ -177,14 +190,17 @@ public class CrumbleTileHandler : MonoBehaviour
             shakeCoroutine = null;
         }
 
+        // ✅ 콜라이더를 다시 trigger로 변경 (또는 비활성화)
+        if (myCollider != null)
+        {
+            myCollider.enabled = false;  // 완전히 비활성화
+        }
+
         // 떨림용 스프라이트 제거
         if (shakingSprite != null)
         {
             Destroy(shakingSprite);
         }
-
-        // 원본 타일 색상 복원 (곧 사라질 거지만)
-        tilemap.SetColor(gridPos, originalTileColor);
 
         // 간단한 축소 효과
         yield return StartCoroutine(ScaleAndDisappear());
@@ -192,11 +208,10 @@ public class CrumbleTileHandler : MonoBehaviour
         // 부서짐 이펙트 재생
         PlayCrumbleEffect();
         
-        // 조각난 타일 효과 생성
-        PlayBrokenTileEffect();
+        // ✅ 이미지를 잘라서 터뜨리는 조각 효과 생성 (캐시된 스프라이트 사용)
+        PlayTileSplitterEffect();
         
         isDestroyed = true;
-        tilemap.SetTile(gridPos, null);
 
         yield return new WaitForSeconds(respawnDelay);
 
@@ -232,43 +247,38 @@ public class CrumbleTileHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// 부숴져서 사라지는 조각 효과
+    /// 이미지를 자동으로 잘라서 터뜨리는 효과
     /// </summary>
-    private void PlayBrokenTileEffect()
+    private void PlayTileSplitterEffect()
     {
+        if (tileSplitterPrefab == null)
+        {
+            return;
+        }
+
+        // ✅ 미리 캐싱해둔 스프라이트 사용
+        if (cachedSprite == null)
+        {
+            Debug.LogWarning("[CrumbleTile] 캐시된 타일 스프라이트가 없습니다.");
+            return;
+        }
+
+        // 타일의 월드 좌표 가져오기
         Vector3 worldPos = tilemap.GetCellCenterWorld(gridPos);
 
-        if (brokenTilePrefab != null)
+        // TileSplitter 프리팹 생성
+        GameObject splitterObj = Instantiate(tileSplitterPrefab, worldPos, Quaternion.identity);
+        CrumbleTileSplitter splitter = splitterObj.GetComponent<CrumbleTileSplitter>();
+
+        if (splitter != null)
         {
-            // 여러 개의 조각 생성
-            for (int i = 0; i < brokenTileCount; i++)
-            {
-                // 랜덤 위치에서 생성
-                Vector3 randomOffset = new Vector3(
-                    Random.Range(-0.3f, 0.3f),
-                    Random.Range(-0.3f, 0.3f),
-                    0
-                );
-                Vector3 spawnPos = worldPos + randomOffset;
-
-                GameObject brokenTile = Instantiate(brokenTilePrefab, spawnPos, Quaternion.identity);
-
-                // 랜덤 방향으로 물리 힘 적용
-                Rigidbody2D rb = brokenTile.GetComponent<Rigidbody2D>();
-                if (rb != null)
-                {
-                    Vector2 forceDirection = Random.insideUnitCircle.normalized;
-                    rb.linearVelocity = forceDirection * brokenTileForce;
-                    rb.angularVelocity = Random.Range(-360f, 360f);
-                }
-
-                // 일정 시간 후 자동 제거
-                Destroy(brokenTile, brokenTileLifetime);
-            }
+            // ✅ 캐시된 스프라이트를 전달
+            splitter.tileSprite = cachedSprite;
         }
         else
         {
-            Debug.LogWarning("[CrumbleTile] brokenTilePrefab이 할당되지 않았습니다!");
+            Debug.LogError("[CrumbleTile] CrumbleTileSplitter 컴포넌트를 찾을 수 없습니다!");
+            Destroy(splitterObj);
         }
     }
 
@@ -309,6 +319,13 @@ public class CrumbleTileHandler : MonoBehaviour
         tilemap.SetTile(gridPos, crumbleTile);
         tilemap.SetColor(gridPos, Color.white);  // 색상도 복구
 
+        // ✅ 콜라이더를 다시 trigger로 설정하고 활성화
+        if (myCollider != null)
+        {
+            myCollider.isTrigger = true;
+            myCollider.enabled = true;
+        }
+
         yield return new WaitForSeconds(fadeDuration);
 
         // 6️⃣ 리스폰 완료
@@ -335,8 +352,6 @@ public class CrumbleTileHandler : MonoBehaviour
             tileSize * 0.9f,
             0f
         );
-
-        BoxCollider2D myCollider = GetComponent<BoxCollider2D>();
 
         foreach (var hit in hits)
         {

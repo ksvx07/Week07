@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 8014068390289277300}
   - component: {fileID: 27345862345866271}
   - component: {fileID: 7625510734380210035}
+  - component: {fileID: 9150533018113665188}
+  - component: {fileID: 6122444051022618922}
   m_Layer: 0
   m_Name: BrokenTile
   m_TagString: Untagged
@@ -26,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6231253652572549914}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
@@ -115,3 +117,46 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &9150533018113665188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6231253652572549914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbccf00b9f315554b8f1900a7fdfdda4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  crumbleEffectPrefab: {fileID: 0}
+  fragmentGridX: 3
+  fragmentGridY: 3
+  explosionForce: 3
+  fragmentUpwardForce: 2
+  shakeIntensity: 0.1
+  shakeSpeed: 30
+  scaleDuration: 0.3
+  respawnCheckInterval: 0.1
+  maxRespawnWaitTime: 10
+  finalSafetyDelay: 0.1
+--- !u!114 &6122444051022618922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6231253652572549914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d58b6b507d7ca1548b8637b43a5da950, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridX: 3
+  gridY: 3
+  explosionForce: 1
+  upwardForce: 0
+  torqueRange: 200
+  fadeStartDelay: 0.5
+  fadeSpeed: 0.02
+  lifetime: 3

@@ -1001,10 +1001,10 @@ MonoBehaviour:
   tilemap: {fileID: 1686739980}
   crumbleTile: {fileID: 11400000, guid: b908468a2d455e04fa3f86e39586892f, type: 2}
   destroyDelay: 0.5
-  respawnDelay: 1.5
+  respawnDelay: 2
   fadeDuration: 0
-  crumbleEffectPrefab: {fileID: 0}
-  brokenTilePrefab: {fileID: 6231253652572549914, guid: 0c4280e03bbe0874b9538733ab06de20, type: 3}
+  crumbleEffectPrefab: {fileID: 6231253652572549914, guid: 0c4280e03bbe0874b9538733ab06de20, type: 3}
+  tileSplitterPrefab: {fileID: 6231253652572549914, guid: 0c4280e03bbe0874b9538733ab06de20, type: 3}
 --- !u!1 &2111476982
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,10 +3,10 @@ using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 
 /// <summary>
-/// CrumbleTileManager - 콜라이더 설정 업데이트 버전
+/// CrumbleTileManager - 자동 이미지 분할 파편 효과 버전
 /// - 콜라이더 크기: 0.98배로 축소
 /// - 콜라이더 오프셋: 위쪽으로 0.1 이동 (위쪽을 밟아야 부서지도록)
-/// - BrokenTilePrefab 자동 할당 기능
+/// - 프리팹 설정 없이 자동으로 이미지 분할
 /// </summary>
 public class CrumbleTileManager : MonoBehaviour
 {
@@ -21,7 +21,7 @@ public class CrumbleTileManager : MonoBehaviour
 
     [Header("이펙트 설정")]
     [SerializeField] private GameObject crumbleEffectPrefab;
-    [SerializeField] private GameObject brokenTilePrefab;
+    [SerializeField] private GameObject tileSplitterPrefab;  // CrumbleTileSplitter가 붙은 프리팹
 
     private Dictionary<Vector3Int, CrumbleTileHandler> tileHandlers = new();
 
@@ -47,10 +47,9 @@ public class CrumbleTileManager : MonoBehaviour
             return;
         }
 
-        // 조각난 타일 프리팹 체크
-        if (brokenTilePrefab == null)
+        if (tileSplitterPrefab == null)
         {
-            Debug.LogWarning("BrokenTilePrefab이 할당되지 않았습니다. 조각 효과가 작동하지 않습니다.");
+            Debug.LogWarning("TileSplitterPrefab이 할당되지 않았습니다. 파편 효과가 작동하지 않습니다.");
         }
 
         // 타일맵의 모든 위치 스캔
@@ -85,7 +84,7 @@ public class CrumbleTileManager : MonoBehaviour
         Rigidbody2D rb = handler.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;
 
-        // ✅ Trigger 콜라이더 추가 - 위쪽을 밟아야 부서지도록 설정
+        // Trigger 콜라이더 추가 - 위쪽을 밟아야 부서지도록 설정
         BoxCollider2D collider = handler.AddComponent<BoxCollider2D>();
         collider.size = tilemap.cellSize * 0.98f;
         collider.offset = new Vector2(0f, 0.1f);  // 위쪽으로 0.1 이동
@@ -99,14 +98,10 @@ public class CrumbleTileManager : MonoBehaviour
             crumbleTile, 
             destroyDelay, 
             respawnDelay, 
-            fadeDuration
+            fadeDuration,
+            crumbleEffectPrefab,
+            tileSplitterPrefab
         );
-
-        // BrokenTilePrefab 자동 할당
-        if (brokenTilePrefab != null)
-        {
-            tileHandler.SetBrokenTilePrefab(brokenTilePrefab);
-        }
 
         tileHandlers[gridPos] = tileHandler;
     }
