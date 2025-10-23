@@ -18,6 +18,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float speedAcceleration = 5f;
     [SerializeField] private float SpeedDeceleration = 5f;
+    [SerializeField] private float TurningSpeedAcceleration = 5f;
 
     [Header("Jump / Gravity")]
     [SerializeField] private float maxJumpSpeed = 5f;
@@ -273,10 +274,12 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     {
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
+        float turnAccel = TurningSpeedAcceleration;
         if (!IsGrounded)
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
+            turnAccel *= airAccelMulti;
         }
 
         if (moveInput.x > 0)
@@ -292,10 +295,42 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             transform.localScale = flippedScale;
         }
 
-        float targetX = moveInput.x * maxSpeed;
-        float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-        rb.linearVelocityX = newX;
+        // float targetX = moveInput.x * maxSpeed;
+
+
+        // float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
+        // float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
+        // rb.linearVelocityX = newX;
+
+
+        if (moveInput.x != 0)
+        {
+            if (Math.Sign(rb.linearVelocity.x) == Mathf.Sign(moveInput.x))
+            {
+                if (Mathf.Abs(rb.linearVelocity.x) < maxSpeed)
+                {
+                    rb.linearVelocityX += accel * moveInput.x * Time.fixedDeltaTime;
+                }
+                else
+                {
+                    rb.linearVelocityX -= decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime;
+                }
+            }
+            else
+            {
+                rb.linearVelocityX += turnAccel * moveInput.x * Time.fixedDeltaTime;
+            }
+
+        }
+        else
+        {
+            rb.linearVelocityX -= decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime;
+            if (Mathf.Sign(rb.linearVelocity.x) != Mathf.Sign(rb.linearVelocity.x - decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime))
+            {
+                rb.linearVelocityX = 0;
+            }
+        }
+
     }
 
     private void DetectGround()
@@ -406,6 +441,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     public void OnEnableSetVelocity(float newVelX, float newVelY)
     {
+        Debug.Log("Set Velocity Called");
         col = GetComponent<PolygonCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         // spriteRenderer = GetComponent<SpriteRenderer>();
@@ -414,6 +450,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = 0f;
+        rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
 
 

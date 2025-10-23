@@ -1219,8 +1219,8 @@ GameObject:
   - component: {fileID: 3693717418050999450}
   - component: {fileID: 8201692839192859106}
   - component: {fileID: 9199883007996079644}
-  - component: {fileID: 2491940320106320406}
-  - component: {fileID: 42300739641885424}
+  - component: {fileID: 4446512307161301079}
+  - component: {fileID: 4029033951336266138}
   m_Layer: 3
   m_Name: NewTriangle
   m_TagString: Player
@@ -1260,6 +1260,7 @@ MonoBehaviour:
   maxSpeed: 5
   speedAcceleration: 20
   SpeedDeceleration: 50
+  TurningSpeedAcceleration: 80
   maxJumpSpeed: 10
   jumpDcceleration: 20
   swingJumpDcceleration: 20
@@ -1426,7 +1427,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!232 &2491940320106320406
+--- !u!232 &4446512307161301079
 DistanceJoint2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1446,7 +1447,7 @@ DistanceJoint2D:
   m_AutoConfigureDistance: 1
   m_Distance: 1
   m_MaxDistanceOnly: 0
---- !u!120 &42300739641885424
+--- !u!120 &4029033951336266138
 LineRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
@@ -2349,6 +2350,7 @@ MonoBehaviour:
   maxSpeed: 5
   speedAcceleration: 20
   SpeedDeceleration: 20
+  canMove: 1
   maxJumpSpeed: 10
   jumpDcceleration: 20
   maxGravity: 50
@@ -2363,6 +2365,56 @@ MonoBehaviour:
   wallJumpXSpeed: 25
   wallJumpYSpeed: 15
   wallSlideMaxSpeed: 2
+  wallJumpStaggerDuration: 0.15
+  wallJumpCurveDuration: 0.2
+  wallJumpSpeedCurveX:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  wallJumpSpeedCurveY:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   dashSpeed: 30
   dashTime: 0.15
   dashCooldown: 0.3
