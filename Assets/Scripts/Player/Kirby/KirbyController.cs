@@ -192,7 +192,13 @@ public class KirbyController : MonoBehaviour, IPlayerController
             {
                 if (Mathf.Abs(_rb.linearVelocity.x) < maxSpeed)
                 {
-                    _rb.linearVelocityX += acceleration * directionX * Time.deltaTime;
+                    if (Mathf.Abs(_rb.linearVelocity.x + acceleration * directionX * Time.fixedDeltaTime) >= maxSpeed)
+                    {
+                        _rb.linearVelocityX = maxSpeed * Mathf.Sign(directionX);
+                    }
+                    else
+                        _rb.linearVelocityX += acceleration * directionX * Time.deltaTime;
+
                 }
                 else
                 {

@@ -17,11 +17,11 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
 
-    public PlayerShape CurrentPlayer { get; private set; }
-    private PlayerShape selectPlayer;
+    public PlayerShape CurrentShape { get; private set; }
+    private PlayerShape selectShape;
     private bool isSelectUIActive = false;
-    [SerializeField] private PlayerShape startPlayer = PlayerShape.Circle;
-    [SerializeField] private List<GameObject> players;
+    [SerializeField] private PlayerShape startShape = PlayerShape.Circle;
+    [SerializeField] private List<GameObject> shapes;
     [SerializeField] private List<Image> pannels;
     [SerializeField] private Color originColor;
     [SerializeField] private Color highLightColor;
@@ -60,13 +60,14 @@ public class PlayerManager : MonoBehaviour
 
         inputActions = new PlayerInput();
 
-        selectPlayer = startPlayer;
-        CurrentPlayer = selectPlayer;
-        _currentPlayerPrefab = players[(int)CurrentPlayer];
+        selectShape = startShape;
+        CurrentShape = selectShape;
+        _currentPlayerPrefab = shapes[(int)CurrentShape];
 
-        ActiveStartPlayer(startPlayer);
-        ShapeUnlockSystem.Initialize(startPlayer); // 시작 도형 잠금 해제
-        playerDataLog.PlayerLogStart(startPlayer); // Log 데이터 수집 시작
+        ActiveStartPlayer(startShape);
+        // ShapeUnlockSystem.Initialize(startShape); // 시작 도형 잠금 해제
+        ShapeUnlockSystem.UnLockAllShape();
+        playerDataLog.PlayerLogStart(startShape); // Log 데이터 수집 시작
     }
 
     private void OnEnable()
@@ -106,11 +107,11 @@ public class PlayerManager : MonoBehaviour
             // 세로 축이 더 강함
             if (inputVector.y > 0) // 위쪽
             {
-                selectPlayer = PlayerShape.Circle;
+                selectShape = PlayerShape.Circle;
             }
             else // 아래쪽
             {
-                selectPlayer = PlayerShape.Square; // 네모
+                selectShape = PlayerShape.Square; // 네모
             }
         }
         else
@@ -118,15 +119,15 @@ public class PlayerManager : MonoBehaviour
             // 가로 축이 더 강함
             if (inputVector.x > 0) // 오른쪽
             {
-                selectPlayer = PlayerShape.Star;
+                selectShape = PlayerShape.Star;
             }
             else // 왼쪽
             {
-                selectPlayer = PlayerShape.Triangle;
+                selectShape = PlayerShape.Triangle;
             }
         }
 
-        HighLightSelectShape(selectPlayer);
+        HighLightSelectShape(selectShape);
     }
     public void OnSwitchModeActive(InputAction.CallbackContext context)
     {
@@ -152,11 +153,11 @@ public class PlayerManager : MonoBehaviour
             // 세로 축이 더 강함
             if (inputVector.y > 0) // 위쪽
             {
-                selectPlayer = PlayerShape.Circle;
+                selectShape = PlayerShape.Circle;
             }
             else // 아래쪽
             {
-                selectPlayer = PlayerShape.Square; // 네모
+                selectShape = PlayerShape.Square; // 네모
             }
         }
         else
@@ -164,20 +165,20 @@ public class PlayerManager : MonoBehaviour
             // 가로 축이 더 강함
             if (inputVector.x > 0) // 오른쪽
             {
-                selectPlayer = PlayerShape.Star;
+                selectShape = PlayerShape.Star;
             }
             else // 왼쪽
             {
-                selectPlayer = PlayerShape.Triangle;
+                selectShape = PlayerShape.Triangle;
             }
         }
 
-        ActiveSelectShape(CurrentPlayer, selectPlayer);
+        ActiveSelectShape(CurrentShape, selectShape);
 
         // 잠금된 도형이 아니면 로그 기록
-        if (ShapeUnlockSystem.IsUnlocked(selectPlayer) == true)
+        if (ShapeUnlockSystem.IsUnlocked(selectShape) == true)
         {
-            playerDataLog.OnPlayerQuickSwitch(selectPlayer); // Hack : 게임 Log 용
+            playerDataLog.OnPlayerQuickSwitch(selectShape); // Hack : 게임 Log 용
         }
 
         // 선택모드 활성화 중에 Qucik Switch 했으면
@@ -206,12 +207,12 @@ public class PlayerManager : MonoBehaviour
         if (isSelectUIActive)
         {
             DeActiveSelectUI();
-            ActiveSelectShape(CurrentPlayer, selectPlayer);
+            ActiveSelectShape(CurrentShape, selectShape);
 
             // 잠금된 도형이 아니면 로그 기록
-            if (ShapeUnlockSystem.IsUnlocked(selectPlayer) == true)
+            if (ShapeUnlockSystem.IsUnlocked(selectShape) == true)
             {
-                playerDataLog.OnPlayerModeSwitch(selectPlayer); // Hack : 게임 Log 용
+                playerDataLog.OnPlayerModeSwitch(selectShape); // Hack : 게임 Log 용
             }
         }
     }
@@ -222,7 +223,7 @@ public class PlayerManager : MonoBehaviour
         if (isSelectUIActive)
         {
             DeActiveSelectUI();
-            ActiveSelectShape(CurrentPlayer, selectPlayer);
+            ActiveSelectShape(CurrentShape, selectShape);
         }
     }
 
@@ -236,9 +237,9 @@ public class PlayerManager : MonoBehaviour
     }
     private void ActiveStartPlayer(PlayerShape starstPlayer)
     {
-        _currentPlayerPrefab = players[(int)starstPlayer];
+        _currentPlayerPrefab = shapes[(int)starstPlayer];
         _currentPlayerPrefab.SetActive(true);
-        CurrentPlayer = selectPlayer;
+        CurrentShape = selectShape;
     }
 
     public void PlayerSetActive(bool isAcitve)
@@ -260,17 +261,17 @@ public class PlayerManager : MonoBehaviour
         HighLightSelectShape(newShape);
         if (oldShape == PlayerShape.Square && newShape == PlayerShape.Square) return;
 
-        GameObject oldPlayerPrefab = players[(int)oldShape];
+        GameObject oldPlayerPrefab = shapes[(int)oldShape];
         Transform lastPos = oldPlayerPrefab.transform;
         Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
         oldPlayerPrefab.SetActive(false);
 
-        _currentPlayerPrefab = players[(int)newShape];
+        _currentPlayerPrefab = shapes[(int)newShape];
         _currentPlayerPrefab.transform.position = lastPos.position;
         _currentPlayerPrefab.SetActive(true);
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
-        CurrentPlayer = selectPlayer;
+        CurrentShape = selectShape;
     }
 
     /// <summary>
@@ -289,25 +290,25 @@ public class PlayerManager : MonoBehaviour
 
         HighLightSelectShape(newShape);
 
-        GameObject oldPlayerPrefab = players[(int)CurrentPlayer];
+        GameObject oldPlayerPrefab = shapes[(int)CurrentShape];
 
         Transform lastPos = oldPlayerPrefab.transform;
         Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
         oldPlayerPrefab.SetActive(false);
 
-        _currentPlayerPrefab = players[(int)newShape];
+        _currentPlayerPrefab = shapes[(int)newShape];
         _currentPlayerPrefab.transform.position = lastPos.position;
         _currentPlayerPrefab.SetActive(true);
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
-        CurrentPlayer = newShape;
+        CurrentShape = newShape;
     }
 
 
     #region Switch Mode UI 함수
     private void AcitveSelectUI()
     {
-        HighLightSelectShape(selectPlayer);
+        HighLightSelectShape(selectShape);
         Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
         selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
 

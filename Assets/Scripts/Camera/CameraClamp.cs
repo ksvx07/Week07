@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.InputSystem.Controls.AxisControl;
 
 public class CameraClamp : MonoBehaviour
 {
@@ -13,10 +15,13 @@ public class CameraClamp : MonoBehaviour
 
     [SerializeField] private int _defaultStageId = 1;
     private float _targetMinX, _targetMinY, _targetMaxX, _targetMaxY;
+    private float _targetZoom = 6f;
+    private float _initialZoom = 9f;
 
     private void Start()
     {
         SetMapBounds(_defaultStageId);
+        StageManager.Instance.CurrentStageId = _defaultStageId;
         SetInitMapBounds();
     }
 
@@ -33,7 +38,8 @@ public class CameraClamp : MonoBehaviour
         float camHeight = cam.orthographicSize;
         float camWidth = camHeight * cam.aspect;
 
-        float clampX = Mathf.Clamp(desiredPos.x, _minX +  camWidth, _maxX - camWidth);
+        // 카메라 중심이 맵 경계를 벗어나지 않도록 제한
+        float clampX = Mathf.Clamp(desiredPos.x, _minX + camWidth, _maxX - camWidth);
         float clampY = Mathf.Clamp(desiredPos.y, _minY + camHeight, _maxY - camHeight);
 
         return new Vector3(clampX, clampY, desiredPos.z);
@@ -48,6 +54,14 @@ public class CameraClamp : MonoBehaviour
             _targetMinY = mapDefinition.minY;
             _targetMaxY = mapDefinition.maxY;
         }
+
+        var mapBoundsWidth = _targetMaxX - _targetMinX;
+        float camWidth = cam.orthographicSize * 2 * cam.aspect;
+
+        Debug.Log($"Map Bounds Width: {mapBoundsWidth}, Cam Width: {camWidth}");
+        var zoom = mapBoundsWidth < camWidth ? _targetZoom : _initialZoom;
+
+        cam.GetComponent<CameraController>().TriggerZoom(zoom);
     }
 
     public List<float> GetMapBounds()
