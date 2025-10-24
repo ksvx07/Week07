@@ -280,6 +280,7 @@ public class PlayerManager : MonoBehaviour
     public void ForceToChangeShape(PlayerShape newShape)
     {
         OriginalTimeScale();
+        playerDataLog.OnPlayerModeSwitch(newShape); // Hack : 게임 Log 용
 
         // 잠금된 도형으로 변경 불가능
         if (ShapeUnlockSystem.IsUnlocked(newShape) == false)
