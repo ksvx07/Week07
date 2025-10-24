@@ -2794,7 +2794,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1574965063123007506, guid: c4811bb9873a2a74ebf1bc02c2271305, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 171.5
+      value: 168.53
       objectReference: {fileID: 0}
     - target: {fileID: 1574965063123007506, guid: c4811bb9873a2a74ebf1bc02c2271305, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4086,8 +4086,8 @@ MonoBehaviour:
   deadZoneSize: {x: 5, y: 5}
   softZoneSize: {x: 1, y: 1}
   _velocity: {x: 30, y: 3, z: 3}
-  MaxZoomIn: 9
-  MaxZoomOut: 8
+  MaxZoomIn: 6
+  MaxZoomOut: 10
   ZoomLerpSpeed: 1
   SpeedThreshold: 999
 --- !u!114 &1318149769
@@ -58601,11 +58601,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 165907923382301145, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.4
+      value: 167.46
       objectReference: {fileID: 0}
     - target: {fileID: 165907923382301145, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.6
+      value: -4.03
       objectReference: {fileID: 0}
     - target: {fileID: 165907923382301145, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
       propertyPath: m_LocalPosition.z
