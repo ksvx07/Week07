@@ -17,3 +17,5 @@ MonoBehaviour:
   maxX: 65
   minY: -6.98
   maxY: 14.4
+  isShapeLockStage: 1
+  initailizeShape: 2
