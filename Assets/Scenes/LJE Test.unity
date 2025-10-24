@@ -1577,6 +1577,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+      propertyPath: startShape
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
       propertyPath: camControlelr
       value: 
       objectReference: {fileID: 1318149768}
@@ -1584,6 +1588,26 @@ PrefabInstance:
       propertyPath: selectPlayerPanel
       value: 
       objectReference: {fileID: 2888391955349680281}
+    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+      propertyPath: shapes.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+      propertyPath: 'shapes.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2838019288967511636}
+    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+      propertyPath: 'shapes.Array.data[1]'
+      value: 
+      objectReference: {fileID: 3077870103139330319}
+    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+      propertyPath: 'shapes.Array.data[2]'
+      value: 
+      objectReference: {fileID: 4786138254855408591}
+    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+      propertyPath: 'shapes.Array.data[3]'
+      value: 
+      objectReference: {fileID: 154410628}
     - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
       propertyPath: 'pannels.Array.data[0]'
       value: 
