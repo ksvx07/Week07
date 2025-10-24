@@ -207,6 +207,7 @@ public class SquareController : MonoBehaviour, IPlayerController
     {
         WallCheck();
         DetectGround();
+        Debug.Log(IsGrounded);
         // UpdateWallJumpState(); // 벽점프 지속시간 중 관리용
         if (!isDashing)
         {
@@ -444,8 +445,8 @@ public class SquareController : MonoBehaviour, IPlayerController
         float extraHeight = 0.05f;
 
         // 좌우 코너 위치 계산
-        Vector2 leftOrigin = new Vector2(bounds.min.x + 0.05f, bounds.min.y);
-        Vector2 rightOrigin = new Vector2(bounds.max.x - 0.05f, bounds.min.y);
+        Vector2 leftOrigin = new Vector2(bounds.min.x, bounds.min.y);
+        Vector2 rightOrigin = new Vector2(bounds.max.x, bounds.min.y);
 
         // 아래로 레이캐스트
         RaycastHit2D leftHit = Physics2D.Raycast(leftOrigin, Vector2.down, extraHeight, wallLayer);
@@ -458,11 +459,11 @@ public class SquareController : MonoBehaviour, IPlayerController
         bool grounded = (leftHit.collider != null || rightHit.collider != null);
 
         // 벽 슬라이드 상태일 땐 false 처리
-        bool isWallSliding = (isTouchingWallRight || isTouchingWallLeft) && rb.linearVelocity.y < 0f;
-        if (grounded && isWallSliding)
-            IsGrounded = false;
-        else
-            IsGrounded = grounded;
+        // bool isWallSliding = (isTouchingWallRight || isTouchingWallLeft) && rb.linearVelocity.y < 0f;
+        // if (grounded && isWallSliding)
+        //     IsGrounded = false;
+        // else
+        IsGrounded = grounded;
 
         // 점프 중 상태 해제
         if (IsJumping && rb.linearVelocity.y <= 0)
@@ -513,6 +514,7 @@ public class SquareController : MonoBehaviour, IPlayerController
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
+            // Debug.Log("Jumped");
             if (isFastFalling)
                 IsJumping = false;
         }
