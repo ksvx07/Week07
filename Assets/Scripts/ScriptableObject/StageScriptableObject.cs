@@ -8,4 +8,11 @@ public class StageScriptableObject : ScriptableObject
     public float maxX;
     public float minY;
     public float maxY;
+
+    [Header("도형 잠금 설정")]
+    public bool isShapeLockStage;
+    public PlayerShape initailizeShape;
+
+    [Header("도형 해금 설정")]
+    public bool unlockAll;
 }

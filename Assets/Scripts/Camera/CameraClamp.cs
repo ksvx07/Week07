@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.InputSystem.Controls.AxisControl;
 
 public class CameraClamp : MonoBehaviour
 {
@@ -13,17 +11,9 @@ public class CameraClamp : MonoBehaviour
     [SerializeField] public float _minY;
     [SerializeField] public float _maxY;
 
-    [SerializeField] private int _defaultStageId = 1;
     private float _targetMinX, _targetMinY, _targetMaxX, _targetMaxY;
     private float _targetZoom = 6f;
     private float _initialZoom = 9f;
-
-    private void Start()
-    {
-        SetMapBounds(_defaultStageId);
-        StageManager.Instance.CurrentStageId = _defaultStageId;
-        SetInitMapBounds();
-    }
 
     private void Update()
     {
@@ -38,27 +28,25 @@ public class CameraClamp : MonoBehaviour
         float camHeight = cam.orthographicSize;
         float camWidth = camHeight * cam.aspect;
 
-        // ƒ´∏ﬁ∂Û ¡ﬂΩ…¿Ã ∏  ∞Ê∞Ë∏¶ π˛æÓ≥™¡ˆ æ µµ∑œ ¡¶«—
+        // Ïπ¥Î©îÎùº Ï§ëÏã¨Ïù¥ Îßµ Í≤ΩÍ≥ÑÎ•º Î≤óÏñ¥ÎÇòÏßÄ ÏïäÎèÑÎ°ù Ï†úÌïú
         float clampX = Mathf.Clamp(desiredPos.x, _minX + camWidth, _maxX - camWidth);
         float clampY = Mathf.Clamp(desiredPos.y, _minY + camHeight, _maxY - camHeight);
 
         return new Vector3(clampX, clampY, desiredPos.z);
     }
 
-    public void SetMapBounds(int Id)
+    public void SetMapBounds(StageScriptableObject stageData)
     {
-        if(GameManager.Instance.StageDics.TryGetValue(Id, out var mapDefinition))
-        {
-            _targetMinX = mapDefinition.minX;
-            _targetMaxX = mapDefinition.maxX;
-            _targetMinY = mapDefinition.minY;
-            _targetMaxY = mapDefinition.maxY;
-        }
+        // stage Data Ïóê ÏûàÎäî Í∞í Í∞ÄÏ†∏Ïò§Í∏∞
+        _targetMinX = stageData.minX;
+        _targetMaxX = stageData.maxX;
+        _targetMinY = stageData.minY;
+        _targetMaxY = stageData.maxY;
+
 
         var mapBoundsWidth = _targetMaxX - _targetMinX;
         float camWidth = cam.orthographicSize * 2 * cam.aspect;
 
-        Debug.Log($"Map Bounds Width: {mapBoundsWidth}, Cam Width: {camWidth}");
         var zoom = mapBoundsWidth < camWidth ? _targetZoom : _initialZoom;
 
         cam.GetComponent<CameraController>().TriggerZoom(zoom);
@@ -75,17 +63,6 @@ public class CameraClamp : MonoBehaviour
         };
 
         return bounds;
-    }
-
-    private void SetInitMapBounds()
-    {
-        if (GameManager.Instance.StageDics.TryGetValue(_defaultStageId, out var mapDefinition))
-        {
-            _minX = mapDefinition.minX;
-            _maxX = mapDefinition.maxX;
-            _minY = mapDefinition.minY;
-            _maxY = mapDefinition.maxY;
-        }
     }
 
     private void OnDrawGizmos()
