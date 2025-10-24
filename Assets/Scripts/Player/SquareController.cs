@@ -207,7 +207,6 @@ public class SquareController : MonoBehaviour, IPlayerController
     {
         WallCheck();
         DetectGround();
-        Debug.Log(IsGrounded);
         // UpdateWallJumpState(); // 벽점프 지속시간 중 관리용
         if (!isDashing)
         {
