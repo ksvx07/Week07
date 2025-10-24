@@ -53,6 +53,7 @@ public class Stage : MonoBehaviour
         StageManager.Instance.RequestStageChange(stageData, shouldGoNext);
     }
 
+
     // Hack: 제거하기
     [Button("디버그용 순간이동")]
     private void DebugPlayerTranform()

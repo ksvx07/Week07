@@ -64,10 +64,8 @@ public class PlayerManager : MonoBehaviour
         CurrentShape = selectShape;
         _currentPlayerPrefab = shapes[(int)CurrentShape];
 
-        ActiveStartPlayer(startShape);
-        // ShapeUnlockSystem.Initialize(startShape); // 시작 도형 잠금 해제
-        ShapeUnlockSystem.UnLockAllShape();
         playerDataLog.PlayerLogStart(startShape); // Log 데이터 수집 시작
+        ActiveStartPlayer(startShape);
     }
 
     private void OnEnable()

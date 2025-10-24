@@ -58,6 +58,8 @@ public class StageManager : MonoBehaviour
         CurrentStageData = stages[CurrentStageIndex];
         cameraClamp.SetMapBounds(CurrentStageData);
 
+        CheckShapeStageLock(); // 스테이지에 맞게 도형 잠금
+
         Debug.Log($"Stage {CurrentStageIndex + 1} 로 변경되었습니다.");
     }
 
@@ -82,6 +84,22 @@ public class StageManager : MonoBehaviour
         int targetIndex = goToNext ? currentIndex : currentIndex - 1;
 
         SetStage(targetIndex);
+    }
+
+    private void CheckShapeStageLock()
+    {
+
+        if (CurrentStageData.isShapeLockStage)
+        {
+            ShapeUnlockSystem.Initialize(CurrentStageData.initailizeShape);
+            return;
+        }
+
+        if (CurrentStageData.unlockAll)
+        {
+            ShapeUnlockSystem.UnLockAllShape();
+        }
+
     }
 }
  
