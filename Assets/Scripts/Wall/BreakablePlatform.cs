@@ -20,6 +20,13 @@ public class BreakablePlatform : MonoBehaviour
     [SerializeField] private string playerTag = "Player";
     [SerializeField] private LayerMask playerLayer; // 리스폰 보류 체크에도 사용 권장(플레이어 레이어만 포함)
 
+    [Header("낙하 시 바닥 감지")]
+    [SerializeField] private bool useFallDownMode = false; // true: 바닥까지 떨어짐, false: 그냥 떨어져서 사라짐
+    [SerializeField] private bool enableGroundDetection = true;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float boxCastDistance = 100f;
+    [SerializeField] private GameObject damageColliderObject; // 낙하 중 활성화할 데미지 콜라이더 (자식 오브젝트)
+
     [Header("재생성")]
     [SerializeField] private bool respawn = true;
     [SerializeField] private float respawnDelay = 3f;
@@ -38,10 +45,14 @@ public class BreakablePlatform : MonoBehaviour
     private bool isTriggered = false;
     private bool isFalling = false;
     private bool isRespawning = false; // 중복 코루틴 방지
+    private bool isPlayerDetectionDisabled = false; // 떨어진 후 플레이어 감지 비활성화
 
     private Rigidbody2D rb;
     private BoxCollider2D platformCollider;
     private SpriteRenderer spriteRenderer;
+
+    // 기즈모 시각화용 히트 정보 저장
+    private RaycastHit2D[] lastBoxCastHits = new RaycastHit2D[3];
 
     void Awake()
     {
@@ -79,7 +90,7 @@ public class BreakablePlatform : MonoBehaviour
     // 충돌 감지(플레이어가 isTrigger=false BoxCollider2D일 때)
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!enableCollisionTrigger || isTriggered) return;
+        if (!enableCollisionTrigger || isTriggered || isPlayerDetectionDisabled) return;
 
         bool isPlayer = detectByTag
             ? collision.collider.CompareTag(playerTag)
@@ -96,6 +107,7 @@ public class BreakablePlatform : MonoBehaviour
 
     private IEnumerator BreakRoutine()
     {
+        isTriggered = true;
         float elapsed = 0f;
 
         while (elapsed < delayBeforeBreak)
@@ -119,10 +131,9 @@ public class BreakablePlatform : MonoBehaviour
         ResetVisualOnly();
         StartFalling();
 
-        if (respawn)
+        // useFallDownMode일 경우 리스폰 방지
+        if (respawn && !useFallDownMode)
         {
-            // 기존: WaitForSeconds 후 바로 리셋
-            // 변경: 영역 비었는지 확인해 조건부 리스폰
             StartRespawnSchedule(respawnDelay);
         }
     }
@@ -130,15 +141,234 @@ public class BreakablePlatform : MonoBehaviour
     private void StartFalling()
     {
         isFalling = true;
+        isPlayerDetectionDisabled = true; // 플레이어 감지 비활성화
 
         // 맵 밖으로 내려가도록 충돌 제거
         if (platformCollider) platformCollider.enabled = false;
 
+        if (useFallDownMode && enableGroundDetection)
+        {
+            // 새로운 방식: 바닥까지 떨어지고 데미지 콜라이더 활성화
+            
+            // 데미지 콜라이더 활성화
+            if (damageColliderObject != null)
+            {
+                damageColliderObject.SetActive(true);
+            }
+
+            // 부드럽게 내려가면서 안착시키는 코루틴 사용
+            StartCoroutine(FallAndSettleRoutine());
+        }
+        else
+        {
+            // 기존 방식: 단순 중력 적용
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.gravityScale = fallGravityScale;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0;
+            rb.freezeRotation = false;
+        }
+    }
+
+    /// <summary>
+    /// 아래 방향으로 박스캐스트를 수행하여 착지 높이 계산
+    /// 플랫폼 바닥에서만 감지 (위의 절벽 무시)
+    /// </summary>
+    private float CalculateSettleHeight()
+    {
+        if (platformCollider == null) return transform.position.y;
+
+        float platformHalfHeight = (platformCollider.size.y * transform.localScale.y) * 0.5f;
+        
+        Vector2 platformCenter = (Vector2)transform.position + new Vector2(
+            platformCollider.offset.x * transform.localScale.x,
+            platformCollider.offset.y * transform.localScale.y
+        );
+
+        // 박스 크기: 좌우는 콜라이더와 동일, 높이는 매우 얇게
+        Vector2 boxSize = new Vector2(
+            platformCollider.size.x * transform.localScale.x,
+            0.05f  // 매우 얇게 (거의 선)
+        );
+
+        // 박스캐스트 위치: 플랫폼 바닥에 위치
+        Vector2 boxCastPosition = new Vector2(
+            platformCenter.x,
+            platformCenter.y - platformHalfHeight  // 플랫폼 바닥으로 설정
+        );
+
+        // 중앙에서 아래로 박스캐스트
+        RaycastHit2D hit = Physics2D.BoxCast(
+            boxCastPosition,
+            boxSize,
+            transform.eulerAngles.z,
+            Vector2.down,
+            boxCastDistance,
+            groundLayer
+        );
+
+        // 히트 정보 저장 (기즈모 시각화용)
+        lastBoxCastHits[0] = hit;
+
+        if (hit.collider != null)
+        {
+            // 감지된 게임오브젝트 로그 출력
+            Debug.Log($"[BreakablePlatform] 감지된 게임오브젝트: {hit.collider.gameObject.name}, 위치: {hit.point}");
+
+            // 착지 높이 계산
+            float settleY = hit.point.y + platformHalfHeight;
+
+#if UNITY_EDITOR
+            Debug.Log($"[BreakablePlatform] 착지 높이: {settleY:F2}");
+#endif
+
+            return settleY;
+        }
+
+        return transform.position.y;
+    }
+
+    /// <summary>
+    /// 부드럽게 바닥으로 내려가면서 안착시키는 코루틴
+    /// Rigidbody의 속도를 제어하여 자연스러운 낙하 표현
+    /// </summary>
+    private IEnumerator FallAndSettleRoutine()
+    {
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = fallGravityScale;
+        rb.freezeRotation = false;
+
+        // 초기 속도 설정 (살짝의 초기 속도)
+        rb.linearVelocity = new Vector2(0, -2f);
+
+        float settleHeight = CalculateSettleHeight();
+        float settleTolerance = 0.05f;  // 안착 판정 거리
+        float maxFallTime = 10f;        // 최대 낙하 시간 (무한 루프 방지)
+        float elapsedTime = 0f;
+
+        // 목표 높이에 도달할 때까지 계속 낙하
+        while (transform.position.y > settleHeight + settleTolerance)
+        {
+            elapsedTime += Time.deltaTime;
+
+            // 매 프레임 바닥 높이 재계산 (울퉁불퉁한 지형 추적)
+            float currentSettleHeight = CalculateSettleHeight();
+            
+            // 가까워질수록 속도 감소 (부드러운 착지)
+            float distanceToGround = transform.position.y - currentSettleHeight;
+            float velocityY = -Mathf.Max(5f, fallGravityScale * Time.deltaTime);
+            
+            // 거리가 가까워지면 속도 줄이기
+            if (distanceToGround < 2f)
+            {
+                velocityY *= 0.5f;
+            }
+            if (distanceToGround < 0.5f)
+            {
+                velocityY *= 0.3f;
+            }
+
+            rb.linearVelocity = new Vector2(0, velocityY);
+
+            // 안전 장치: 너무 오래 떨어지고 있으면 강제 안착
+            if (elapsedTime > maxFallTime)
+            {
+#if UNITY_EDITOR
+                Debug.LogWarning("[BreakablePlatform] 최대 낙하 시간 초과 - 강제 안착");
+#endif
+                break;
+            }
+
+            yield return null;
+        }
+
+        // 안착 완료
+        FinalizeSettle();
+    }
+
+    /// <summary>
+    /// 최종 안착 처리
+    /// </summary>
+    private void FinalizeSettle()
+    {
+        // 최종 높이 설정
+        float finalHeight = CalculateSettleHeight();
+        transform.position = new Vector3(transform.position.x, finalHeight, transform.position.z);
+
+        // useFallDownMode일 경우만 콜라이더 처리
+        if (useFallDownMode)
+        {
+            // 리지드바디를 Kinematic으로 변경 (플레이어에게 밀리지 않도록)
+            rb.bodyType = RigidbodyType2D.Kinematic;
+
+            // 데미지 콜라이더 비활성화
+            if (damageColliderObject != null)
+            {
+                damageColliderObject.SetActive(false);
+            }
+
+            // 기존 박스 콜라이더 원복 (새로운 땅으로 기능)
+            if (platformCollider)
+            {
+                platformCollider.enabled = true;
+            }
+        }
+
+        // 물리 상태 정리
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0;
-        rb.freezeRotation = false;
+        rb.gravityScale = 0;
+        rb.freezeRotation = true;
+
+#if UNITY_EDITOR
+        Debug.Log($"[BreakablePlatform] 안착 완료 - 최종 위치: {transform.position.y:F2}");
+#endif
+    }
+
+    /// <summary>
+    /// 기존 메서드 - 필요시 참고용으로 보존 (기존 방식)
+    /// </summary>
+    [System.Obsolete("FallAndSettleRoutine 사용 권장")]
+    private void CalculateAndMoveToPlatformPosition()
+    {
+        if (platformCollider == null) return;
+
+        Vector2 boxSize = new Vector2(
+            platformCollider.size.x * transform.localScale.x,
+            platformCollider.size.y * transform.localScale.y * 0.1f
+        );
+
+        Vector2 boxCenter = (Vector2)transform.position + new Vector2(
+            platformCollider.offset.x * transform.localScale.x,
+            platformCollider.offset.y * transform.localScale.y
+        );
+
+        RaycastHit2D hit = Physics2D.BoxCast(
+            boxCenter,
+            boxSize,
+            transform.eulerAngles.z,
+            Vector2.down,
+            boxCastDistance,
+            groundLayer
+        );
+
+        if (hit.collider != null)
+        {
+            float platformHalfHeight = (platformCollider.size.y * transform.localScale.y) * 0.5f;
+            float targetY = hit.point.y + platformHalfHeight;
+            
+            transform.position = new Vector3(transform.position.x, targetY, transform.position.z);
+
+#if UNITY_EDITOR
+            Debug.Log($"[BreakablePlatform] 바닥 감지 완료 - Hit Point: {hit.point}, Target Y: {targetY}");
+#endif
+        }
+        else
+        {
+#if UNITY_EDITOR
+            Debug.LogWarning($"[BreakablePlatform] 바닥을 감지하지 못함. groundLayer 설정을 확인하세요.");
+#endif
+        }
     }
 
     private void StartRespawnSchedule(float initialDelay)
@@ -228,6 +458,12 @@ public class BreakablePlatform : MonoBehaviour
         // 콜라이더 재활성화
         if (platformCollider) platformCollider.enabled = true;
 
+        // 데미지 콜라이더 비활성화
+        if (damageColliderObject != null)
+        {
+            damageColliderObject.SetActive(false);
+        }
+
         // 비주얼 원복
         ResetVisualOnly();
 
@@ -240,6 +476,7 @@ public class BreakablePlatform : MonoBehaviour
 
         isTriggered = false;
         isFalling = false;
+        isPlayerDetectionDisabled = false; // 플레이어 감지 재활성화
     }
 
     private void ResetVisualOnly()
@@ -253,9 +490,16 @@ public class BreakablePlatform : MonoBehaviour
     {
         if (!isFalling) return;
 
-        if (respawn)
-            StartRespawnSchedule(0.5f); // 예전처럼 살짝 지연 후, '영역 비었는지' 확인
-        else
+        // 데미지 콜라이더 비활성화
+        if (damageColliderObject != null)
+        {
+            damageColliderObject.SetActive(false);
+        }
+
+        // useFallDownMode일 경우 리스폰 방지
+        if (respawn && !useFallDownMode)
+            StartRespawnSchedule(0.5f);
+        else if (!useFallDownMode)
             Destroy(gameObject);
     }
 
@@ -284,6 +528,50 @@ public class BreakablePlatform : MonoBehaviour
         Gizmos.matrix = m;
         Gizmos.DrawCube(Vector3.zero, new Vector3(size.x, size.y, 0.01f));
         Gizmos.matrix = Matrix4x4.identity;
+
+        // 박스캐스트 시각화 (실시간 편집에서)
+        if (enableGroundDetection && Application.isPlaying && isFalling)
+        {
+            Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.3f);
+            float platformHalfHeight = (platformCollider.size.y * lossy.y) * 0.5f;
+            Vector2 boxSize = new Vector2(
+                platformCollider.size.x * lossy.x,
+                0.05f  // 매우 얇게
+            );
+            Vector2 boxCenter = (Vector2)transform.position + new Vector2(
+                platformCollider.offset.x * lossy.x,
+                platformCollider.offset.y * lossy.y
+            );
+            // 박스캐스트 위치: 플랫폼 바닥
+            Vector2 boxCastPosition = new Vector2(
+                boxCenter.x,
+                boxCenter.y - platformHalfHeight
+            );
+            m = Matrix4x4.TRS(new Vector3(boxCastPosition.x, boxCastPosition.y, 0), 
+                            Quaternion.Euler(0, 0, transform.eulerAngles.z),
+                            Vector3.one);
+            Gizmos.matrix = m;
+            Gizmos.DrawCube(Vector3.zero, new Vector3(boxSize.x, boxSize.y, 0.01f));
+            Gizmos.matrix = Matrix4x4.identity;
+        }
+
+        // 박스캐스트 히트 지점 시각화 (노란색 구)
+        if (enableGroundDetection && Application.isPlaying && isFalling)
+        {
+            Gizmos.color = new Color(1f, 1f, 0f, 1f); // 노란색
+            for (int i = 0; i < lastBoxCastHits.Length; i++)
+            {
+                if (lastBoxCastHits[i].collider != null)
+                {
+                    // 히트 지점에 구 그리기
+                    Gizmos.DrawSphere(lastBoxCastHits[i].point, 0.1f);
+                    
+                    // 히트 지점에서 법선 방향으로 선 그리기
+                    Gizmos.color = new Color(0f, 1f, 1f, 1f); // 하늘색
+                    Gizmos.DrawLine(lastBoxCastHits[i].point, lastBoxCastHits[i].point + lastBoxCastHits[i].normal * 0.3f);
+                }
+            }
+        }
     }
 #endif
 }
