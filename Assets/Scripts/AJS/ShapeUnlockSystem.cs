@@ -55,6 +55,14 @@ public class ShapeUnlockSystem : MonoBehaviour
         unlockedShapes.Add(PlayerShape.Triangle);
     }
 
+    public static void LockAllShape()
+    {
+        Lock(PlayerShape.Circle);
+        Lock(PlayerShape.Star);
+        Lock(PlayerShape.Square);
+        Lock(PlayerShape.Triangle);
+    }
+
     /// <summary>
     /// 특정 모양이 해금되었는지 확인합니다.
     /// </summary>

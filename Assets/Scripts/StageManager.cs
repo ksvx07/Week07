@@ -25,6 +25,28 @@ public class StageManager : MonoBehaviour
                 return;
             }
             Instance._currentStageId = value;
+
+            if(_currentStageId > 4)
+            {
+                ShapeUnlockSystem.UnLockAllShape();
+                return;
+            }
+
+            switch (_currentStageId)
+            {
+                case 2:
+                    ShapeUnlockSystem.Unlock(PlayerShape.Triangle);
+                    ShapeUnlockSystem.LockAllShape();
+                    break;
+                case 3:
+                    ShapeUnlockSystem.Unlock(PlayerShape.Circle);
+                    ShapeUnlockSystem.LockAllShape();
+                    break;
+                case 4:
+                    ShapeUnlockSystem.Unlock(PlayerShape.Star);
+                    ShapeUnlockSystem.LockAllShape();
+                    break;
+            }
         }
     }
 
