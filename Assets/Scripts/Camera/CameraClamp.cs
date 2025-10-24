@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.InputSystem.Controls.AxisControl;
 
 public class CameraClamp : MonoBehaviour
 {
@@ -16,15 +14,6 @@ public class CameraClamp : MonoBehaviour
     private float _targetMinX, _targetMinY, _targetMaxX, _targetMaxY;
     private float _targetZoom = 6f;
     private float _initialZoom = 9f;
-
-    private StageScriptableObject stageData;
-
-    private void Start()
-    {
-        // stage Data 가져오기
-        stageData = StageManager.Instance.stageData;
-        SetMapBounds(StageManager.Instance.currentStageID);
-    }
 
     private void Update()
     {
@@ -46,7 +35,7 @@ public class CameraClamp : MonoBehaviour
         return new Vector3(clampX, clampY, desiredPos.z);
     }
 
-    public void SetMapBounds(int Id)
+    public void SetMapBounds(StageScriptableObject stageData)
     {
         // stage Data 에 있는 값 가져오기
         _targetMinX = stageData.minX;
@@ -58,7 +47,6 @@ public class CameraClamp : MonoBehaviour
         var mapBoundsWidth = _targetMaxX - _targetMinX;
         float camWidth = cam.orthographicSize * 2 * cam.aspect;
 
-        Debug.Log($"Map Bounds Width: {mapBoundsWidth}, Cam Width: {camWidth}");
         var zoom = mapBoundsWidth < camWidth ? _targetZoom : _initialZoom;
 
         cam.GetComponent<CameraController>().TriggerZoom(zoom);

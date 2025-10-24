@@ -11,6 +11,8 @@ public class StageManager : MonoBehaviour
     public StageScriptableObject stageData { get; private set; }
     public int currentStageID { get; private set; }
 
+    [SerializeField] private CameraClamp cameraClamp;
+
     private void Awake()
     {
         if (null == Instance)
@@ -24,6 +26,9 @@ public class StageManager : MonoBehaviour
         }
 
         stageData = stages[0];
+        // 현재 스테이지 데이터 카메라 정보값으로 초기화
+        cameraClamp.SetMapBounds(stageData);
     }
 
 }
+ 

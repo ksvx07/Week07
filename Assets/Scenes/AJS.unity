@@ -1254,8 +1254,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stages:
-  - {fileID: 11400000, guid: e7b6d77d99c94584597a12fff73ea877, type: 2}
   - {fileID: 11400000, guid: c6d9dbea1cec8d847812c3ade63bbaba, type: 2}
+  - {fileID: 11400000, guid: e7b6d77d99c94584597a12fff73ea877, type: 2}
+  - {fileID: 11400000, guid: 1f30ddc3b4db0644d9eef566dfe4bdd4, type: 2}
+  - {fileID: 11400000, guid: 3e38305630e9a104091102f335e259bb, type: 2}
+  - {fileID: 11400000, guid: 483dc87b23e8c0643a433c6c529acf39, type: 2}
 --- !u!4 &554717745
 Transform:
   m_ObjectHideFlags: 0
@@ -5999,7 +6002,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d745e5190d54e842acf55a32340739d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableFileLogging: 1
+  enableFileLogging: 0
   minimumLogLevel: 0
   setFileName: 0
   logFileName: 
