@@ -1275,6 +1275,7 @@ MonoBehaviour:
   wallJumpXSpeed: 0
   wallJumpYSpeed: 0
   wallSlideMaxSpeed: 2
+  centerOffset: 0.3
   airAccelMulti: 0.3
   airDecelMulti: 0.3
   swingableLayer:

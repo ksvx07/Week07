@@ -27,9 +27,6 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private float maxDownSpeed = 5f;
     [SerializeField] private float coyoteTime = 0.1f;
     [SerializeField] private float jumpBufferTime = 0.1f;
-    [SerializeField] private float cornerRayPosX = 0.3f;
-    [SerializeField] private float cornerRayOffsetX = 0.1f;
-    [SerializeField] private float cornerRayLength = 0.1f;
 
 
     [Header("Wall Jump")]
@@ -37,6 +34,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private float wallJumpXSpeed = 5f;
     [SerializeField] private float wallJumpYSpeed = 5f;
     [SerializeField] private float wallSlideMaxSpeed = 5f;
+    [SerializeField] private float centerOffset = 0.3f;
 
 
     [Header("AirTimeMultiplier")]
@@ -62,6 +60,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [Header("Rope Visuals")] // [새로 추가]
     [SerializeField] private int ropeSegments = 20; // 로프를 그릴 포인트 수 (부드러움)
     [SerializeField] private float ropeSagMultiplier = 0.5f; // 로프가 처지는 정도
+    private string cantSwingTag = "CantSwing"; // 로프가 처지는 정도
 
 
     private LayerMask wallLayer;
@@ -245,7 +244,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         {
             if (rb.gravityScale != 0f) rb.gravityScale = 0f;
             Jump();
-            WallJump();
+            // WallJump();
             ApplyGravity();
             Move();
             return;
@@ -327,17 +326,51 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     }
 
+    // private void DetectGround()
+    // {
+    //     Bounds bounds = col.bounds;
+    //     float extraHeight = 0.05f;
+
+    //     RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
+    //         extraHeight, wallLayer);
+
+    //     IsGrounded = hit.collider != null;
+
+
+    //     if (IsJumping && rb.linearVelocity.y <= 0)
+    //     {
+    //         IsJumping = false;
+    //         currentGravity = jumpDcceleration;
+    //     }
+    // }
+
     private void DetectGround()
     {
         Bounds bounds = col.bounds;
         float extraHeight = 0.05f;
 
-        RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
-            extraHeight, wallLayer);
+        // 좌우 코너 위치 계산
+        Vector2 leftOrigin = new Vector2(bounds.min.x + 0.05f, bounds.min.y);
+        Vector2 rightOrigin = new Vector2(bounds.max.x - 0.05f, bounds.min.y);
 
-        IsGrounded = hit.collider != null;
+        // 아래로 레이캐스트
+        RaycastHit2D leftHit = Physics2D.Raycast(leftOrigin, Vector2.down, extraHeight, wallLayer);
+        RaycastHit2D rightHit = Physics2D.Raycast(rightOrigin, Vector2.down, extraHeight, wallLayer);
 
+        // 디버그용 시각화
+        Debug.DrawRay(leftOrigin, Vector2.down * extraHeight, Color.green);
+        Debug.DrawRay(rightOrigin, Vector2.down * extraHeight, Color.green);
 
+        bool grounded = (leftHit.collider != null || rightHit.collider != null);
+
+        // 벽 슬라이드 상태일 땐 false 처리
+        bool isWallSliding = (isTouchingWallRight || isTouchingWallLeft) && rb.linearVelocity.y < 0f;
+        if (grounded && isWallSliding)
+            IsGrounded = false;
+        else
+            IsGrounded = grounded;
+
+        // 점프 중 상태 해제
         if (IsJumping && rb.linearVelocity.y <= 0)
         {
             IsJumping = false;
@@ -375,7 +408,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     {
         if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
-            Debug.Log("Jump!");
+            // Debug.Log("Jump!");
             IsJumping = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             currentJumpDcceleration = jumpDcceleration;
@@ -400,10 +433,9 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     // --- (WallCheck, WallJump, OnEnableSetVelocity, ConfigureLineRenderer, StartSwing, GroundDashSwing, AttachSwingJoint, StopSwing... 함수들은 모두 동일합니다) ---
     // (이전 코드와 동일한 부분은 생략)
-
     private void WallCheck()
     {
-        Vector2 origin = transform.position;
+        Vector2 origin = transform.position - new Vector3(0f, centerOffset, 0f);
         RaycastHit2D hitWallRight = new RaycastHit2D();
         RaycastHit2D hitWallLeft = new RaycastHit2D();
         hitWallRight = Physics2D.Raycast(origin, Vector2.right, wallCheckDistance, wallLayer);
@@ -429,13 +461,13 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
             IsJumping = true;
             rb.linearVelocity = new Vector2(wallJumpXSpeed * wallJumpDir, wallJumpYSpeed);
-            Debug.Log("Wall Jump");
+            // Debug.Log("Wall Jump");
         }
     }
 
     public void OnEnableSetVelocity(float newVelX, float newVelY)
     {
-        Debug.Log("Set Velocity Called");
+        // Debug.Log("Set Velocity Called");
         col = GetComponent<PolygonCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         currentGravity = jumpDcceleration;
@@ -609,7 +641,11 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
         if (hit45.collider != null && hit45.point.y > playerY)
         {
-            return hit45;
+            if (hit45.collider.CompareTag(cantSwingTag))
+                hit45 = new RaycastHit2D();
+            else
+                return hit45;
+
         }
 
         for (float deltaAngle = 5f; deltaAngle <= 40f; deltaAngle += 5f)
@@ -620,7 +656,10 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
             if (hitUp.collider != null && hitUp.point.y > playerY)
             {
-                return hitUp;
+                if (hitUp.collider.CompareTag(cantSwingTag))
+                    hitUp = new RaycastHit2D();
+                else
+                    return hitUp;
             }
 
             float angleDown = 45f - deltaAngle;
@@ -629,7 +668,10 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
             if (hitDown.collider != null && hitDown.point.y > playerY)
             {
-                return hitDown;
+                if (hitDown.collider.CompareTag(cantSwingTag))
+                    hitDown = new RaycastHit2D();
+                else
+                    return hitDown;
             }
         }
 

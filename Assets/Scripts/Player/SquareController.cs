@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class PlayerController : MonoBehaviour, IPlayerController
+public class SquareController : MonoBehaviour, IPlayerController
 {
     private PlayerInput inputActions;
     private Vector2 moveInput;
@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private Vector3 originalScale; // ?���? ?���? ????��
 
     // // ========== 벽점프 발딛움 상태 변수 ==========
-    private bool isWallJumping = false;
+    // private bool isWallJumping = false;
     [SerializeField] private float walljumpTime = 0.1f;
     private float walljumpTimerCounter = 0f;
     [SerializeField] private float wallJumpAccelMulti = 0.1f;
@@ -198,7 +198,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         walljumpTimerCounter -= Time.deltaTime;
         if (walljumpTimerCounter < 0)
         {
-            isWallJumping = false;
+            // isWallJumping = false;
             walljumpTimerCounter = 0f;
         }
     }
@@ -256,7 +256,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
             else
                 wallJumpDir = 1;
 
-            isWallJumping = true;
+            // isWallJumping = true;
             walljumpTimerCounter = walljumpTime;
             IsJumping = true;
             rb.linearVelocity = new Vector2(wallJumpXSpeed * wallJumpDir, wallJumpYSpeed);

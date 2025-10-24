@@ -40,7 +40,7 @@ public class StarController : MonoBehaviour, IPlayerController
     [SerializeField] private Transform starPivotTransform;
     [SerializeField] private float starWallGravity = 2f;
     [SerializeField] private float starMaxWallGravityDistance = 0.34f;
-    [SerializeField] private float starNormalMaxSpeed = 8f;
+    // [SerializeField] private float starNormalMaxSpeed = 8f;
 
 
     [SerializeField] private GameObject abilityOnObject;
@@ -439,7 +439,7 @@ public class StarController : MonoBehaviour, IPlayerController
                 {
                     //if (selectedWallNormal != null)
                     // +y�� linearVelocity ����
-                    Debug.Log("Jump!");
+                    // Debug.Log("Jump!");
                     isJumping = true;
 
                     //rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
@@ -455,7 +455,7 @@ public class StarController : MonoBehaviour, IPlayerController
         {
             if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
             {
-                Debug.Log("Jump!");
+                // Debug.Log("Jump!");
                 isJumping = true;
 
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
@@ -490,7 +490,7 @@ public class StarController : MonoBehaviour, IPlayerController
             isJumping = true;
             rb.linearVelocity = avgNormal * starWallJumpSpeed;
             jumpBufferCounter = 0;
-            Debug.Log("Wall Jump");
+            // Debug.Log("Wall Jump");
         }
     }
 
