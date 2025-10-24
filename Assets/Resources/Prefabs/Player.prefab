@@ -183,9 +183,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!58 &5005868304499440490
 CircleCollider2D:
@@ -1275,6 +1275,7 @@ MonoBehaviour:
   wallJumpXSpeed: 0
   wallJumpYSpeed: 0
   wallSlideMaxSpeed: 2
+  centerOffset: 0.3
   airAccelMulti: 0.3
   airDecelMulti: 0.3
   swingableLayer:
@@ -1294,6 +1295,7 @@ MonoBehaviour:
   groundDashDuration: 0.2
   ropeSegments: 20
   ropeSagMultiplier: 0.5
+  playerDataLog: {fileID: 0}
 --- !u!212 &3693717418050999450
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1690,7 +1692,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -2366,92 +2368,6 @@ MonoBehaviour:
   wallJumpXSpeed: 10
   wallJumpYSpeed: 7
   wallSlideMaxSpeed: 2
-  wallJumpStaggerDuration: 0.075
-  wallJumpCurveDuration: 0.25
-  wallJumpSpeedCurveX:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.65
-      inSlope: 1.7314274
-      outSlope: 1.7314274
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.5
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.42592597
-    - serializedVersion: 3
-      time: 0.8
-      value: 0.8
-      inSlope: -1.3064973
-      outSlope: -1.3064973
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.10185188
-      outWeight: 0.09374992
-    - serializedVersion: 3
-      time: 1
-      value: 0.5
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  wallJumpSpeedCurveY:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: -0.02779874
-      outSlope: -0.02779874
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.61652005
-    - serializedVersion: 3
-      time: 0.25
-      value: 1
-      inSlope: -0.05716895
-      outSlope: -0.05716895
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.41941622
-    - serializedVersion: 3
-      time: 0.6
-      value: 0.4
-      inSlope: -5.0285683
-      outSlope: -5.0285683
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.07142867
-      outWeight: 0.09374992
-    - serializedVersion: 3
-      time: 1
-      value: -0.2
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   dashSpeed: 30
   dashTime: 0.15
   dashCooldown: 0.3
@@ -2464,6 +2380,9 @@ MonoBehaviour:
   airAccelMulti: 0.3
   airDecelMulti: 0.3
   walljumpTime: 0
+  wallJumpAccelMulti: 0.1
+  wallJumpDecelMulti: 0.1
+  playerDataLog: {fileID: 0}
 --- !u!61 &4782539506400394416
 BoxCollider2D:
   m_ObjectHideFlags: 0
