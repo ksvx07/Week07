@@ -1,0 +1,108 @@
+﻿[00:00.0] [DEBUG] === Game Session Started ===
+[00:04.7] [DEBUG] Square의 능력 사용 횟수: 1번
+[00:05.7] [DEBUG] Square의 능력 사용 횟수: 2번
+[00:06.6] [DEBUG] Square의 능력 사용 횟수: 3번
+[00:14.2] [DEBUG] 플레이어 죽음 횟수: 1번
+[00:16.5] [DEBUG] Square의 능력 사용 횟수: 4번
+[00:18.8] [DEBUG] Square의 능력 사용 횟수: 5번
+[00:26.6] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 23.10
+[00:28.0] [DEBUG] Triangle의 능력 사용 횟수: 1번
+[00:29.5] [DEBUG] Triangle의 능력 사용 횟수: 2번
+[00:30.6] [DEBUG] Triangle의 능력 사용 횟수: 3번
+[00:32.1] [DEBUG] Triangle의 능력 사용 횟수: 4번
+[00:36.7] [DEBUG] Triangle의 능력 사용 횟수: 5번
+[00:37.5] [DEBUG] Triangle의 능력 사용 횟수: 6번
+[00:39.0] [DEBUG] Triangle의 능력 사용 횟수: 7번
+[00:40.0] [DEBUG] Triangle의 능력 사용 횟수: 8번
+[00:42.4] [DEBUG] Triangle의 능력 사용 횟수: 9번
+[00:45.7] [DEBUG] 플레이어 죽음 횟수: 2번
+[00:45.7] [DEBUG] 플레이어 죽음 횟수: 3번
+[00:47.6] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 20.96
+[00:50.0] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 2.48
+[00:52.6] [DEBUG] Triangle의 능력 사용 횟수: 10번
+[00:53.3] [DEBUG] Triangle의 능력 사용 횟수: 11번
+[00:54.1] [DEBUG] Triangle의 능력 사용 횟수: 12번
+[00:55.6] [DEBUG] Triangle의 능력 사용 횟수: 13번
+[00:56.6] [DEBUG] Triangle의 능력 사용 횟수: 14번
+[00:56.8] [DEBUG] 플레이어 죽음 횟수: 4번
+[00:59.4] [DEBUG] Triangle의 능력 사용 횟수: 15번
+[01:00.2] [DEBUG] Triangle의 능력 사용 횟수: 16번
+[01:01.2] [DEBUG] Triangle의 능력 사용 횟수: 17번
+[01:46.4] [DEBUG] Triangle의 능력 사용 횟수: 18번
+[01:47.0] [DEBUG] Triangle의 능력 사용 횟수: 19번
+[01:48.0] [DEBUG] Triangle의 능력 사용 횟수: 20번
+[01:48.6] [DEBUG] Triangle의 능력 사용 횟수: 21번
+[02:52.6] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 122.58
+[02:53.8] [DEBUG] Circle의 능력 사용 횟수: 1번
+[02:54.4] [INFO] 모양 변경: Circle -> Triangle / Circle 유지시간: 1.74
+[02:55.6] [DEBUG] Triangle의 능력 사용 횟수: 22번
+[02:57.4] [DEBUG] Triangle의 능력 사용 횟수: 23번
+[02:59.5] [DEBUG] Triangle의 능력 사용 횟수: 24번
+[03:00.5] [DEBUG] Triangle의 능력 사용 횟수: 25번
+[03:01.3] [DEBUG] Triangle의 능력 사용 횟수: 26번
+[03:02.5] [DEBUG] Triangle의 능력 사용 횟수: 27번
+[03:06.4] [DEBUG] Triangle의 능력 사용 횟수: 28번
+[03:08.2] [DEBUG] Triangle의 능력 사용 횟수: 29번
+[03:16.0] [DEBUG] Triangle의 능력 사용 횟수: 30번
+[03:16.6] [DEBUG] Triangle의 능력 사용 횟수: 31번
+[03:17.3] [DEBUG] Triangle의 능력 사용 횟수: 32번
+[03:18.1] [DEBUG] Triangle의 능력 사용 횟수: 33번
+[03:26.6] [DEBUG] Triangle의 능력 사용 횟수: 34번
+[03:30.3] [DEBUG] Triangle의 능력 사용 횟수: 35번
+[03:31.1] [DEBUG] Triangle의 능력 사용 횟수: 36번
+[03:32.0] [DEBUG] Triangle의 능력 사용 횟수: 37번
+[03:38.5] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 44.16
+[03:48.8] [DEBUG] Circle의 능력 사용 횟수: 2번
+[03:49.9] [DEBUG] 플레이어 죽음 횟수: 5번
+[03:51.7] [INFO] 모양 변경: Circle -> Triangle / Circle 유지시간: 13.22
+[03:53.0] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 1.26
+[03:56.0] [DEBUG] 플레이어 죽음 횟수: 6번
+[03:57.9] [DEBUG] Circle의 능력 사용 횟수: 3번
+[04:00.2] [DEBUG] Circle의 능력 사용 횟수: 4번
+[04:01.1] [DEBUG] Circle의 능력 사용 횟수: 5번
+[04:02.4] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 9.36
+[04:06.7] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 4.34
+[04:09.4] [DEBUG] Circle의 능력 사용 횟수: 6번
+[04:10.9] [DEBUG] Circle의 능력 사용 횟수: 7번
+[04:13.7] [DEBUG] Circle의 능력 사용 횟수: 8번
+[04:14.2] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 7.54
+[04:16.5] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 2.22
+[04:17.7] [DEBUG] Circle의 능력 사용 횟수: 9번
+[04:18.1] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 1.60
+[04:20.3] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 2.26
+[04:21.7] [DEBUG] Circle의 능력 사용 횟수: 10번
+[04:22.0] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 1.68
+[04:24.3] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 2.34
+[04:28.2] [DEBUG] Circle의 능력 사용 횟수: 11번
+[04:28.7] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 4.36
+[05:29.4] [INFO] 
+--------- 최종 플레이어 데이터 ---------
+총 변신 횟수: 17번
+총 모드 변신 횟수: 17번
+총 단축키 변신 횟수: 0번
+총 죽음 횟수: 6번
+------------------------------------
+[모양별 상세 기록 (플레이 시간 순)]
+1. Triangle
+   - 총 유지 시간: 03:08.9초
+   - 변신 횟수: 4회
+   - 최대 연속 유지 시간: 02:02.5초
+   - 능력 사용 횟수: 37회
+2. Star
+   - 총 유지 시간: 01:08.0초
+   - 변신 횟수: 5회
+   - 최대 연속 유지 시간: 00:56.8초
+   - 능력 사용 횟수: 0회
+3. Circle
+   - 총 유지 시간: 00:39.4초
+   - 변신 횟수: 7회
+   - 최대 연속 유지 시간: 00:13.2초
+   - 능력 사용 횟수: 11회
+4. Square
+   - 총 유지 시간: 00:25.5초
+   - 변신 횟수: 2회
+   - 최대 연속 유지 시간: 00:23.1초
+   - 능력 사용 횟수: 5회
+------------------------------------
+
+[00:00.0] [DEBUG] === Game Session Ended ===

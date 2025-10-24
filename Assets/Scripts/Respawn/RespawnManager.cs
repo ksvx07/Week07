@@ -73,7 +73,6 @@ public class RespawnManager : MonoBehaviour
         {
             currentCheckpointId = checkpointId;
             currentSpawnPosition = checkpoints[checkpointId];
-
             OnCheckpointReached?.Invoke(checkpointId, currentSpawnPosition);
 
             if (checkPointparticleEffect != null && ValidatePlayer())
@@ -82,10 +81,7 @@ public class RespawnManager : MonoBehaviour
             }
             Debug.Log($"[RespawnManager] Checkpoint {checkpointId} activated at {currentSpawnPosition}");
         }
-        else
-        {
-            //Debug.Log($"[RespawnManager] Already at checkpoint {checkpointId}");
-        }
+
     }
 
     public void PlayerDead()
@@ -104,10 +100,8 @@ public class RespawnManager : MonoBehaviour
     {
         ResetPlayerPhysics();
         SpawnPlayerAtCheckpoint();
-        PlayerManager.Instance.PlayerSetActive(true); // ���� �ʱ�ȭ�� ���� ���� �ѱ�
-        // Debug.Log($"[RespawnManager] Player respawned at checkpoint {currentCheckpointId}: {currentSpawnPosition}");
+        PlayerManager.Instance.PlayerSetActive(true);
     }
-
 
     private bool ValidatePlayer()
     {
@@ -149,23 +143,5 @@ public class RespawnManager : MonoBehaviour
     public Vector3 GetCurrentSpawnPosition() => currentSpawnPosition;
     public int GetCurrentCheckpointId() => currentCheckpointId;
     public int GetCheckpointCount() => checkpoints.Count;
-    #endregion
-
-    #region Debug Methods
-    [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    public void DebugTeleportToCheckpoint(int checkpointId)
-    {
-        if (Application.isPlaying && ValidatePlayer() && checkpoints.ContainsKey(checkpointId))
-        {
-            player.position = checkpoints[checkpointId];
-            Debug.Log($"[RespawnManager] Debug teleport to checkpoint {checkpointId}");
-        }
-    }
-
-    [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    public void DebugLogCheckpointInfo()
-    {
-        Debug.Log($"[RespawnManager] Current Checkpoint - ID: {currentCheckpointId}, Position: {currentSpawnPosition}, Total: {checkpoints.Count}");
-    }
     #endregion
 }
