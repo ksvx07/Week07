@@ -3786,7 +3786,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.67318726, y: -0.92162585}
+  m_Offset: {x: -0.5376587, y: -0.11361456}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -3796,7 +3796,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 9.3463745, y: 6.329169}
+  m_Size: {x: 3.5966797, y: 4.631974}
   m_EdgeRadius: 0
 --- !u!4 &1074855109
 Transform:
@@ -4698,6 +4698,101 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 25.999416, y: 2.973542, z: -0.15603213}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1299660274
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1299660277}
+  - component: {fileID: 1299660276}
+  - component: {fileID: 1299660275}
+  m_Layer: 0
+  m_Name: MapLog (7)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1299660275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1299660274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 223dce4a9e4129b4f8cc1a1c2d351be6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zoneName: Square3
+  isForbiddenZone: 0
+  isExpectedZone: 1
+  expectShape: 1
+--- !u!61 &1299660276
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1299660274}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.6232605, y: -1.7155871}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 3.7678833, y: 7.982665}
+  m_EdgeRadius: 0
+--- !u!4 &1299660277
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1299660274}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 270.36, y: -5.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5826,19 +5921,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 511137259051222980, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
       propertyPath: m_Size.x
-      value: 1.6068878
+      value: 1.6964645
       objectReference: {fileID: 0}
     - target: {fileID: 511137259051222980, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
       propertyPath: m_Size.y
-      value: 5.425001
+      value: 5.1966705
       objectReference: {fileID: 0}
     - target: {fileID: 511137259051222980, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
       propertyPath: m_Offset.x
-      value: -2.508522
+      value: -2.4256783
       objectReference: {fileID: 0}
     - target: {fileID: 511137259051222980, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
       propertyPath: m_Offset.y
-      value: -10.318749
+      value: -10.204582
       objectReference: {fileID: 0}
     - target: {fileID: 1527331219487631838, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
       propertyPath: m_Name
@@ -61101,5 +61196,6 @@ SceneRoots:
   - {fileID: 1313236196}
   - {fileID: 1544431882}
   - {fileID: 1074855109}
+  - {fileID: 1299660277}
   - {fileID: 1873067660}
   - {fileID: 1551484030}
