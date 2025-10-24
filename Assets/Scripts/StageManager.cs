@@ -36,6 +36,10 @@ public class StageManager : MonoBehaviour
 
             switch (_currentStageId)
             {
+                case 1:
+                    ShapeUnlockSystem.Unlock(PlayerShape.Square);
+                    PlayerManager.Instance.ForceToChangeShape(PlayerShape.Square);
+                    break;
                 case 2:
                     ShapeUnlockSystem.Unlock(PlayerShape.Triangle);
                     PlayerManager.Instance.ForceToChangeShape(PlayerShape.Triangle);
