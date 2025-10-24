@@ -14,65 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneDatasByGuid:
     keys:
-    - f84fc1faf42f64346ad61219d800deed
-    - b3ee4cdfa081e3944b4b9e4a61c414e2
-    - 
+    - ba950d1eb726b6b4ca8d49e3e1392509
     values:
     - goDatasByGlobalId:
         keys:
-        - GlobalObjectId_V1-2-f84fc1faf42f64346ad61219d800deed-257227073-0
-        - GlobalObjectId_V1-2-f84fc1faf42f64346ad61219d800deed-1149946046597637600-2158819792337474491
-        - GlobalObjectId_V1-2-f84fc1faf42f64346ad61219d800deed-1569991849111811678-2158819792337474491
-        - GlobalObjectId_V1-2-f84fc1faf42f64346ad61219d800deed-4983962846033551737-2158819792337474491
+        - GlobalObjectId_V1-2-ba950d1eb726b6b4ca8d49e3e1392509-1675437445-0
         values:
-        - iColor: 0
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 0
-          icon: 
         - iColor: 0
           icon: 
       goDatasByInstanceId:
-        keys: 48b300000afbffff68faffffb2b30000
+        keys: 54b500008e710100
         values:
         - iColor: 0
           icon: 
         - iColor: 0
           icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 0
-          icon: 
-    - goDatasByGlobalId:
-        keys:
-        - GlobalObjectId_V1-2-b3ee4cdfa081e3944b4b9e4a61c414e2-257227073-0
-        - GlobalObjectId_V1-2-b3ee4cdfa081e3944b4b9e4a61c414e2-315658096-0
-        - GlobalObjectId_V1-2-b3ee4cdfa081e3944b4b9e4a61c414e2-1649845744-0
-        - GlobalObjectId_V1-2-b3ee4cdfa081e3944b4b9e4a61c414e2-1289792622-0
-        values:
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-      goDatasByInstanceId:
-        keys: 54b30000c825fdff5223fdffee21fdff
-        values:
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-        - iColor: 8
-          icon: 
-    - goDatasByGlobalId:
-        keys: []
-        values: []
-      goDatasByInstanceId:
-        keys: 
-        values: []

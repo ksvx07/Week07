@@ -46,10 +46,10 @@ public class GameLog : MonoBehaviour
     #region /// 편의성을 위한 정적 메서드 ///
 
     // --- 다른 스크립트에서 사용! ---
-    public static void Log(string message) => Instance?.Log(message, LogLevel.Debug);
-    public static void Info(string message) => Instance?.Log(message, LogLevel.Info);
-    public static void Warn(string message) => Instance?.Log(message, LogLevel.Warning);
-    public static void Error(string message) => Instance?.Log(message, LogLevel.Error);
+    public static void Log(string message, UnityEngine.Object context = null) => Instance?.WriteLog(message, LogLevel.Debug, context);
+    public static void Info(string message, UnityEngine.Object context = null) => Instance?.WriteLog(message, LogLevel.Info, context);
+    public static void Warn(string message, UnityEngine.Object context = null) => Instance?.WriteLog(message, LogLevel.Warning, context);
+    public static void Error(string message, UnityEngine.Object context = null) => Instance?.WriteLog(message, LogLevel.Error, context);
 
     #endregion
 
@@ -76,35 +76,32 @@ public class GameLog : MonoBehaviour
         InitializeLogFile();
     }
 
-    public void Log(string message, LogLevel level = LogLevel.Debug)
+    private void WriteLog(string message, LogLevel level = LogLevel.Debug, UnityEngine.Object context = null)
     {
         if (level < minimumLogLevel)
         {
             return;
         }
 
-        // Time.time 대신 Time.unscaledTime을 사용하고, 새로운 형식으로 변경
-        TimeSpan timeSpan = TimeSpan.FromSeconds(Time.unscaledTime);
-        // 분:초.십분의일초 형식 / 예시: - 총 유지 시간: 01:25.5
-        string timeStamp = $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}.{timeSpan.Milliseconds/100}";
-
         // 결과: "02:05.500"
         // 파일에 기록될 메시지 형식: [시간] [로그레벨] 메시지
-        string fileLogMessage = $"[{timeStamp}] [{level.ToString().ToUpper()}] {message}";
+        string fileLogMessage = $"[{GetTimeStamp()}] [{level.ToString().ToUpper()}] {message}";
         // 유니티 콘솔에 출력될 메시지 형식: [시간] 메시지
-        string consoleLogMessage = $"[{timeStamp}] {message}";
+        string consoleLogMessage = $"[{GetTimeStamp()}] {message}";
+
+        UnityEngine.Object logContext = context ?? this;
 
         switch (level)
         {
             case LogLevel.Debug:
             case LogLevel.Info:
-                Debug.Log(consoleLogMessage);
+                Debug.Log(consoleLogMessage, logContext);
                 break;
             case LogLevel.Warning:
-                Debug.LogWarning(consoleLogMessage);
+                Debug.LogWarning(consoleLogMessage, logContext);
                 break;
             case LogLevel.Error:
-                Debug.LogError(consoleLogMessage);
+                Debug.LogError(consoleLogMessage, logContext);
                 break;
         }
 
@@ -153,13 +150,22 @@ public class GameLog : MonoBehaviour
             logWriter = new StreamWriter(logFilePath, true, System.Text.Encoding.UTF8);
             logWriter.AutoFlush = true; // 자동으로 버퍼를 비워 파일에 즉시 쓰도록 설정
 
-            this.Log("=== Game Session Started ===");
+            this.WriteLog("=== Game Session Started ===");
         }
         catch (Exception ex)
         {
             Debug.LogError($"로그 파일 초기화 실패: {ex.Message}");
             enableFileLogging = false; // 파일 쓰기 비활성화
         }
+    }
+
+    // 로그에 적힐 시간형식
+    private string GetTimeStamp()
+    {
+        // Time.time 대신 Time.unscaledTime을 사용하고, 새로운 형식으로 변경
+        TimeSpan timeSpan = TimeSpan.FromSeconds(Time.unscaledTime);
+        // 분:초.십분의일초 형식 / 예시: - 총 유지 시간: 01:25.5
+        return $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}.{timeSpan.Milliseconds / 100}";
     }
 
 
@@ -214,10 +220,7 @@ public class GameLog : MonoBehaviour
     {
         if (!enableFileLogging) return;
 
-        TimeSpan timeSpan = TimeSpan.FromSeconds(Time.unscaledTime);
-        string timeStamp = $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}.{timeSpan.Milliseconds/100}";
-
-        string fileLogMessage = $"[{timeStamp}] [BOOKMARK] {"====================================="}";
+        string fileLogMessage = $"[{GetTimeStamp()}] [BOOKMARK] {"====================================="}";
         if (enableFileLogging && logWriter != null)
         {
             logWriter.WriteLine(fileLogMessage);

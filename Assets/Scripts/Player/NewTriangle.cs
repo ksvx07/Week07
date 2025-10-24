@@ -42,6 +42,8 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private float airDecelMulti = 0.65f;
 
     [Header("Rope Swing")]
+    [SerializeField] private bool toggleSwing = true;
+    [SerializeField] private GameObject swingPointIndicator;
     [SerializeField] private LayerMask swingableLayer;
     [SerializeField] private float swingTangentialForce = 5f;
     [SerializeField] private float swingBrakeForceMultiplier = 2.0f;
@@ -117,6 +119,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         inputActions.Player.Jump.started += OnJump;
         inputActions.Player.Jump.canceled += OffJump;
         inputActions.Player.Dash.performed += OnSwing;
+        inputActions.Player.Dash.canceled += OffSwing;
     }
 
     private void OnDisable()
@@ -126,6 +129,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         inputActions.Player.Jump.started -= OnJump;
         inputActions.Player.Jump.canceled -= OffJump;
         inputActions.Player.Dash.performed -= OnSwing;
+        inputActions.Player.Dash.canceled -= OffSwing;
         inputActions.Player.Disable();
 
         moveInput = Vector2.zero;
@@ -175,23 +179,46 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     private void OnSwing(InputAction.CallbackContext ctx)
     {
+        if (!toggleSwing)
+        {
+            if (isSwinging)
+            {
+                StopSwing();
+
+                if (rb.linearVelocity.y > 0)
+                {
+                    IsJumping = true;
+                    currentJumpDcceleration = swingJumpDcceleration;
+                }
+                else
+                {
+                    IsJumping = false;
+                }
+            }
+            else
+            {
+                StartSwing();
+            }
+        }
+        else
+        {
+            if (!isSwinging)
+                StartSwing();
+        }
+
+    }
+
+    private void OffSwing(InputAction.CallbackContext ctx)
+    {
+        if (!toggleSwing) return;
         if (isSwinging)
         {
             StopSwing();
-
             if (rb.linearVelocity.y > 0)
             {
                 IsJumping = true;
                 currentJumpDcceleration = swingJumpDcceleration;
             }
-            else
-            {
-                IsJumping = false;
-            }
-        }
-        else
-        {
-            StartSwing();
         }
     }
 
@@ -203,6 +230,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         TimeCounters();
         // DrawRope(); // LateUpdate에서 처리
         HandleRotation();
+        UpdateSwingPointIndicator();
 
         if (swingHitCollider != null && isSwinging)
         {
@@ -210,6 +238,36 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             {
                 StopSwing();
             }
+        }
+    }
+    private void UpdateSwingPointIndicator()
+    {
+        if (swingPointIndicator == null) return;
+
+        // 스윙 중일 때는 인디케이터 숨김
+        if (isSwinging)
+        {
+            if (swingPointIndicator.activeSelf)
+                swingPointIndicator.SetActive(false);
+            return;
+        }
+
+        // 스윙 포인트 찾기
+        RaycastHit2D hit = FindBestSwingPoint();
+
+        if (hit.collider != null)
+        {
+            // 스윙 포인트가 있으면 해당 위치에 표시
+            if (!swingPointIndicator.activeSelf)
+                swingPointIndicator.SetActive(true);
+
+            swingPointIndicator.transform.position = hit.point;
+        }
+        else
+        {
+            // 스윙 포인트가 없으면 숨김
+            if (swingPointIndicator.activeSelf)
+                swingPointIndicator.SetActive(false);
         }
     }
 
@@ -501,6 +559,9 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
         if (hit.collider != null)
         {
+            if (swingPointIndicator != null && swingPointIndicator.activeSelf)
+                swingPointIndicator.SetActive(false);
+
             if (hit.collider.TryGetComponent<BreakablePlatform>(out BreakablePlatform crumbleTile))
             {
                 crumbleTile.TriggerBreak();
