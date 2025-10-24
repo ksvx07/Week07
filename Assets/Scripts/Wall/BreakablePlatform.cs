@@ -62,6 +62,54 @@ public class BreakablePlatform : MonoBehaviour
         InitializeComponents();
     }
 
+    void Start()
+    {
+        SubscribeToRespawnManager();
+    }
+
+    void OnDestroy()
+    {
+        UnsubscribeFromRespawnManager();
+    }
+
+    /// <summary>
+    /// RespawnManager의 OnPlayerSpawned 이벤트 구독
+    /// 플레이어가 리스폰될 때 플랫폼을 초기화
+    /// </summary>
+    private void SubscribeToRespawnManager()
+    {
+        var respawnManager = FindFirstObjectByType<RespawnManager>();
+        if (respawnManager != null)
+        {
+            respawnManager.OnPlayerSpawned += OnPlayerRespawned;
+        }
+    }
+
+    /// <summary>
+    /// RespawnManager의 OnPlayerSpawned 이벤트 구독 해제
+    /// 메모리 누수 방지
+    /// </summary>
+    private void UnsubscribeFromRespawnManager()
+    {
+        var respawnManager = FindFirstObjectByType<RespawnManager>();
+        if (respawnManager != null)
+        {
+            respawnManager.OnPlayerSpawned -= OnPlayerRespawned;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어 리스폰 시 호출되는 콜백
+    /// 수도코드:
+    /// 1. 실행 중인 모든 코루틴 중지
+    /// 2. 플랫폼 즉시 초기화
+    /// </summary>
+    private void OnPlayerRespawned(Vector3 spawnPosition)
+    {
+        StopAllCoroutines();
+        ResetPlatformImmediate();
+    }
+
     /// <summary>
     /// 모든 컴포넌트 초기화 (Rigidbody, BoxCollider, Visual 등)
     /// 런타임 중 상태 초기화가 필요할 때 재호출 가능
@@ -171,7 +219,7 @@ public class BreakablePlatform : MonoBehaviour
     /// 2. delayBeforeBreak 동안 Visual에 Perlin 노이즈 흔들림 효과 적용
     /// 3. 흔들림 종료 후 Visual 원상복구
     /// 4. 낙하 시작
-    /// 5. useFallDownMode가 false면 리스폰 스케줄 시작
+    /// 5. useFallDownMode가 false면 respawnDelay 후 리스폰 시작
     /// </summary>
     private IEnumerator BreakRoutine()
     {
@@ -201,10 +249,11 @@ public class BreakablePlatform : MonoBehaviour
         ResetVisualOnly();
         StartFalling();
 
-        // useFallDownMode = false일 때만 리스폰 스케줄 시작
+        // useFallDownMode = false일 때 respawnDelay 후 리스폰
         if (respawn && !useFallDownMode)
         {
-            StartRespawnSchedule(respawnDelay);
+            yield return new WaitForSeconds(respawnDelay);
+            StartCoroutine(RespawnWhenClear(0f));
         }
     }
 
@@ -213,10 +262,10 @@ public class BreakablePlatform : MonoBehaviour
     /// 수도코드:
     /// 1. isFalling, isPlayerDetectionDisabled 플래그 활성화
     /// 2. platformCollider 비활성화 (충돌 방지)
-    /// 3. useFallDownMode 여부에 따라:
-    ///    - true: enableDamageColliderOnFallDownMode 옵션으로 데미지 콜라이더 활성화
-    ///    - false: enableDamageColliderOnFreeFall 옵션으로 데미지 콜라이더 활성화
-    /// 4. Rigidbody 또는 FallAndSettleRoutine으로 낙하 시작
+    /// 3. 데미지 콜라이더 활성화 (낙하 시작 시점)
+    /// 4. useFallDownMode 여부에 따라 낙하 방식 결정:
+    ///    - true: FallAndSettleRoutine으로 바닥까지 낙하
+    ///    - false: Rigidbody Dynamic으로 자유 낙하
     /// </summary>
     private void StartFalling()
     {
@@ -226,25 +275,25 @@ public class BreakablePlatform : MonoBehaviour
         if (platformCollider)
             platformCollider.enabled = false;
 
+        // 낙하 시작 시점에 데미지 콜라이더 활성화
+        bool shouldEnableDamage = useFallDownMode 
+            ? enableDamageColliderOnFallDownMode 
+            : enableDamageColliderOnFreeFall;
+
+        if (shouldEnableDamage && damageColliderObject != null)
+            damageColliderObject.SetActive(true);
+
+        // Rigidbody 설정
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.gravityScale = fallGravityScale;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0;
+        rb.freezeRotation = false;
+
+        // 바닥 감지 모드일 경우 FallAndSettleRoutine 실행
         if (useFallDownMode && enableGroundDetection)
         {
-            // 바닥까지 떨어지는 모드: enableDamageColliderOnFallDownMode 옵션 사용
-            if (enableDamageColliderOnFallDownMode && damageColliderObject != null)
-                damageColliderObject.SetActive(true);
-
             StartCoroutine(FallAndSettleRoutine());
-        }
-        else
-        {
-            // 일반 낙하 모드: enableDamageColliderOnFreeFall 옵션 사용
-            if (enableDamageColliderOnFreeFall && damageColliderObject != null)
-                damageColliderObject.SetActive(true);
-
-            rb.bodyType = RigidbodyType2D.Dynamic;
-            rb.gravityScale = fallGravityScale;
-            rb.linearVelocity = Vector2.zero;
-            rb.angularVelocity = 0;
-            rb.freezeRotation = false;
         }
     }
 
@@ -306,17 +355,26 @@ public class BreakablePlatform : MonoBehaviour
     /// 1. Rigidbody를 Dynamic으로 전환, 중력 적용
     /// 2. 초기 착지 높이 계산
     /// 3. 현재 위치가 착지 높이보다 위에 있는 동안 중력으로 낙하
-    /// 4. 착지점 이하로 내려가면 루프 탈출
-    /// 5. FinalizeSettle()에서 위치를 정확히 착지점으로 고정
+    /// 4. 착지점에 도달할 때까지 중력으로 낙하
+    /// 5. 최종 안착 처리
     /// </summary>
     private IEnumerator FallAndSettleRoutine()
     {
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = fallGravityScale;
-        rb.freezeRotation = false;
         rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0;
+        rb.freezeRotation = false;
 
+        // 초기 착지 높이 계산
         float _settleHeight = CalculateSettleHeight();
+
+        // 현재 위치가 착지 높이보다 위에 있는 동안 중력으로 낙하
+        while (transform.position.y > _settleHeight)
+        {
+            yield return null;
+        }
+
         float _maxFallTime = 10f;
         float _elapsedTime = 0f;
 
