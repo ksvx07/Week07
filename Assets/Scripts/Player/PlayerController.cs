@@ -79,7 +79,11 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private Vector3 originalScale; // ?���? ?���? ????��
 
     // // ========== 벽점프 발딛움 상태 변수 ==========
-    // private bool isWallJumping = false;
+    private bool isWallJumping = false;
+    [SerializeField] private float walljumpTime = 0.1f;
+    private float walljumpTimerCounter = 0f;
+    [SerializeField] private float wallJumpAccelMulti = 0.1f;
+    [SerializeField] private float wallJumpDecelMulti = 0.1f;
     // private float wallJumpElapsedTime = 0f;
     // private float wallJumpInitialVelX = 0f;
     // ============================================
@@ -191,11 +195,12 @@ public class PlayerController : MonoBehaviour, IPlayerController
             }
         }
         dashCooldownCounter -= Time.deltaTime;
-        // walljumpTimerCounter -= Time.deltaTime;
-        // if (walljumpTimerCounter < 0)
-        // {
-        //     isWallJumping = false;
-        // }
+        walljumpTimerCounter -= Time.deltaTime;
+        if (walljumpTimerCounter < 0)
+        {
+            isWallJumping = false;
+            walljumpTimerCounter = 0f;
+        }
     }
 
     private void FixedUpdate()
@@ -205,9 +210,9 @@ public class PlayerController : MonoBehaviour, IPlayerController
         // UpdateWallJumpState(); // 벽점프 지속시간 중 관리용
         if (!isDashing)
         {
+            WallJump();
             Jump();
             CornerCorrection();
-            WallJump();
             ApplyGravity();
             Move();
         }
@@ -239,8 +244,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         }
     }
 
-    [SerializeField] private float walljumpTime = 0.2f;
-    private float walljumpTimerCounter = 0f;
+
 
     private void WallJump()
     {
@@ -252,11 +256,11 @@ public class PlayerController : MonoBehaviour, IPlayerController
             else
                 wallJumpDir = 1;
 
-            // isWallJumping = true;
-            // walljumpTimerCounter = walljumpTime;
+            isWallJumping = true;
+            walljumpTimerCounter = walljumpTime;
             IsJumping = true;
             rb.linearVelocity = new Vector2(wallJumpXSpeed * wallJumpDir, wallJumpYSpeed);
-            Debug.Log("Wall Jump");
+            // Debug.Log("Wall Jump");
         }
     }
 
@@ -347,7 +351,13 @@ public class PlayerController : MonoBehaviour, IPlayerController
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
         float turnAccel = TurningSpeedAcceleration;
-        if (!IsGrounded) // ??????? ??? ????
+        if (walljumpTimerCounter > 0)
+        {
+            accel *= wallJumpAccelMulti;
+            decel *= wallJumpDecelMulti;
+            turnAccel *= wallJumpAccelMulti;
+        }
+        else if (!IsGrounded) // ??????? ??? ????
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
@@ -410,18 +420,51 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
     }
 
-    // ??? ???? (BoxCast)
+    // // ??? ???? (BoxCast)
+    // private void DetectGround()
+    // {
+    //     Bounds bounds = col.bounds;
+    //     float extraHeight = 0.05f;
+
+    //     RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
+    //         extraHeight, wallLayer);
+
+    //     IsGrounded = hit.collider != null;
+
+
+    //     if (IsJumping && rb.linearVelocity.y <= 0)
+    //     {
+    //         IsJumping = false;
+    //         currentGravity = jumpDcceleration;
+    //     }
+    // }
     private void DetectGround()
     {
         Bounds bounds = col.bounds;
         float extraHeight = 0.05f;
 
-        RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
-            extraHeight, wallLayer);
+        // 좌우 코너 위치 계산
+        Vector2 leftOrigin = new Vector2(bounds.min.x + 0.05f, bounds.min.y);
+        Vector2 rightOrigin = new Vector2(bounds.max.x - 0.05f, bounds.min.y);
 
-        IsGrounded = hit.collider != null;
+        // 아래로 레이캐스트
+        RaycastHit2D leftHit = Physics2D.Raycast(leftOrigin, Vector2.down, extraHeight, wallLayer);
+        RaycastHit2D rightHit = Physics2D.Raycast(rightOrigin, Vector2.down, extraHeight, wallLayer);
 
+        // 디버그용 시각화
+        Debug.DrawRay(leftOrigin, Vector2.down * extraHeight, Color.green);
+        Debug.DrawRay(rightOrigin, Vector2.down * extraHeight, Color.green);
 
+        bool grounded = (leftHit.collider != null || rightHit.collider != null);
+
+        // 벽 슬라이드 상태일 땐 false 처리
+        bool isWallSliding = (isTouchingWallRight || isTouchingWallLeft) && rb.linearVelocity.y < 0f;
+        if (grounded && isWallSliding)
+            IsGrounded = false;
+        else
+            IsGrounded = grounded;
+
+        // 점프 중 상태 해제
         if (IsJumping && rb.linearVelocity.y <= 0)
         {
             IsJumping = false;

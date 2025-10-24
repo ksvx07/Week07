@@ -1676,10 +1676,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 1617188163437989074, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1617188163437989074, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2575406721597680265, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
       propertyPath: playerDataLog
       value: 
       objectReference: {fileID: 1964745383}
+    - target: {fileID: 4496188728282346999, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7186000537919112133, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
       propertyPath: playerDataLog
       value: 

@@ -179,6 +179,16 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         if (isSwinging)
         {
             StopSwing();
+
+            if (rb.linearVelocity.y > 0)
+            {
+                IsJumping = true;
+                currentJumpDcceleration = swingJumpDcceleration;
+            }
+            else
+            {
+                IsJumping = false;
+            }
         }
         else
         {
