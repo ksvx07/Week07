@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public class RespawnManager : MonoBehaviour
 {
+    public PlayerDataLog playerLog; // Inspector에서 할당하거나 FindObjectOfType으로 찾기
+
     #region Singleton
     public static RespawnManager Instance;
     #endregion
@@ -74,6 +76,8 @@ public class RespawnManager : MonoBehaviour
             currentCheckpointId = checkpointId;
             currentSpawnPosition = checkpoints[checkpointId];
             OnCheckpointReached?.Invoke(checkpointId, currentSpawnPosition);
+
+            playerLog.OnReachCheckpoint(checkpointId.ToString());
 
             if (checkPointparticleEffect != null && ValidatePlayer())
             {

@@ -4,37 +4,72 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
+// 스테이지 또는 체크포인트별 데이터를 담는 클래스
+public class LogStats
+{
+    public int deadAmount = 0;
+    public int abilityUseAmount = 0;
+    public int shapeChangeAmount = 0;
+    public Dictionary<PlayerShape, int> shapeChangeCounts = new Dictionary<PlayerShape, int>();
+
+    public LogStats()
+    {
+        // 모든 PlayerShape Enum 값에 대해 Dictionary를 초기화합니다.
+        foreach (PlayerShape shape in Enum.GetValues(typeof(PlayerShape)))
+        {
+            shapeChangeCounts[shape] = 0;
+        }
+    }
+}
+
+// 스테이지 하나에 대한 모든 데이터 (스테이지 전체 기록 + 체크포인트별 기록)
+public class StageLogData
+{
+    public string stageName;
+    public LogStats stageTotalStats = new LogStats(); // 스테이지 전체에 대한 누적 데이터
+    public Dictionary<string, LogStats> checkpointStats = new Dictionary<string, LogStats>(); // 이 스테이지의 체크포인트별 데이터
+
+    public StageLogData(string name)
+    {
+        this.stageName = name;
+    }
+}
+
+
 public class PlayerDataLog : MonoBehaviour
 {
-    // --- 데이터 추적을 위한 변수들 ---
+    // --- 전역 데이터 추적 변수들 ---
     private PlayerShape currentShape;
-
-    private int shapeChangeAmount; // 총 변신 횟수
-    private int deadAmount;        // 총 죽음 횟수
-    private int modeSwitchAmount; // 모드 변신 횟수
-    private int quickSwitchAmount; // 단축키 변신 횟수
-    // 각 모양별 총 플레이 시간
+    private int shapeChangeAmount;
+    private int deadAmount;
+    private int modeSwitchAmount;
+    private int quickSwitchAmount;
     private Dictionary<PlayerShape, float> shapePlayTimes = new Dictionary<PlayerShape, float>();
-    // 각 모양으로 몇 번 변신했는지 기록
     private Dictionary<PlayerShape, int> shapeChangeCounts = new Dictionary<PlayerShape, int>();
-    // 각 모양의 최대 유지 시간
     private Dictionary<PlayerShape, float> maxShapeStayTimes = new Dictionary<PlayerShape, float>();
-
-    // 각 모양으로 몇 번 능력 사용했는지 기록
     private Dictionary<PlayerShape, int> shapeAbilityCounts = new Dictionary<PlayerShape, int>();
-
-    // 현재 모양으로 변신한 시점의 시간 (연속 유지 시간 계산용)
     private float currentShapeStartTime;
+
+    // --- 스테이지/체크포인트 데이터 ---
+    private Dictionary<string, StageLogData> allStageLogs = new Dictionary<string, StageLogData>();
+
+    // --- 현재 추적중인 스코프 ---
+    private StageLogData currentStageLog;
+    private LogStats currentCheckpointLog;
+
 
     private void Update()
     {
-        shapePlayTimes[currentShape] += Time.deltaTime;
+        // currentShape가 초기화된 후에만 실행
+        if (shapePlayTimes.ContainsKey(currentShape))
+        {
+            shapePlayTimes[currentShape] += Time.deltaTime;
+        }
     }
 
     public void PlayerLogStart(PlayerShape initialShape)
     {
-        // 모든 PlayerShape Enum 값에 대해 Dictionary를 초기화합니다.
-        foreach (PlayerShape shape in System.Enum.GetValues(typeof(PlayerShape)))
+        foreach (PlayerShape shape in Enum.GetValues(typeof(PlayerShape)))
         {
             shapePlayTimes[shape] = 0f;
             shapeChangeCounts[shape] = 0;
@@ -42,69 +77,136 @@ public class PlayerDataLog : MonoBehaviour
             shapeAbilityCounts[shape] = 0;
         }
 
-        // 초기 모양 설정
         currentShape = initialShape;
-        shapeChangeCounts[initialShape] = 1; // 시작 시 1회 변신(생성)으로 간주
-        currentShapeStartTime = Time.time;   // 시작 시간 기록
+        shapeChangeCounts[initialShape] = 1;
+        currentShapeStartTime = Time.time;
 
-        // 다른 카운터 초기화
         shapeChangeAmount = 0;
         deadAmount = 0;
         modeSwitchAmount = 0;
         quickSwitchAmount = 0;
     }
 
+    // =================================================================
+    //            새로운 외부 호출 함수 (스테이지/체크포인트 관리)
+    // =================================================================
+
     /// <summary>
-    /// 새 모양으로 변경시, 변신 횟수, 이전 모양의 유지 시간을 기록합니다
+    /// 새로운 스테이지에 진입했을 때 호출합니다.
     /// </summary>
-    /// <param name="newShape"></param>
+    /// <param name="stageId">스테이지를 식별할 고유한 이름 (예: "Stage 1", "Forest Area")</param>
+    public void OnEnterStage(string stageId)
+    {
+        if (!allStageLogs.ContainsKey(stageId))
+        {
+            allStageLogs[stageId] = new StageLogData(stageId);
+        }
+        currentStageLog = allStageLogs[stageId];
+        currentCheckpointLog = null; // 스테이지가 바뀌면 현재 체크포인트는 리셋
+        GameLog.Info($"스테이지 [{stageId}] 진입");
+    }
+
+    /// <summary>
+    /// 체크포인트에 도달했을 때 호출합니다.
+    /// </summary>
+    /// <param name="checkpointId">체크포인트를 식별할 고유한 이름 (예: "CP-1", "Mid-Boss Entrance")</param>
+    public void OnReachCheckpoint(string checkpointId)
+    {
+        if (currentStageLog == null)
+        {
+            GameLog.Warn("현재 스테이지가 설정되지 않았는데 체크포인트 도달을 시도했습니다.");
+            return;
+        }
+
+        if (!currentStageLog.checkpointStats.ContainsKey(checkpointId))
+        {
+            currentStageLog.checkpointStats[checkpointId] = new LogStats();
+        }
+        currentCheckpointLog = currentStageLog.checkpointStats[checkpointId];
+        GameLog.Info($"체크포인트 [{checkpointId}] 도달");
+    }
+
+    // =================================================================
+    //                    기존 함수 수정 (데이터 기록 로직 추가)
+    // =================================================================
+
     private void OnPlayerShapeChange(PlayerShape newShape)
     {
-        if (newShape == currentShape) return; // 같은 모양으로 변경 요청 시 무시
+        if (newShape == currentShape) return;
 
         PlayerShape oldShape = currentShape;
         GameLog.Info($"모양 변경: {oldShape} -> {newShape} / {oldShape} 유지시간: {Time.time - currentShapeStartTime:F2}");
 
-        // 이전 모양(oldShape)의 연속 유지 시간을 계산하고 최대값을 갱신
         UpdateMaxStayTime(oldShape);
 
-        // 새로운 모양으로 데이터를 변경
         currentShape = newShape;
-        currentShapeStartTime = Time.time; // 새 모양의 유지 시간 측정을 위해 현재 시간 기록
-        shapeChangeCounts[newShape]++;     // 새 모양의 변신 횟수 증가
-        shapeChangeAmount++;               // 전체 변신 횟수 증가
+        currentShapeStartTime = Time.time;
+
+        // --- 전역 데이터 기록 ---
+        shapeChangeCounts[newShape]++;
+        shapeChangeAmount++;
+
+        // --- 스테이지/체크포인트 데이터 기록 ---
+        if (currentStageLog != null)
+        {
+            currentStageLog.stageTotalStats.shapeChangeAmount++;
+            currentStageLog.stageTotalStats.shapeChangeCounts[newShape]++;
+        }
+        if (currentCheckpointLog != null)
+        {
+            currentCheckpointLog.shapeChangeAmount++;
+            currentCheckpointLog.shapeChangeCounts[newShape]++;
+        }
     }
 
     public void PlayerDeadLog()
     {
+        // --- 전역 데이터 기록 ---
         deadAmount++;
         GameLog.Log($"플레이어 죽음 횟수: {deadAmount}번");
+
+        // --- 스테이지/체크포인트 데이터 기록 ---
+        if (currentStageLog != null)
+        {
+            currentStageLog.stageTotalStats.deadAmount++;
+        }
+        if (currentCheckpointLog != null)
+        {
+            currentCheckpointLog.deadAmount++;
+        }
     }
 
     public void OnPlayerUseAbility()
     {
-        shapeAbilityCounts[currentShape]++; // 현재 모양 능력 횟수 증가
+        // --- 전역 데이터 기록 ---
+        shapeAbilityCounts[currentShape]++;
         GameLog.Log($"{currentShape}의 능력 사용 횟수: {shapeAbilityCounts[currentShape]}번");
+
+        // --- 스테이지/체크포인트 데이터 기록 ---
+        if (currentStageLog != null)
+        {
+            currentStageLog.stageTotalStats.abilityUseAmount++;
+        }
+        if (currentCheckpointLog != null)
+        {
+            currentCheckpointLog.abilityUseAmount++;
+        }
     }
 
     public void OnPlayerQuickSwitch(PlayerShape newShape)
     {
-        if (newShape == currentShape) return; // 같은 모양으로 변경 요청 시 무시
+        if (newShape == currentShape) return;
         quickSwitchAmount++;
         OnPlayerShapeChange(newShape);
     }
 
     public void OnPlayerModeSwitch(PlayerShape newShape)
     {
-        if (newShape == currentShape) return; // 같은 모양으로 변경 요청 시 무시
+        if (newShape == currentShape) return;
         modeSwitchAmount++;
         OnPlayerShapeChange(newShape);
     }
 
-
-    /// <summary>
-    /// 특정 모양의 최대 유지 시간을 계산하고 갱신합니다.
-    /// </summary>
     private void UpdateMaxStayTime(PlayerShape shape)
     {
         float sessionDuration = Time.time - currentShapeStartTime;
@@ -114,25 +216,31 @@ public class PlayerDataLog : MonoBehaviour
         }
     }
 
-    // 게임 종료시 결과 Log 출력 함수
+    // =================================================================
+    //                     결과 출력 함수 확장
+    // =================================================================
     private void PlayerLogResult()
     {
-        // shapePlayTimes를 기준으로 내림차순 정렬
-        var sortedShapes = shapePlayTimes.Keys.OrderByDescending(shape => shapePlayTimes[shape]);
-
         // StringBuilder를 사용해 여러 줄의 문자열을 효율적으로 만듭니다.
         StringBuilder report = new StringBuilder();
         report.AppendLine();
-        report.AppendLine("--------- 최종 플레이어 데이터 ---------");
+        report.AppendLine("#########################################");
+        report.AppendLine("      >>>>> 최종 플레이어 데이터 <<<<<");
+        report.AppendLine("#########################################");
+        report.AppendLine();
+        report.AppendLine("--------- [전체 플레이 요약] ---------");
         report.AppendLine($"총 변신 횟수: {shapeChangeAmount}번");
         report.AppendLine($"총 모드 변신 횟수: {modeSwitchAmount}번");
         report.AppendLine($"총 단축키 변신 횟수: {quickSwitchAmount}번");
         report.AppendLine($"총 죽음 횟수: {deadAmount}번");
         report.AppendLine("------------------------------------");
-        report.AppendLine("[모양별 상세 기록 (플레이 시간 순)]");
+        report.AppendLine();
+        report.AppendLine("--------- [모양별 상세 기록 (플레이 시간 순)] ---------");
+
+        var sortedShapesByTime = shapePlayTimes.Keys.OrderByDescending(shape => shapePlayTimes[shape]);
 
         int rank = 1;
-        foreach (var shape in sortedShapes)
+        foreach (var shape in sortedShapesByTime)
         {
             string shapeName = shape.ToString();
             float totalTime = shapePlayTimes[shape];
@@ -140,32 +248,88 @@ public class PlayerDataLog : MonoBehaviour
             float maxStayTime = maxShapeStayTimes[shape];
             int abiltyCount = shapeAbilityCounts[shape];
 
-            // float 초 단위를 TimeSpan 객체로 변환합니다.
             TimeSpan totalTimeSpan = TimeSpan.FromSeconds(totalTime);
             TimeSpan maxStayTimeSpan = TimeSpan.FromSeconds(maxStayTime);
 
-            // TimeSpan 객체를 원하는 형식의 문자열로 만듭니다
-            string formattedTotalTime = $"{totalTimeSpan.Minutes:D2}:{totalTimeSpan.Seconds:D2}.{totalTimeSpan.Milliseconds/100}";
-            string formattedMaxStayTime = $"{maxStayTimeSpan.Minutes:D2}:{maxStayTimeSpan.Seconds:D2}.{maxStayTimeSpan.Milliseconds/100}";
+            string formattedTotalTime = $"{totalTimeSpan.Minutes:D2}:{totalTimeSpan.Seconds:D2}.{totalTimeSpan.Milliseconds / 100}";
+            string formattedMaxStayTime = $"{maxStayTimeSpan.Minutes:D2}:{maxStayTimeSpan.Seconds:D2}.{maxStayTimeSpan.Milliseconds / 100}";
 
             report.AppendLine($"{rank}. {shapeName}");
-            report.AppendLine($"   - 총 유지 시간: {formattedTotalTime}초");
-            report.AppendLine($"   - 변신 횟수: {changeCount}회");
-            report.AppendLine($"   - 최대 연속 유지 시간: {formattedMaxStayTime}초");
-            report.AppendLine($"   - 능력 사용 횟수: {abiltyCount}회");
+            report.AppendLine($"    - 총 유지 시간: {formattedTotalTime}초");
+            report.AppendLine($"    - 변신 횟수: {changeCount}회");
+            report.AppendLine($"    - 최대 연속 유지 시간: {formattedMaxStayTime}초");
+            report.AppendLine($"    - 능력 사용 횟수: {abiltyCount}회");
             rank++;
         }
-        report.AppendLine("------------------------------------");
+        report.AppendLine("-------------------------------------------------");
+        report.AppendLine();
+
+        // --- 스테이지별 상세 기록 출력 ---
+        if (allStageLogs.Count > 0)
+        {
+            report.AppendLine("#########################################");
+            report.AppendLine("      >>>>> 스테이지별 상세 데이터 <<<<<");
+            report.AppendLine("#########################################");
+
+            foreach (var stagePair in allStageLogs)
+            {
+                StageLogData stageData = stagePair.Value;
+                report.AppendLine();
+                report.AppendLine($"---------- [스테이지: {stageData.stageName}] ----------");
+
+                // 스테이지 전체 기록 출력
+                report.Append(GenerateScopeReport("스테이지 전체", stageData.stageTotalStats));
+
+                // 해당 스테이지의 체크포인트별 기록 출력
+                if (stageData.checkpointStats.Count > 0)
+                {
+                    report.AppendLine();
+                    report.AppendLine("    --- [체크포인트별 기록] ---");
+                    foreach (var checkpointPair in stageData.checkpointStats)
+                    {
+                        report.Append(GenerateScopeReport(checkpointPair.Key, checkpointPair.Value, "      "));
+                    }
+                }
+                report.AppendLine("-------------------------------------------");
+            }
+        }
 
         // 최종적으로 만들어진 문자열을 한 번에 로그로 출력합니다.
         GameLog.Info(report.ToString());
     }
 
-    // Hack : 게임 종료 시 확인을 위한 임시함수
+    /// <summary>
+    /// 스테이지/체크포인트별 기록 문자열을 생성하는 헬퍼 함수
+    /// </summary>
+    private string GenerateScopeReport(string title, LogStats stats, string indentation = "  ")
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"{indentation}▶ {title}:");
+        sb.AppendLine($"{indentation}  - 죽음 횟수: {stats.deadAmount}회");
+        sb.AppendLine($"{indentation}  - 능력 사용 횟수: {stats.abilityUseAmount}회");
+        sb.AppendLine($"{indentation}  - 총 변신 횟수: {stats.shapeChangeAmount}회");
+
+        // 변신한 모양이 있을 경우에만 상세 내역 출력
+        var shapeChanges = stats.shapeChangeCounts.Where(kv => kv.Value > 0).OrderByDescending(kv => kv.Value);
+        if (shapeChanges.Any())
+        {
+            sb.AppendLine($"{indentation}  - 모양별 변신 내역:");
+            foreach (var pair in shapeChanges)
+            {
+                sb.AppendLine($"{indentation}    - {pair.Key}: {pair.Value}회");
+            }
+        }
+        return sb.ToString();
+    }
+
+
     private void OnApplicationQuit()
     {
         // 마지막 모양의 연속 유지 시간도 계산에 포함시켜야 합니다.
-        UpdateMaxStayTime(currentShape);
+        if (shapePlayTimes.ContainsKey(currentShape))
+        {
+            UpdateMaxStayTime(currentShape);
+        }
         PlayerLogResult();
     }
 }

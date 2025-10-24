@@ -1454,6 +1454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3617120735c1e14d900aa556f6038bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerLog: {fileID: 1073592792}
   stages:
   - {fileID: 11400000, guid: c6d9dbea1cec8d847812c3ade63bbaba, type: 2}
   - {fileID: 11400000, guid: e7b6d77d99c94584597a12fff73ea877, type: 2}
@@ -7402,6 +7403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4577bf096b78ac646b3df2d9f2d908b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerLog: {fileID: 1073592792}
   defaultSpawn: {fileID: 1594432339}
   respawnTime: 1
   playerParticleEffect: {fileID: 6652016746359257598, guid: 2bf653da47a57f44c9d691f2dadf31ea, type: 3}
