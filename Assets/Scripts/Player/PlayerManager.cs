@@ -4,20 +4,27 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+// Hack: enum으로 전면 수술하기
+public enum PlayerShape
+{
+    Circle,
+    Star,
+    Square,
+    Triangle
+}
+[RequireComponent(typeof(PlayerDataLog))] // Hack : 데이터 로그 참고용 제거예정
 public class PlayerManager : MonoBehaviour
 {
-    // Hack ;Input ����
-    private int currentPlayer = 0;
-    private int selectPlayer = 0;
-    private int highlightPlayer = 0;
-    private bool isSelectUIActive = false;  // UI�� ���� Ȱ��ȭ�Ǿ� �ִ��� ����
+    public static PlayerManager Instance;
 
-    [SerializeField] private int startPlayer = 0;
+    public PlayerShape CurrentPlayer { get; private set; }
+    private PlayerShape selectPlayer;
+    private bool isSelectUIActive = false;
+    [SerializeField] private PlayerShape startPlayer = PlayerShape.Circle;
     [SerializeField] private List<GameObject> players;
     [SerializeField] private List<Image> pannels;
     [SerializeField] private Color originColor;
     [SerializeField] private Color highLightColor;
-
 
     [SerializeField] private CameraController camControlelr;
     [SerializeField] private GameObject selectPlayerPanel;
@@ -26,15 +33,19 @@ public class PlayerManager : MonoBehaviour
     private PlayerInput inputActions;
 
     public bool IsHold { get; private set; }
+    public bool IsSelectMode { get; private set; }
     public bool IsTimeSlow { get; private set; }
     private Vector3 _MaxScale = new Vector3(1.2f, 1.2f, 1.2f);
     [SerializeField] private float _selectPanelSpeed = 60f;
     private Coroutine pannelActive;
 
-    public static PlayerManager Instance;
+    #region 게임 로그용
+    PlayerDataLog playerDataLog;
+    #endregion
 
     private void Awake()
     {
+
         if (null == Instance)
         {
             Instance = this;
@@ -45,52 +56,44 @@ public class PlayerManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        playerDataLog = GetComponent<PlayerDataLog>();
 
         inputActions = new PlayerInput();
 
         selectPlayer = startPlayer;
-        currentPlayer = selectPlayer;
-        highlightPlayer = selectPlayer;
-        _currentPlayerPrefab = players[currentPlayer];
+        CurrentPlayer = selectPlayer;
+        _currentPlayerPrefab = players[(int)CurrentPlayer];
+
         ActiveStartPlayer(startPlayer);
+        ShapeUnlockSystem.Initialize(startPlayer); // 시작 도형 잠금 해제
+        playerDataLog.PlayerLogStart(startPlayer); // Log 데이터 수집 시작
     }
 
     private void OnEnable()
     {
         inputActions.UI.Enable();
 
-        /*        inputActions.UI.QuickSwitchRight.started += SlowTimeScale; // �ϴ� ������ �ð� ������
-                inputActions.UI.QuickSwitchLeft.started += SlowTimeScale;*/
+        inputActions.UI.SelectMode.performed += OnSwitchModeActive;
+        inputActions.UI.SelectPlayer.performed += OnChangeSelectPlayer;
 
-        /*        inputActions.UI.QuickSwitchRight.performed += QuickSwitchPlayerRight; // 0.2�� ���� ���� QuickSwitch ȣ��
-                inputActions.UI.QuickSwitchLeft.performed += QuickSwitchPlayerLeft;*/
-
-        inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; // 0.2�� �̻� ������ OnSwithPlayerHold ȣ��
-
-        inputActions.UI.SwitchHold.canceled += OnSwitchPlayerCancled;
-
-        inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;// ���� �Ϸ��ϸ� ȣ��
+        inputActions.UI.QuickSwitch.performed += OnQuickSwitch;
     }
 
     private void OnDisable()
     {
 
-        /*        inputActions.UI.QuickSwitchLeft.started -= SlowTimeScale;*/
-
-        /*        inputActions.UI.QuickSwitchRight.performed -= QuickSwitchPlayerRight; // 0.2�� ���� ���� QuickSwitch ȣ��
-                inputActions.UI.QuickSwitchLeft.performed -= QuickSwitchPlayerLeft;*/
-
-        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 0.2�� �̻� ������ OnSwithPlayerHold ȣ��
-
-        inputActions.UI.SwitchHold.canceled -= OnSwitchPlayerCancled;
-
-        inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;// ���� �Ϸ��ϸ� ȣ��
+        inputActions.UI.SelectMode.performed -= OnSwitchModeActive;
+        inputActions.UI.SelectPlayer.performed -= OnChangeSelectPlayer;
+        inputActions.UI.QuickSwitch.performed -= OnQuickSwitch;
         inputActions.UI.Disable();
     }
 
-    private void ChangeSelectPlayer(InputAction.CallbackContext context)
+    #region InputAction 콜백 함수
+
+    // 새로운 모양을 정하는 입력값
+    private void OnChangeSelectPlayer(InputAction.CallbackContext context)
     {
-        if (!isSelectUIActive) return;
+        if (IsSelectMode == false) return;
 
         Vector2 inputVector = context.ReadValue<Vector2>();
 
@@ -103,11 +106,11 @@ public class PlayerManager : MonoBehaviour
             // 세로 축이 더 강함
             if (inputVector.y > 0) // 위쪽
             {
-                selectPlayer = 0;
+                selectPlayer = PlayerShape.Circle;
             }
             else // 아래쪽
             {
-                selectPlayer = 2;
+                selectPlayer = PlayerShape.Square; // 네모
             }
         }
         else
@@ -115,36 +118,196 @@ public class PlayerManager : MonoBehaviour
             // 가로 축이 더 강함
             if (inputVector.x > 0) // 오른쪽
             {
-                selectPlayer = 1;
+                selectPlayer = PlayerShape.Star;
             }
             else // 왼쪽
             {
-                selectPlayer = 3;
+                selectPlayer = PlayerShape.Triangle;
             }
         }
 
-        HighLightSelectPlayer(highlightPlayer, selectPlayer);
-        highlightPlayer = selectPlayer;
+        HighLightSelectShape(selectPlayer);
     }
-
-    private void SlowTimeScale()
+    public void OnSwitchModeActive(InputAction.CallbackContext context)
     {
-        if (IsTimeSlow) return;
-        IsTimeSlow = true;
-        Time.timeScale = 0.1f;
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+        if (IsSelectMode == false)
+        {
+            IsSelectMode = true;
+            OnSwithModeStart();
+        }
+        else
+        {
+            OnSwitchModeEnd();
+            IsSelectMode = false;
+        }
     }
 
-    private void OriginalTimeScale()
+    public void OnQuickSwitch(InputAction.CallbackContext context)
     {
-        IsTimeSlow = false;
-        Time.timeScale = 1f;
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+        Vector2 inputVector = context.ReadValue<Vector2>();
+
+        // 가장 강한 축을 기준으로 방향 결정
+        if (Mathf.Abs(inputVector.y) > Mathf.Abs(inputVector.x))
+        {
+            // 세로 축이 더 강함
+            if (inputVector.y > 0) // 위쪽
+            {
+                selectPlayer = PlayerShape.Circle;
+            }
+            else // 아래쪽
+            {
+                selectPlayer = PlayerShape.Square; // 네모
+            }
+        }
+        else
+        {
+            // 가로 축이 더 강함
+            if (inputVector.x > 0) // 오른쪽
+            {
+                selectPlayer = PlayerShape.Star;
+            }
+            else // 왼쪽
+            {
+                selectPlayer = PlayerShape.Triangle;
+            }
+        }
+
+        ActiveSelectShape(CurrentPlayer, selectPlayer);
+
+        // 잠금된 도형이 아니면 로그 기록
+        if (ShapeUnlockSystem.IsUnlocked(selectPlayer) == true)
+        {
+            playerDataLog.OnPlayerQuickSwitch(selectPlayer); // Hack : 게임 Log 용
+        }
+
+        // 선택모드 활성화 중에 Qucik Switch 했으면
+        if (IsSelectMode == true)
+        {
+            DeActiveSelectUI();
+            IsSelectMode = false;
+        }
+
+    }
+    #endregion
+
+    public void OnSwithModeStart()
+    {
+        SlowTimeScale();
+
+        if (!isSelectUIActive)
+        {
+            IsHold = true;
+            AcitveSelectUI();
+        }
     }
 
+    public void OnSwitchModeEnd()
+    {
+        if (isSelectUIActive)
+        {
+            DeActiveSelectUI();
+            ActiveSelectShape(CurrentPlayer, selectPlayer);
+
+            // 잠금된 도형이 아니면 로그 기록
+            if (ShapeUnlockSystem.IsUnlocked(selectPlayer) == true)
+            {
+                playerDataLog.OnPlayerModeSwitch(selectPlayer); // Hack : 게임 Log 용
+            }
+        }
+    }
+
+    public void OnPlayerDead()
+    {
+        playerDataLog.PlayerDeadLog();
+        if (isSelectUIActive)
+        {
+            DeActiveSelectUI();
+            ActiveSelectShape(CurrentPlayer, selectPlayer);
+        }
+    }
+
+    private void HighLightSelectShape(PlayerShape newShape)
+    {
+        foreach (var pannel in pannels)
+        {
+            pannel.color = originColor;
+        }
+        pannels[(int)newShape].color = highLightColor;
+    }
+    private void ActiveStartPlayer(PlayerShape starstPlayer)
+    {
+        _currentPlayerPrefab = players[(int)starstPlayer];
+        _currentPlayerPrefab.SetActive(true);
+        CurrentPlayer = selectPlayer;
+    }
+
+    public void PlayerSetActive(bool isAcitve)
+    {
+        _currentPlayerPrefab.SetActive(isAcitve);
+    }
+    // 새 모양으로 변신하기
+    private void ActiveSelectShape(PlayerShape oldShape, PlayerShape newShape)
+    {
+        OriginalTimeScale();
+
+        // 잠금된 도형으로 변경 불가능
+        if (ShapeUnlockSystem.IsUnlocked(newShape) == false)
+        {
+            Debug.Log($"{newShape}은 잠금 상태입니다");
+            return;
+        }
+
+        HighLightSelectShape(newShape);
+        if (oldShape == PlayerShape.Square && newShape == PlayerShape.Square) return;
+
+        GameObject oldPlayerPrefab = players[(int)oldShape];
+        Transform lastPos = oldPlayerPrefab.transform;
+        Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
+        oldPlayerPrefab.SetActive(false);
+
+        _currentPlayerPrefab = players[(int)newShape];
+        _currentPlayerPrefab.transform.position = lastPos.position;
+        _currentPlayerPrefab.SetActive(true);
+        _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
+
+        CurrentPlayer = selectPlayer;
+    }
+
+    /// <summary>
+    /// 플레이어랑 상관없이 강제로 도형 변경하기
+    /// </summary>
+    public void ForceToChangeShape(PlayerShape newShape)
+    {
+        OriginalTimeScale();
+
+        // 잠금된 도형으로 변경 불가능
+        if (ShapeUnlockSystem.IsUnlocked(newShape) == false)
+        {
+            Debug.Log($"{newShape}은 잠금 상태입니다");
+            return;
+        }
+
+        HighLightSelectShape(newShape);
+
+        GameObject oldPlayerPrefab = players[(int)CurrentPlayer];
+
+        Transform lastPos = oldPlayerPrefab.transform;
+        Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
+        oldPlayerPrefab.SetActive(false);
+
+        _currentPlayerPrefab = players[(int)newShape];
+        _currentPlayerPrefab.transform.position = lastPos.position;
+        _currentPlayerPrefab.SetActive(true);
+        _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
+
+        CurrentPlayer = newShape;
+    }
+
+
+    #region Switch Mode UI 함수
     private void AcitveSelectUI()
     {
-        HighLightSelectPlayer(highlightPlayer, selectPlayer);
+        HighLightSelectShape(selectPlayer);
         Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
         selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
 
@@ -154,7 +317,7 @@ public class PlayerManager : MonoBehaviour
         }
         pannelActive = StartCoroutine(ScaleOverTime());
         selectPlayerPanel.SetActive(true);
-        isSelectUIActive = true;  // UI�� ���� Ȱ��ȭ�Ǿ� �ִ��� ����
+        isSelectUIActive = true;
     }
 
     private void DeActiveSelectUI()
@@ -167,107 +330,24 @@ public class PlayerManager : MonoBehaviour
         selectPlayerPanel.SetActive(false);
         isSelectUIActive = false;
     }
-
-
-    public void OnSwithPlayerHold(InputAction.CallbackContext context)
+    // 게임 시간 느리게 하기
+    private void SlowTimeScale()
     {
-        SlowTimeScale();
-
-        if (context.phase == InputActionPhase.Performed)
-        {
-            // ���� UI�� Ȱ��ȭ ���� �ʾ�����
-            if (!isSelectUIActive)
-            {
-                IsHold = true;
-                // 0.2�� �̻� Ȧ�� Ű�� ������ ��, ���� UI Ȱ��ȭ
-                AcitveSelectUI();
-            }
-        }
+        if (IsTimeSlow) return;
+        IsTimeSlow = true;
+        Time.timeScale = 0.1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
     }
 
-    public void OnSwitchPlayerCancled(InputAction.CallbackContext context)
+    // 게임 시간 원래대로 되돌리기
+    private void OriginalTimeScale()
     {
-        // ����â�� Ȱ��ȭ �� ���¿��ٸ�
-        if (isSelectUIActive)
-        {
-            //���� UI��Ȱ��ȭ
-            DeActiveSelectUI();
-            // ĳ���� ����
-            ActiveSelectPlayer(currentPlayer, selectPlayer);
-        }
+        IsTimeSlow = false;
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
     }
 
-    public void OnPlayerDead()
-    {
-        // ����â�� Ȱ��ȭ �� ���¿��ٸ�
-        if (isSelectUIActive)
-        {
-            //���� UI��Ȱ��ȭ
-            DeActiveSelectUI();
-            ActiveSelectPlayer(currentPlayer, selectPlayer);
-        }
-    }
-
-    /*    private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
-            {
-                // ����â Ȱ��ȭ�� ���¸� ���� �Ұ���
-                if (IsHold) return;
-                // ���� �÷��̾� �ε����� 1 ������Ű��, �÷��̾� �� �̻��̸� 0���� ��ȯ
-                selectPlayer = (currentPlayer + 1) % players.Count;
-
-                ActiveSelectPlayer(currentPlayer, selectPlayer);
-            }
-            private void QuickSwitchPlayerLeft(InputAction.CallbackContext context)
-            {
-                // ����â Ȱ��ȭ�� ���¸� ���� �Ұ���
-                if (IsHold) return;
-
-                // ���� �÷��̾� �ε����� 1 ���ҽ�Ű��, 0 �̸��̸� ������ �ε����� ��ȯ
-                selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
-                ActiveSelectPlayer(currentPlayer, selectPlayer);
-            }*/
-
-    private void HighLightSelectPlayer(int oldPlayer, int newPlayer)
-    {
-        pannels[oldPlayer].color = originColor;
-        pannels[newPlayer].color = highLightColor;
-    }
-    private void ActiveStartPlayer(int starstPlayer)
-    {
-        _currentPlayerPrefab = players[starstPlayer];
-        _currentPlayerPrefab.SetActive(true);
-        currentPlayer = selectPlayer; // �ε��� ����ȭ
-    }
-
-    public void PlayerSetActive(bool isAcitve)
-    {
-        _currentPlayerPrefab.SetActive(isAcitve);
-    }
-    private void ActiveSelectPlayer(int oldPlayer, int newPlayer)
-    {
-        OriginalTimeScale();
-
-        // ���� ĳ���ͷιٲٷ��� return
-        //if (oldPlayer == newPlayer) return;
-        HighLightSelectPlayer(oldPlayer, newPlayer);
-        if (oldPlayer == 2 && newPlayer == 2) return;
-        // print($"{oldPlayer}, {newPlayer}");
-
-        GameObject oldPlayerPrefab = players[oldPlayer];
-        Transform lastPos = oldPlayerPrefab.transform;
-        Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
-        oldPlayerPrefab.SetActive(false);
-
-        _currentPlayerPrefab = players[newPlayer];
-        _currentPlayerPrefab.transform.position = lastPos.position;
-        _currentPlayerPrefab.SetActive(true);
-        _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
-
-        currentPlayer = selectPlayer; // �ε��� ����ȭ
-        highlightPlayer = currentPlayer;
-    }
-
-    IEnumerator ScaleOverTime()
+    private IEnumerator ScaleOverTime()
     {
         selectPlayerPanel.SetActive(true);
         selectPlayerPanel.transform.localScale = Vector3.zero;
@@ -275,30 +355,23 @@ public class PlayerManager : MonoBehaviour
         Vector3 initialScale = selectPlayerPanel.transform.localScale;
         float elapsedTime = 0f;
 
-        // ��� �ð��� ������ ���� �ð����� ���� ������ �ݺ�
         while (elapsedTime < _selectPanelSpeed)
         {
-            // �� �����Ӹ��� ���� �÷��̾��� ��ġ�� ����
             selectPlayerPanel.transform.position = _currentPlayerPrefab.transform.position;
 
-            // Time.deltaTime�� ����Ͽ� ��� �ð� ��� (Time.timeScale�� ���� ����)
             elapsedTime += Time.deltaTime;
 
-            // ������� 0.0���� 1.0 ���̷� ���
             float t = Mathf.Clamp01(elapsedTime / _selectPanelSpeed);
 
-            // Lerp �Լ��� ũ�⸦ �ε巴�� ����
             selectPlayerPanel.transform.localScale = Vector3.Lerp(initialScale, _MaxScale, t);
 
-            // ���� �����ӱ��� ���
             yield return null;
         }
-        // �� �������ʹ� �г��� ��ġ�� �����ϰ� ũ�� �ִϸ��̼��� ����
         while (true)
         {
             selectPlayerPanel.transform.position = _currentPlayerPrefab.transform.position;
             yield return null;
         }
     }
-
+    #endregion
 }

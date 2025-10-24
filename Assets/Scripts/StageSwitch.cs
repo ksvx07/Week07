@@ -48,9 +48,15 @@ public class StageSwitch : MonoBehaviour
         {
             case SwitchDirection.LeftToRight:
                 if (prevPlayerX <= transform.position.x && Player.position.x > transform.position.x)
+                {
                     Clamp.SetMapBounds(AfterId);
+                    StageManager.Instance.CurrentStageId = AfterId;
+                }
                 else if (prevPlayerX >= transform.position.x && Player.position.x < transform.position.x)
+                {
                     Clamp.SetMapBounds(BeforeId);
+                    StageManager.Instance.CurrentStageId = BeforeId;
+                }
                 break;
             case SwitchDirection.RightToLeft:
                 if (prevPlayerX >= transform.position.x && Player.position.x < transform.position.x)
@@ -58,7 +64,7 @@ public class StageSwitch : MonoBehaviour
                 else if (prevPlayerX <= transform.position.x && Player.position.x > transform.position.x)
                     Clamp.SetMapBounds(BeforeId);
                 break;
-            case SwitchDirection.TopToBottom:
+/*            case SwitchDirection.TopToBottom:
                 if (prevPlayerY >= transform.position.y && Player.position.y < transform.position.y)
                     Clamp.SetMapBounds(AfterId);
                 else if (prevPlayerY <= transform.position.y && Player.position.y > transform.position.y)
@@ -69,7 +75,7 @@ public class StageSwitch : MonoBehaviour
                     Clamp.SetMapBounds(AfterId);
                 else if (prevPlayerY >= transform.position.y && Player.position.y < transform.position.y)
                     Clamp.SetMapBounds(BeforeId);
-                break;
+                break;*/
         }
 
         prevPlayerX = Player.position.x;

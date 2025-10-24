@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class KirbyController : MonoBehaviour, IPlayerController
 {
+    // Hack: 능력 Data log 용
+    [Header("Game Log 용")]
+    [SerializeField] PlayerDataLog playerDataLog;
+
     #region References
     Rigidbody2D _rb;
     KirbyGroundCheck _groundCheck;
@@ -184,28 +188,37 @@ public class KirbyController : MonoBehaviour, IPlayerController
         // �̵�Ű�� ��������
         if (pressingKey)
         {
-            //���� �̵� x �����, �������� �ϴ� ���� x���� ��ȣ�� �ٸ��ٴ� ����. ����Ű�� �ٲ�ٴ� ������, turnSpeed�� �����Ѵ�
-            if (Mathf.Sign(directionX) != Mathf.Sign(moveVelocity.x))
+            if (Mathf.Sign(directionX) == Mathf.Sign(moveVelocity.x))
             {
-                maxSpeedChangeAmount = turnSpeed * Time.deltaTime;
+                if (Mathf.Abs(_rb.linearVelocity.x) < maxSpeed)
+                {
+                    if (Mathf.Abs(_rb.linearVelocity.x + acceleration * directionX * Time.fixedDeltaTime) >= maxSpeed)
+                    {
+                        _rb.linearVelocityX = maxSpeed * Mathf.Sign(directionX);
+                    }
+                    else
+                        _rb.linearVelocityX += acceleration * directionX * Time.deltaTime;
+
+                }
+                else
+                {
+                    _rb.linearVelocityX -= deceleration * Mathf.Sign(_rb.linearVelocity.x) * Time.deltaTime;
+                }
+
             }
             else
             {
-                //���ٸ�, ������ ���� �������� ���� �ִٴ� ������, acceleration�� �����Ѵ�
-                maxSpeedChangeAmount = acceleration * Time.deltaTime;
+                _rb.linearVelocityX += turnSpeed * directionX * Time.deltaTime;
             }
         }
         else
         {
-            //����Ű�� ������ �ִ� ���°� �ƴϸ�, �����ؾ� �ϹǷ�, deceleration�� �����Ѵ�
-            maxSpeedChangeAmount = deceleration * Time.deltaTime;
+            _rb.linearVelocityX -= deceleration * Mathf.Sign(_rb.linearVelocity.x) * Time.deltaTime;
+            if (Mathf.Sign(_rb.linearVelocity.x) != Mathf.Sign(_rb.linearVelocity.x - deceleration * Mathf.Sign(_rb.linearVelocity.x) * Time.fixedDeltaTime))
+            {
+                _rb.linearVelocityX = 0;
+            }
         }
-
-        //���� velocity ����, ���� �Ǵ� velocity ���� ���̸� ���ϵ�, ���� �ִ� �ӵ����淮�� ���� ���� ���� ��ȯ
-        moveVelocity.x = Mathf.MoveTowards(moveVelocity.x, desiredVelocity.x, maxSpeedChangeAmount);
-
-        //���� ����� moveVelocity ���� Update�� �����Ѵ�
-        _rb.linearVelocity = moveVelocity;
     }
 
     // ���ӵ� ���� ���� �ٷ� �ְ� �ӵ��� �̵�
@@ -282,6 +295,11 @@ public class KirbyController : MonoBehaviour, IPlayerController
         // �ٿ ���¿����� TurboMode �Ұ���
         if (isBouncing) return;
 
+        if (turboMode == false)
+        {
+            // 터보 모드는 비활성화는 능력 사용으로 보지 않음
+            playerDataLog.OnPlayerUseAbility(); // Hack : 원 능력 사용 로그
+        }
         turboMode = !turboMode;
     }
 

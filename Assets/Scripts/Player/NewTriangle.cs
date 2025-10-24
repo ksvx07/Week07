@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System;
 using System.Collections;
 
 [RequireComponent(typeof(DistanceJoint2D))]
@@ -11,13 +10,13 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     private Vector2 moveInput;
     private Rigidbody2D rb;
     private Collider2D col;
-    private SpriteRenderer spriteRenderer;
 
     // --- (기존 Inspector 변수들은 동일) ---
     [Header("Move")]
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float speedAcceleration = 5f;
     [SerializeField] private float SpeedDeceleration = 5f;
+    [SerializeField] private float TurningSpeedAcceleration = 80f;
 
     [Header("Jump / Gravity")]
     [SerializeField] private float maxJumpSpeed = 5f;
@@ -28,9 +27,6 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private float maxDownSpeed = 5f;
     [SerializeField] private float coyoteTime = 0.1f;
     [SerializeField] private float jumpBufferTime = 0.1f;
-    [SerializeField] private float cornerRayPosX = 0.3f;
-    [SerializeField] private float cornerRayOffsetX = 0.1f;
-    [SerializeField] private float cornerRayLength = 0.1f;
 
 
     [Header("Wall Jump")]
@@ -38,6 +34,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private float wallJumpXSpeed = 5f;
     [SerializeField] private float wallJumpYSpeed = 5f;
     [SerializeField] private float wallSlideMaxSpeed = 5f;
+    [SerializeField] private float centerOffset = 0.3f;
 
 
     [Header("AirTimeMultiplier")]
@@ -63,6 +60,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [Header("Rope Visuals")] // [새로 추가]
     [SerializeField] private int ropeSegments = 20; // 로프를 그릴 포인트 수 (부드러움)
     [SerializeField] private float ropeSagMultiplier = 0.5f; // 로프가 처지는 정도
+    private string cantSwingTag = "CantSwing"; // 로프가 처지는 정도
 
 
     private LayerMask wallLayer;
@@ -84,13 +82,14 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     private DistanceJoint2D swingJoint;
     private LineRenderer lineRenderer;
+    [Header("Game Log 용")]
+    [SerializeField] PlayerDataLog playerDataLog;
 
     private void Awake()
     {
         inputActions = new PlayerInput();
         col = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
-        // spriteRenderer = GetComponent<SpriteRenderer>(); 
         currentGravity = jumpDcceleration;
         currentJumpDcceleration = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
@@ -179,6 +178,16 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         if (isSwinging)
         {
             StopSwing();
+
+            if (rb.linearVelocity.y > 0)
+            {
+                IsJumping = true;
+                currentJumpDcceleration = swingJumpDcceleration;
+            }
+            else
+            {
+                IsJumping = false;
+            }
         }
         else
         {
@@ -194,6 +203,14 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         TimeCounters();
         // DrawRope(); // LateUpdate에서 처리
         HandleRotation();
+
+        if (swingHitCollider != null && isSwinging)
+        {
+            if (!swingHitCollider.enabled)
+            {
+                StopSwing();
+            }
+        }
     }
 
     /// <summary>
@@ -227,8 +244,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         {
             if (rb.gravityScale != 0f) rb.gravityScale = 0f;
             Jump();
-            CornerCorrection();
-            WallJump();
+            // WallJump();
             ApplyGravity();
             Move();
             return;
@@ -248,35 +264,17 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     // --- (CornerCorrection, Move, DetectGround... 함수들은 동일합니다) ---
     // (이전 코드와 동일한 부분은 생략)
 
-    private void CornerCorrection()
-    {
-        RaycastHit2D CornerHitRight = Physics2D.Raycast(transform.position + new Vector3(cornerRayPosX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
-        RaycastHit2D CornerHitRightOffset = Physics2D.Raycast(transform.position + new Vector3(cornerRayPosX + cornerRayOffsetX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
-        RaycastHit2D CornerHitLeft = Physics2D.Raycast(transform.position + new Vector3(-cornerRayPosX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
-        RaycastHit2D CornerHitLeftOffset = Physics2D.Raycast(transform.position + new Vector3(-cornerRayPosX - cornerRayOffsetX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
-        Debug.DrawRay(transform.position + new Vector3(cornerRayPosX, 0, 0), Vector2.up * cornerRayLength, Color.red);
-        Debug.DrawRay(transform.position + new Vector3(cornerRayPosX + cornerRayOffsetX, 0, 0), Vector2.up * cornerRayLength, Color.red);
-        Debug.DrawRay(transform.position + new Vector3(-cornerRayPosX, 0, 0), Vector2.up * cornerRayLength, Color.red);
-        Debug.DrawRay(transform.position + new Vector3(-cornerRayPosX - cornerRayOffsetX, 0, 0), Vector2.up * cornerRayLength, Color.red);
-
-        if (!CornerHitRight && CornerHitRightOffset && moveInput.x <= 0)
-        {
-            rb.MovePosition(rb.position + new Vector2(-cornerRayPosX + cornerRayOffsetX, 0));
-        }
-        else if (!CornerHitLeft && CornerHitLeftOffset && moveInput.x >= 0)
-        {
-            rb.MovePosition(rb.position + new Vector2(cornerRayPosX - cornerRayOffsetX, 0));
-        }
-    }
 
     private void Move()
     {
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
+        float turnAccel = TurningSpeedAcceleration;
         if (!IsGrounded)
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
+            turnAccel *= airAccelMulti;
         }
 
         if (moveInput.x > 0)
@@ -292,23 +290,87 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             transform.localScale = flippedScale;
         }
 
-        float targetX = moveInput.x * maxSpeed;
-        float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-        rb.linearVelocityX = newX;
+
+        if (moveInput.x != 0)
+        {
+            if (Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(moveInput.x))
+            {
+                if (Mathf.Abs(rb.linearVelocity.x) <= maxSpeed + 0.01f)
+                {
+                    if (Mathf.Abs(rb.linearVelocity.x + accel * moveInput.x * Time.fixedDeltaTime) >= maxSpeed)
+                    {
+                        rb.linearVelocityX = maxSpeed * Mathf.Sign(moveInput.x);
+                    }
+                    else
+                        rb.linearVelocityX += accel * moveInput.x * Time.fixedDeltaTime;
+                }
+                else
+                {
+                    rb.linearVelocityX -= decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime;
+                }
+            }
+            else
+            {
+                rb.linearVelocityX += turnAccel * moveInput.x * Time.fixedDeltaTime;
+            }
+
+        }
+        else
+        {
+            rb.linearVelocityX -= decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime;
+            if (Mathf.Sign(rb.linearVelocity.x) != Mathf.Sign(rb.linearVelocity.x - decel * Mathf.Sign(rb.linearVelocity.x) * Time.fixedDeltaTime))
+            {
+                rb.linearVelocityX = 0;
+            }
+        }
+
     }
+
+    // private void DetectGround()
+    // {
+    //     Bounds bounds = col.bounds;
+    //     float extraHeight = 0.05f;
+
+    //     RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
+    //         extraHeight, wallLayer);
+
+    //     IsGrounded = hit.collider != null;
+
+
+    //     if (IsJumping && rb.linearVelocity.y <= 0)
+    //     {
+    //         IsJumping = false;
+    //         currentGravity = jumpDcceleration;
+    //     }
+    // }
 
     private void DetectGround()
     {
         Bounds bounds = col.bounds;
         float extraHeight = 0.05f;
 
-        RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
-            extraHeight, wallLayer);
+        // 좌우 코너 위치 계산
+        Vector2 leftOrigin = new Vector2(bounds.min.x + 0.05f, bounds.min.y);
+        Vector2 rightOrigin = new Vector2(bounds.max.x - 0.05f, bounds.min.y);
 
-        IsGrounded = hit.collider != null;
+        // 아래로 레이캐스트
+        RaycastHit2D leftHit = Physics2D.Raycast(leftOrigin, Vector2.down, extraHeight, wallLayer);
+        RaycastHit2D rightHit = Physics2D.Raycast(rightOrigin, Vector2.down, extraHeight, wallLayer);
 
+        // 디버그용 시각화
+        Debug.DrawRay(leftOrigin, Vector2.down * extraHeight, Color.green);
+        Debug.DrawRay(rightOrigin, Vector2.down * extraHeight, Color.green);
 
+        bool grounded = (leftHit.collider != null || rightHit.collider != null);
+
+        // 벽 슬라이드 상태일 땐 false 처리
+        bool isWallSliding = (isTouchingWallRight || isTouchingWallLeft) && rb.linearVelocity.y < 0f;
+        if (grounded && isWallSliding)
+            IsGrounded = false;
+        else
+            IsGrounded = grounded;
+
+        // 점프 중 상태 해제
         if (IsJumping && rb.linearVelocity.y <= 0)
         {
             IsJumping = false;
@@ -346,7 +408,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     {
         if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
-            Debug.Log("Jump!");
+            // Debug.Log("Jump!");
             IsJumping = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             currentJumpDcceleration = jumpDcceleration;
@@ -359,7 +421,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     private void FastFall()
     {
-        if (IsJumping && currentJumpDcceleration != swingJumpDcceleration)
+        if (IsJumping)
         {
             IsJumping = false;
         }
@@ -371,10 +433,9 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     // --- (WallCheck, WallJump, OnEnableSetVelocity, ConfigureLineRenderer, StartSwing, GroundDashSwing, AttachSwingJoint, StopSwing... 함수들은 모두 동일합니다) ---
     // (이전 코드와 동일한 부분은 생략)
-
     private void WallCheck()
     {
-        Vector2 origin = transform.position;
+        Vector2 origin = transform.position - new Vector3(0f, centerOffset, 0f);
         RaycastHit2D hitWallRight = new RaycastHit2D();
         RaycastHit2D hitWallLeft = new RaycastHit2D();
         hitWallRight = Physics2D.Raycast(origin, Vector2.right, wallCheckDistance, wallLayer);
@@ -400,20 +461,21 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
             IsJumping = true;
             rb.linearVelocity = new Vector2(wallJumpXSpeed * wallJumpDir, wallJumpYSpeed);
-            Debug.Log("Wall Jump");
+            // Debug.Log("Wall Jump");
         }
     }
 
     public void OnEnableSetVelocity(float newVelX, float newVelY)
     {
+        // Debug.Log("Set Velocity Called");
         col = GetComponent<PolygonCollider2D>();
         rb = GetComponent<Rigidbody2D>();
-        // spriteRenderer = GetComponent<SpriteRenderer>();
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
 
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = 0f;
+        rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
 
 
@@ -429,14 +491,23 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         lineRenderer.enabled = false;
     }
 
+    private Collider2D swingHitCollider;
+
     private void StartSwing()
     {
         if (isDashingToSwing) return;
+        swingHitCollider = null;
+        RaycastHit2D hit = FindBestSwingPoint();
 
-        Vector2 bestPoint = FindBestSwingPoint();
-
-        if (bestPoint != Vector2.zero)
+        if (hit.collider != null)
         {
+            if (hit.collider.TryGetComponent<BreakablePlatform>(out BreakablePlatform crumbleTile))
+            {
+                crumbleTile.TriggerBreak();
+                swingHitCollider = hit.collider;
+            }
+            playerDataLog.OnPlayerUseAbility();
+            Vector2 bestPoint = hit.point;
             isSwinging = true;
             swingJoint.connectedAnchor = bestPoint;
             lineRenderer.enabled = true;
@@ -560,7 +631,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         }
     }
 
-    private Vector2 FindBestSwingPoint()
+    private RaycastHit2D FindBestSwingPoint()
     {
         Vector2 rayOrigin = transform.position;
         float playerY = rayOrigin.y;
@@ -570,7 +641,11 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
         if (hit45.collider != null && hit45.point.y > playerY)
         {
-            return hit45.point;
+            if (hit45.collider.CompareTag(cantSwingTag))
+                hit45 = new RaycastHit2D();
+            else
+                return hit45;
+
         }
 
         for (float deltaAngle = 5f; deltaAngle <= 40f; deltaAngle += 5f)
@@ -581,7 +656,10 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
             if (hitUp.collider != null && hitUp.point.y > playerY)
             {
-                return hitUp.point;
+                if (hitUp.collider.CompareTag(cantSwingTag))
+                    hitUp = new RaycastHit2D();
+                else
+                    return hitUp;
             }
 
             float angleDown = 45f - deltaAngle;
@@ -590,11 +668,14 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
             if (hitDown.collider != null && hitDown.point.y > playerY)
             {
-                return hitDown.point;
+                if (hitDown.collider.CompareTag(cantSwingTag))
+                    hitDown = new RaycastHit2D();
+                else
+                    return hitDown;
             }
         }
 
-        return Vector2.zero;
+        return new RaycastHit2D();
     }
 
     private void SwingMovement()
