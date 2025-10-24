@@ -57,10 +57,13 @@ public class ShapeUnlockSystem : MonoBehaviour
 
     public static void LockAllShape()
     {
-        Lock(PlayerShape.Circle);
-        Lock(PlayerShape.Star);
-        Lock(PlayerShape.Square);
-        Lock(PlayerShape.Triangle);
+        foreach (PlayerShape shape in System.Enum.GetValues(typeof(PlayerShape)))
+        {
+            if(unlockedShapes.Contains(shape))
+            {
+                Lock(shape);
+            }
+        }
     }
 
     /// <summary>

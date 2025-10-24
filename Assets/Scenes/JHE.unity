@@ -3893,8 +3893,8 @@ MonoBehaviour:
   SmoothTime: 0.2
   Clamp: {fileID: 1318149767}
   minMaxPos: {x: 6, y: 4}
-  deadZoneSize: {x: 12, y: 8}
-  softZoneSize: {x: 9, y: 9}
+  deadZoneSize: {x: 8, y: 8}
+  softZoneSize: {x: 7, y: 7}
   _velocity: {x: 3, y: 3, z: 3}
   MaxZoomIn: 8
   MaxZoomOut: 8
@@ -7190,7 +7190,7 @@ GameObject:
   - component: {fileID: 7407447701109172862}
   - component: {fileID: 6976131346865967914}
   m_Layer: 5
-  m_Name: Image (4)
+  m_Name: Triangle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7218,7 +7218,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4047954783547226566}
   - component: {fileID: 8821444893494236396}
-  - component: {fileID: 9218821072879040432}
   m_Layer: 5
   m_Name: Frame
   m_TagString: Untagged
@@ -50744,7 +50743,7 @@ GameObject:
   - component: {fileID: 9115289368195999735}
   - component: {fileID: 4674349864751507803}
   m_Layer: 5
-  m_Name: Image (4)
+  m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52185,7 +52184,7 @@ GameObject:
   - component: {fileID: 9127012420558788860}
   - component: {fileID: 6807701727922339202}
   m_Layer: 5
-  m_Name: Image (4)
+  m_Name: Star
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52233,7 +52232,7 @@ GameObject:
   - component: {fileID: 4479778309090464711}
   - component: {fileID: 4571885879454735878}
   m_Layer: 5
-  m_Name: Image (4)
+  m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52300,36 +52299,6 @@ RectTransform:
   m_AnchoredPosition: {x: 28, y: -35}
   m_SizeDelta: {x: 130, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &9218821072879040432
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1805488890901761183}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1943134236348120946, guid: c1c8dae7a9c85ba4093e541a3f47bb41, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 3
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
