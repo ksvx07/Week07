@@ -55,6 +55,17 @@ public class ShapeUnlockSystem : MonoBehaviour
         unlockedShapes.Add(PlayerShape.Triangle);
     }
 
+    public static void LockAllShape()
+    {
+        foreach (PlayerShape shape in System.Enum.GetValues(typeof(PlayerShape)))
+        {
+            if(unlockedShapes.Contains(shape))
+            {
+                Lock(shape);
+            }
+        }
+    }
+
     /// <summary>
     /// 특정 모양이 해금되었는지 확인합니다.
     /// </summary>

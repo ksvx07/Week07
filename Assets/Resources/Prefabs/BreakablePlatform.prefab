@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5705079887995282848}
   - component: {fileID: 7296288420077678669}
   - component: {fileID: 765176942777225910}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BreakablePlatform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,6 +98,7 @@ MonoBehaviour:
   shakeIntensity: 0.1
   shakeSpeed: 20
   shakeRotIntensity: 2
+  enableCollisionTrigger: 1
   detectByTag: 1
   playerTag: Player
   playerLayer:
@@ -105,6 +106,8 @@ MonoBehaviour:
     m_Bits: 8
   respawn: 1
   respawnDelay: 3
+  respawnCheckInterval: 0.05
+  respawnAfterClearDelay: 0.2
 --- !u!1 &8204215853723154551
 GameObject:
   m_ObjectHideFlags: 0
@@ -115,7 +118,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2022025911515109135}
   - component: {fileID: 6799211594533954839}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
