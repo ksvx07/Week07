@@ -81,6 +81,8 @@ public class KirbyController : MonoBehaviour, IPlayerController
     }
     private void Update()
     {
+        if (_groundCheck.GetOnGround())
+            dashCount = maxDashCount;
         // �Է�Ű�� ������ ���� �ּ� �����ؾ� �ϴ� boucning�ð�
         if (isFixedBouncing)
         {
@@ -302,12 +304,14 @@ public class KirbyController : MonoBehaviour, IPlayerController
         }
         turboMode = !turboMode;
     }
-
-    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    private int maxDashCount = 1;
+    public int dashCount { get; set; }
+    public void OnEnableSetVelocity(float newVelX, float newVelY, int currentDashCount)
     {
         _rb = GetComponent<Rigidbody2D>();
         _groundCheck = GetComponent<KirbyGroundCheck>(); // �� ��Ҵ��� �˱����� ��ũ��Ʈ
         _rb.linearVelocity = new Vector2(newVelX, newVelY);
+        dashCount = currentDashCount;
     }
     #endregion
 }

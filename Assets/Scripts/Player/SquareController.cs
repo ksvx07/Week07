@@ -73,7 +73,7 @@ public class SquareController : MonoBehaviour, IPlayerController
     private bool isTouchingWallRight;
     private bool isTouchingWallLeft;
     private bool isDashing;
-    private int dashCount;
+    public int dashCount { get; set; }
     private bool isFastFalling;
     private int facingDirection = 1; // 1: ?��른쪽, -1: ?���?
     private Vector3 originalScale; // ?���? ?���? ????��
@@ -600,13 +600,13 @@ public class SquareController : MonoBehaviour, IPlayerController
         rb.linearVelocity = new Vector2(dampedSpeedX, dampedSpeedY);
     }
 
-    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    public void OnEnableSetVelocity(float newVelX, float newVelY, int currentDashCount)
     {
         col = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
-        dashCount = maxDashCount;
+        dashCount = currentDashCount;
 
         // Rigidbody ????
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;

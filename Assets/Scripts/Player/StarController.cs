@@ -150,6 +150,7 @@ public class StarController : MonoBehaviour, IPlayerController
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
+            dashCount = maxDashCount;
 
         }
 
@@ -507,8 +508,9 @@ public class StarController : MonoBehaviour, IPlayerController
 
     // ��� �� ����, ��� ������ �ִ�ӵ� ����
 
-
-    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    private int maxDashCount = 1;
+    public int dashCount { get; set; }
+    public void OnEnableSetVelocity(float newVelX, float newVelY, int currentDashCount)
     {
         col = GetComponent<CircleCollider2D>();
         rb = GetComponent<Rigidbody2D>();
@@ -517,6 +519,7 @@ public class StarController : MonoBehaviour, IPlayerController
 
         hitWalls = new RaycastHit2D[rayCount];
         rayDirs = new Vector2[rayCount];
+        dashCount = currentDashCount;
 
         // Rigidbody ����
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;

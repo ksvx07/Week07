@@ -300,6 +300,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         if (IsGrounded)
         {
             coyoteTimeCounter = coyoteTime;
+            dashCount = maxDashCount;
         }
         else
             coyoteTimeCounter -= Time.deltaTime;
@@ -535,8 +536,9 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             // Debug.Log("Wall Jump");
         }
     }
-
-    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    private int maxDashCount = 1;
+    public int dashCount { get; set; }
+    public void OnEnableSetVelocity(float newVelX, float newVelY, int currentDashCount)
     {
         // Debug.Log("Set Velocity Called");
         col = GetComponent<PolygonCollider2D>();
@@ -547,6 +549,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = 0f;
         rb.linearVelocity = new Vector2(newVelX, newVelY);
+        dashCount = currentDashCount;
     }
 
 
