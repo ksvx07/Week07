@@ -21,6 +21,7 @@ public class CameraClamp : MonoBehaviour
     private void Start()
     {
         SetMapBounds(_defaultStageId);
+        StageManager.Instance.CurrentStageId = _defaultStageId;
         SetInitMapBounds();
     }
 
