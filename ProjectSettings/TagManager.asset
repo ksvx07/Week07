@@ -9,6 +9,7 @@ TagManager:
   - Wall
   - CheckPoint
   - CantSwing
+  - CurveGround
   layers:
   - Default
   - TransparentFX
