@@ -2266,7 +2266,7 @@ GameObject:
   - component: {fileID: 769571016}
   - component: {fileID: 769571015}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Map Data Log
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
