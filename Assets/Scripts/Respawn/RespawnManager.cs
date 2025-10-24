@@ -14,7 +14,6 @@ public class RespawnManager : MonoBehaviour
     [SerializeField] private GameObject playerParticleEffect;
     [SerializeField] private GameObject checkPointparticleEffect;
 
-    [SerializeField] private StageScriptableObject currentStageData;
 
     private Transform player => PlayerManager.Instance?._currentPlayerPrefab?.transform;
     private int currentCheckpointId = 0;
@@ -31,10 +30,6 @@ public class RespawnManager : MonoBehaviour
     private void Awake()
     {
         InitializeSingleton();
-    }
-
-    private void Start()
-    {
         InitializeCheckpointSystem();
     }
     #endregion
@@ -59,7 +54,6 @@ public class RespawnManager : MonoBehaviour
     {
         currentSpawnPosition = defaultSpawn.position;
         checkpoints[0] = defaultSpawn.position;
-        currentStageData = StageManager.Instance.CurrentStageData;
         SpawnPlayerAtCheckpoint();
     }
 
@@ -68,7 +62,7 @@ public class RespawnManager : MonoBehaviour
         checkpoints[checkpointId] = position;
     }
 
-    public void ActivateCheckpoint(int checkpointId, StageScriptableObject newStageData)
+    public void ActivateCheckpoint(int checkpointId)
     {
         if (!checkpoints.ContainsKey(checkpointId))
         {
@@ -79,9 +73,6 @@ public class RespawnManager : MonoBehaviour
         {
             currentCheckpointId = checkpointId;
             currentSpawnPosition = checkpoints[checkpointId];
-
-            currentStageData = newStageData;
-
             OnCheckpointReached?.Invoke(checkpointId, currentSpawnPosition);
 
             if (checkPointparticleEffect != null && ValidatePlayer())
