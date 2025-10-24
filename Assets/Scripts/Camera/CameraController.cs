@@ -12,16 +12,10 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Vector2 softZoneSize = new Vector2(4f, 1f);
     [SerializeField] private Vector3 _velocity = new Vector3(4, 4, 4);
 
-    [Header("Zoom In Out")]
-    [SerializeField] private float MaxZoomIn = 3f;
-    [SerializeField] private float MaxZoomOut = 10f;
-    [SerializeField] private float ZoomLerpSpeed = 1f;
-    [SerializeField] private float SpeedThreshold = 5f;
+    private float ZoomLerpSpeed = 1f;
 
     private Transform Player => PlayerManager.Instance?._currentPlayerPrefab?.transform;
     private float targetZoom;
-    private Rigidbody2D _rb;
-    private bool _forceCentering = false;
 
     public static CameraController Instance;
     public bool IsTriggerZoom { get; private set; }
@@ -40,12 +34,6 @@ public class CameraController : MonoBehaviour
         }
 
         Cam = GetComponent<Camera>();
-    }
-
-    private void Start()
-    {
-        if (Player != null)
-            _rb = Player.GetComponent<Rigidbody2D>();
     }
 
     private void LateUpdate()
