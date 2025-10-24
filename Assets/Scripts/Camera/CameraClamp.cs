@@ -33,7 +33,8 @@ public class CameraClamp : MonoBehaviour
         float camHeight = cam.orthographicSize;
         float camWidth = camHeight * cam.aspect;
 
-        float clampX = Mathf.Clamp(desiredPos.x, _minX +  camWidth, _maxX - camWidth);
+        // 카메라 중심이 맵 경계를 벗어나지 않도록 제한
+        float clampX = Mathf.Clamp(desiredPos.x, _minX + camWidth, _maxX - camWidth);
         float clampY = Mathf.Clamp(desiredPos.y, _minY + camHeight, _maxY - camHeight);
 
         return new Vector3(clampX, clampY, desiredPos.z);
