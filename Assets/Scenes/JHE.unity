@@ -4997,7 +4997,7 @@ MonoBehaviour:
   _maxX: 57.2
   _minY: -7
   _maxY: 14.87
-  _defaultStageId: 3
+  _defaultStageId: 1
 --- !u!114 &1318149768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7236,7 +7236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4577bf096b78ac646b3df2d9f2d908b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultSpawn: {fileID: 1774095203}
+  defaultSpawn: {fileID: 1594432339}
   respawnTime: 1
   playerParticleEffect: {fileID: 6652016746359257598, guid: 2bf653da47a57f44c9d691f2dadf31ea, type: 3}
   checkPointparticleEffect: {fileID: 4070845227085174312, guid: d684009b45e27a9469ecf74ed123b351, type: 3}
