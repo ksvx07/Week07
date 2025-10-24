@@ -144,22 +144,4 @@ public class RespawnManager : MonoBehaviour
     public int GetCurrentCheckpointId() => currentCheckpointId;
     public int GetCheckpointCount() => checkpoints.Count;
     #endregion
-
-    #region Debug Methods
-    [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    public void DebugTeleportToCheckpoint(int checkpointId)
-    {
-        if (Application.isPlaying && ValidatePlayer() && checkpoints.ContainsKey(checkpointId))
-        {
-            player.position = checkpoints[checkpointId];
-            Debug.Log($"[RespawnManager] Debug teleport to checkpoint {checkpointId}");
-        }
-    }
-
-    [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    public void DebugLogCheckpointInfo()
-    {
-        Debug.Log($"[RespawnManager] Current Checkpoint - ID: {currentCheckpointId}, Position: {currentSpawnPosition}, Total: {checkpoints.Count}");
-    }
-    #endregion
 }

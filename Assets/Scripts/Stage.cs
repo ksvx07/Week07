@@ -52,4 +52,21 @@ public class Stage : MonoBehaviour
         Debug.Log($"'{stageData.name}' 스테이지에서 {(shouldGoNext ? "다음" : "이전")} 방향으로 이동 요청!");
         StageManager.Instance.RequestStageChange(stageData, shouldGoNext);
     }
+
+    // Hack: 제거하기
+    [Button("디버그용 순간이동")]
+    private void DebugPlayerTranform()
+    {
+        // 게임이 실행 중일 때만 아래 코드를 실행합니다.
+        if (Application.isPlaying)
+        {
+            Transform player = PlayerManager.Instance?._currentPlayerPrefab?.transform;
+
+            // player가 null이 아닐 때만 위치를 변경하여 에러를 방지합니다.
+            if (player != null)
+            {
+                player.position = transform.position;
+            }
+        }
+    }
 }

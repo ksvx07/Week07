@@ -83,30 +83,5 @@ public class StageManager : MonoBehaviour
 
         SetStage(targetIndex);
     }
-
-    [Button]
-    public void NextStageData()
-    {
-        if (CurrentStageIndex + 1 < stages.Count)
-        {
-            SetStage(CurrentStageIndex + 1);
-        }
-        else
-        {
-            Debug.Log("마지막 스테이지입니다.");
-        }
-    }
-    [Button]
-    public void PreStageData()
-    {
-        if (CurrentStageIndex - 1 >= 0)
-        {
-            SetStage(CurrentStageIndex - 1);
-        }
-        else
-        {
-            Debug.Log("첫 스테이지입니다.");
-        }
-    }
 }
  
