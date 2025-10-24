@@ -1253,6 +1253,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3617120735c1e14d900aa556f6038bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stages:
+  - {fileID: 11400000, guid: e7b6d77d99c94584597a12fff73ea877, type: 2}
+  - {fileID: 11400000, guid: c6d9dbea1cec8d847812c3ade63bbaba, type: 2}
 --- !u!4 &554717745
 Transform:
   m_ObjectHideFlags: 0
@@ -4627,7 +4630,6 @@ MonoBehaviour:
   _maxX: 57.2
   _minY: -7
   _maxY: 14.87
-  _defaultStageId: 1
 --- !u!114 &1318149768
 MonoBehaviour:
   m_ObjectHideFlags: 0

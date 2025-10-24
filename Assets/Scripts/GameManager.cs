@@ -4,8 +4,6 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public Dictionary<int, StageScriptableObject> StageDics { get; private set; } = new();
-
     #region Respawn System  
     [Header("Respawn System")]
     [SerializeField] private RespawnManager respawnManager;
@@ -28,9 +26,6 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        LoadScriptableObject("Stages");
-
         Initialize();
     }
 
@@ -56,21 +51,6 @@ public class GameManager : MonoBehaviour
     {
 
     }
-
-    #region Stage System
-    private void LoadScriptableObject(string path)
-    {
-        var stages = Resources.LoadAll<StageScriptableObject>(path);
-
-        StageDics.Clear();
-
-        foreach (var stage in stages)
-        {
-            StageDics.Add(stage.Id, stage);
-        }
-    }
-    #endregion
-
 
    #region Respawn System Integration
     private void InitializeRespawnManager()

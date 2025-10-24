@@ -13,16 +13,17 @@ public class CameraClamp : MonoBehaviour
     [SerializeField] public float _minY;
     [SerializeField] public float _maxY;
 
-    [SerializeField] private int _defaultStageId = 1;
     private float _targetMinX, _targetMinY, _targetMaxX, _targetMaxY;
     private float _targetZoom = 6f;
     private float _initialZoom = 9f;
 
+    private StageScriptableObject stageData;
+
     private void Start()
     {
-        SetMapBounds(_defaultStageId);
-        StageManager.Instance.CurrentStageId = _defaultStageId;
-        SetInitMapBounds();
+        // stage Data ê°€ì ¸ì˜¤ê¸°
+        stageData = StageManager.Instance.stageData;
+        SetMapBounds(StageManager.Instance.currentStageID);
     }
 
     private void Update()
@@ -38,7 +39,7 @@ public class CameraClamp : MonoBehaviour
         float camHeight = cam.orthographicSize;
         float camWidth = camHeight * cam.aspect;
 
-        // Ä«¸Ş¶ó Áß½ÉÀÌ ¸Ê °æ°è¸¦ ¹ş¾î³ªÁö ¾Êµµ·Ï Á¦ÇÑ
+        // ì¹´ë©”ë¼ ì¤‘ì‹¬ì´ ë§µ ê²½ê³„ë¥¼ ë²—ì–´ë‚˜ì§€ ì•Šë„ë¡ ì œí•œ
         float clampX = Mathf.Clamp(desiredPos.x, _minX + camWidth, _maxX - camWidth);
         float clampY = Mathf.Clamp(desiredPos.y, _minY + camHeight, _maxY - camHeight);
 
@@ -47,13 +48,12 @@ public class CameraClamp : MonoBehaviour
 
     public void SetMapBounds(int Id)
     {
-        if(GameManager.Instance.StageDics.TryGetValue(Id, out var mapDefinition))
-        {
-            _targetMinX = mapDefinition.minX;
-            _targetMaxX = mapDefinition.maxX;
-            _targetMinY = mapDefinition.minY;
-            _targetMaxY = mapDefinition.maxY;
-        }
+        // stage Data ì— ìˆëŠ” ê°’ ê°€ì ¸ì˜¤ê¸°
+        _targetMinX = stageData.minX;
+        _targetMaxX = stageData.maxX;
+        _targetMinY = stageData.minY;
+        _targetMaxY = stageData.maxY;
+
 
         var mapBoundsWidth = _targetMaxX - _targetMinX;
         float camWidth = cam.orthographicSize * 2 * cam.aspect;
@@ -75,17 +75,6 @@ public class CameraClamp : MonoBehaviour
         };
 
         return bounds;
-    }
-
-    private void SetInitMapBounds()
-    {
-        if (GameManager.Instance.StageDics.TryGetValue(_defaultStageId, out var mapDefinition))
-        {
-            _minX = mapDefinition.minX;
-            _maxX = mapDefinition.maxX;
-            _minY = mapDefinition.minY;
-            _maxY = mapDefinition.maxY;
-        }
     }
 
     private void OnDrawGizmos()

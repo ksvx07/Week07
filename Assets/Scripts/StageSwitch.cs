@@ -50,12 +50,12 @@ public class StageSwitch : MonoBehaviour
                 if (prevPlayerX <= transform.position.x && Player.position.x > transform.position.x)
                 {
                     Clamp.SetMapBounds(AfterId);
-                    StageManager.Instance.CurrentStageId = AfterId;
+                    //StageManager.Instance.CurrentStageId = AfterId;
                 }
                 else if (prevPlayerX >= transform.position.x && Player.position.x < transform.position.x)
                 {
                     Clamp.SetMapBounds(BeforeId);
-                    StageManager.Instance.CurrentStageId = BeforeId;
+                    //StageManager.Instance.CurrentStageId = BeforeId;
                 }
                 break;
             case SwitchDirection.RightToLeft:
