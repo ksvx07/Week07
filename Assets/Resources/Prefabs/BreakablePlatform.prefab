@@ -112,7 +112,7 @@ MonoBehaviour:
     m_Bits: 64
   boxCastDistance: 35
   damageColliderObject: {fileID: 8437526509194884033}
-  enableDamageColliderOnFallDownMode: 1
+  enableDamageColliderOnFallDownMode: 0
   enableDamageColliderOnFreeFall: 0
   respawn: 1
   respawnDelay: 3
