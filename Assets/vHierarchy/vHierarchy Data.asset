@@ -14,30 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneDatasByGuid:
     keys:
-    - f84fc1faf42f64346ad61219d800deed
+    - ba950d1eb726b6b4ca8d49e3e1392509
     values:
     - goDatasByGlobalId:
         keys:
-        - GlobalObjectId_V1-2-f84fc1faf42f64346ad61219d800deed-257227073-0
-        - GlobalObjectId_V1-2-f84fc1faf42f64346ad61219d800deed-1149946046597637600-2158819792337474491
-        - GlobalObjectId_V1-2-f84fc1faf42f64346ad61219d800deed-1569991849111811678-2158819792337474491
-        - GlobalObjectId_V1-2-f84fc1faf42f64346ad61219d800deed-4983962846033551737-2158819792337474491
+        - GlobalObjectId_V1-2-ba950d1eb726b6b4ca8d49e3e1392509-1675437445-0
         values:
-        - iColor: 0
-          icon: 
-        - iColor: 0
-          icon: 
-        - iColor: 0
-          icon: 
         - iColor: 0
           icon: 
       goDatasByInstanceId:
-        keys: 48b300000afbffff68faffffb2b30000
+        keys: 54b500008e710100
         values:
-        - iColor: 0
-          icon: 
-        - iColor: 0
-          icon: 
         - iColor: 0
           icon: 
         - iColor: 0
