@@ -14,6 +14,7 @@ public class RespawnManager : MonoBehaviour
     [SerializeField] private GameObject playerParticleEffect;
     [SerializeField] private GameObject checkPointparticleEffect;
 
+    [SerializeField] private StageScriptableObject currentStageData;
 
     private Transform player => PlayerManager.Instance?._currentPlayerPrefab?.transform;
     private int currentCheckpointId = 0;
@@ -30,6 +31,10 @@ public class RespawnManager : MonoBehaviour
     private void Awake()
     {
         InitializeSingleton();
+    }
+
+    private void Start()
+    {
         InitializeCheckpointSystem();
     }
     #endregion
@@ -54,6 +59,7 @@ public class RespawnManager : MonoBehaviour
     {
         currentSpawnPosition = defaultSpawn.position;
         checkpoints[0] = defaultSpawn.position;
+        currentStageData = StageManager.Instance.CurrentStageData;
         SpawnPlayerAtCheckpoint();
     }
 
@@ -62,7 +68,7 @@ public class RespawnManager : MonoBehaviour
         checkpoints[checkpointId] = position;
     }
 
-    public void ActivateCheckpoint(int checkpointId)
+    public void ActivateCheckpoint(int checkpointId, StageScriptableObject newStageData)
     {
         if (!checkpoints.ContainsKey(checkpointId))
         {
@@ -74,6 +80,8 @@ public class RespawnManager : MonoBehaviour
             currentCheckpointId = checkpointId;
             currentSpawnPosition = checkpoints[checkpointId];
 
+            currentStageData = newStageData;
+
             OnCheckpointReached?.Invoke(checkpointId, currentSpawnPosition);
 
             if (checkPointparticleEffect != null && ValidatePlayer())
@@ -82,10 +90,7 @@ public class RespawnManager : MonoBehaviour
             }
             Debug.Log($"[RespawnManager] Checkpoint {checkpointId} activated at {currentSpawnPosition}");
         }
-        else
-        {
-            //Debug.Log($"[RespawnManager] Already at checkpoint {checkpointId}");
-        }
+
     }
 
     public void PlayerDead()
@@ -104,8 +109,7 @@ public class RespawnManager : MonoBehaviour
     {
         ResetPlayerPhysics();
         SpawnPlayerAtCheckpoint();
-        PlayerManager.Instance.PlayerSetActive(true); // ���� �ʱ�ȭ�� ���� ���� �ѱ�
-        // Debug.Log($"[RespawnManager] Player respawned at checkpoint {currentCheckpointId}: {currentSpawnPosition}");
+        PlayerManager.Instance.PlayerSetActive(true);
     }
 
     private bool ValidatePlayer()

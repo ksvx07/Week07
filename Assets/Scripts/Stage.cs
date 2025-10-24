@@ -9,7 +9,7 @@ public class Stage : MonoBehaviour
 {
     [Header("스테이지 데이터")]
     [Tooltip("Trigger 통과 시 넘어가는 다음 스테이지 정보")]
-    [SerializeField] private StageScriptableObject myStageSO;
+    [SerializeField] private StageScriptableObject stageData;
 
     [Header("진행 방향")]
     [SerializeField] private SwitchDirection boundaryDirection;
@@ -19,7 +19,7 @@ public class Stage : MonoBehaviour
     {
         // 나간 오브젝트가 플레이어가 아니거나, 소속된 스테이지가 없으면 무시
         if (!collision.CompareTag("Player")) return;
-        if (myStageSO == null)
+        if (stageData == null)
         {
             Debug.LogError("StageSwitch에 myStageSO가 할당되지 않았습니다!", gameObject);
             return;
@@ -49,7 +49,7 @@ public class Stage : MonoBehaviour
         }
 
         // 최종적으로 판단된 결과를 StageManager에게 요청합니다.
-        Debug.Log($"'{myStageSO.name}' 스테이지에서 {(shouldGoNext ? "다음" : "이전")} 방향으로 이동 요청!");
-        StageManager.Instance.RequestStageChange(myStageSO, shouldGoNext);
+        Debug.Log($"'{stageData.name}' 스테이지에서 {(shouldGoNext ? "다음" : "이전")} 방향으로 이동 요청!");
+        StageManager.Instance.RequestStageChange(stageData, shouldGoNext);
     }
 }

@@ -62,9 +62,14 @@ public class StageManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 특정 스테이지를 기준으로 다음 또는 이전 스테이지로 변경을 요청받는 함수
+    /// 특정 스테이지를 '목표 지점'으로 삼아 이동하거나, 그 목표의 '바로 이전' 스테이지로 이동 시키는 함수입니다.
     /// </summary>
-    public void RequestStageChange(StageScriptableObject baseStage, bool goToNext)
+    /// <param name="baseStage">이동의 기준점이 될 스테이지 데이터</param>
+    /// <param name="goToNext">.
+    /// - true: 'baseStage' 자체로 이동
+    /// - false: 'baseStage'의 바로 이전 스테이지로 이동
+    /// </param>
+    public void RequestStageChange(StageScriptableObject baseStage, bool goToNext = true)
     {
         int currentIndex = stages.IndexOf(baseStage);
 
@@ -76,7 +81,6 @@ public class StageManager : MonoBehaviour
 
         int targetIndex = goToNext ? currentIndex : currentIndex - 1;
 
-        // SetStage 함수는 내부에 인덱스 범위 검사를 포함하고 있어야 안전합니다.
         SetStage(targetIndex);
     }
 

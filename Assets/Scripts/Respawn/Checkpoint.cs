@@ -3,7 +3,8 @@ using UnityEngine;
 public class Checkpoint : MonoBehaviour
 {
     [SerializeField] private int checkpointId;
-    
+    [SerializeField] private StageScriptableObject stageData;
+
     private void Start()
     {
         RespawnManager.Instance.RegisterCheckpoint(checkpointId, transform.position);
