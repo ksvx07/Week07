@@ -2285,7 +2285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   zoneName: "1\uBC88 \uAD6C\uC5ED"
-  isForbiddenZone: 1
+  isForbiddenZone: 0
   isExpectedZone: 0
   expectShape: 1
 --- !u!61 &769571016

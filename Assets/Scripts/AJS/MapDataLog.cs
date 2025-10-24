@@ -30,6 +30,17 @@ public class MapDataLog : MonoBehaviour
     private bool isPlayerInZone = false; // 플레이어의 현재 존 진입 상태
     private Coroutine exitCheckCoroutine; // 퇴장 확인 코루틴
 
+    #region 콜라이더 변수
+    private BoxCollider2D boxCollider;
+    private Vector2 savedSize; // 크기를 저장할 변수
+    #endregion
+    void OnValidate()
+    {
+        if (boxCollider == null)
+        {
+            boxCollider = GetComponent<BoxCollider2D>();
+        }
+    }
     private void OnDisable()
     {
         GetComponent<BoxCollider2D>().enabled = false;
@@ -144,4 +155,69 @@ public class MapDataLog : MonoBehaviour
             GameLog.Info(message, this);
         }
     }
+
+    /// <summary>
+    /// 콜라이더 크기를 (1, 1)로 설정합니다.
+    /// </summary>
+    [Button("초기화")]
+    public void SetSizeToOneOne()
+    {
+        if (boxCollider != null)
+        {
+            boxCollider.size = new Vector2(1f, 1f);
+        }
+    }
+
+    /// <summary>
+    /// 콜라이더의 가로(X) 크기만 1 증가시킵니다.
+    /// </summary>
+    [Button("X축 증가")]
+    public void IncreaseX()
+    {
+        if (boxCollider != null)
+        {
+            // 현재 크기를 가져와서 x값에 1을 더한 새로운 Vector2를 만듭니다.
+            boxCollider.size = new Vector2(boxCollider.size.x + 1f, boxCollider.size.y);
+        }
+    }
+
+    /// <summary>
+    /// 콜라이더의 세로(Y) 크기만 1 증가시킵니다.
+    /// </summary>
+    [Button("Y축 증가")]
+    public void IncreaseY()
+    {
+        if (boxCollider != null)
+        {
+            // 현재 크기를 가져와서 y값에 1을 더한 새로운 Vector2를 만듭니다.
+            boxCollider.size = new Vector2(boxCollider.size.x, boxCollider.size.y + 1f);
+        }
+    }
+
+    /// <summary>
+    /// 현재 콜라이더의 크기를 변수에 저장합니다.
+    /// </summary>
+    [Button("현재 범위 저장")]
+    public void SaveCurrentSize()
+    {
+        if (boxCollider != null)
+        {
+            savedSize = boxCollider.size;
+            Debug.Log("현재 크기 저장됨: " + savedSize);
+        }
+    }
+
+    /// <summary>
+    /// 저장해뒀던 크기로 콜라이더를 되돌립니다.
+    /// </summary>
+    [Button("저장 범위 복원")]
+    public void RevertToSavedSize()
+    {
+        if (boxCollider != null)
+        {
+            boxCollider.size = savedSize;
+            Debug.Log("저장된 크기로 복원됨: " + savedSize);
+        }
+    }
+
 }
