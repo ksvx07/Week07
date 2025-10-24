@@ -4,20 +4,24 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class MapDataLog : MonoBehaviour
 {
+    [Header("구역 이름")]
     [Tooltip("로그에 표시될 이 구역의 이름입니다.")]
     [SerializeField]
     private string zoneName = "Unnamed Zone";
 
-    [Header("구역 설정")]
+    [Header("금지 구역 여부")]
     [Tooltip("금지 구역으로 설정")]
     [SerializeField]
     private bool isForbiddenZone;
 
+    [Header("예상 도형 여부")]
     [Tooltip("특정 플레이어 도형을 기대하는 구역으로 설정")]
     [SerializeField]
     private bool isExpectedZone;
 
     [Tooltip("기대하는 플레이어의 도형")]
+    [ShowIf("isExpectedZone")]
+    [InfoBox("금지 구역에는 예상 도형이 적용 되지 않습니다!", InfoBoxType.Error, VisibleIf = "isForbiddenZone")]
     [SerializeField]
     private PlayerShape expectShape;
 
@@ -101,19 +105,19 @@ public class MapDataLog : MonoBehaviour
         // 금지 구역에 들어왔는지 확인
         if (isForbiddenZone)
         {
-            GameLog.Warn($"'{zoneName}' 금지 구역 진입! (플레이어 도형: {shapeOnEnter})", this);
+            GameLog.Warn($"'{zoneName}' 금지 구역 진입! /도형: {shapeOnEnter}", this);
             return;
         }
 
         // 특정 도형을 기대하는 구역인지 확인
         if (isExpectedZone && shapeOnEnter != expectShape)
         {
-            GameLog.Warn($"'{zoneName}' 구역에 잘못된 도형으로 진입! (현재: {shapeOnEnter}, 예상: {expectShape})", this);
+            GameLog.Warn($"'{zoneName}' 구역 잘못된 도형으로 진입! / 현재: {shapeOnEnter}, 예상: {expectShape}", this);
             return;
         }
 
         // 위 모든 특수 케이스에 해당하지 않으면 일반적인 진입으로 처리
-        GameLog.Info($"'{zoneName}' 구역 진입. (플레이어 도형: {shapeOnEnter})", this);
+        GameLog.Info($"'{zoneName}' 구역 진입 / 도형: {shapeOnEnter}", this);
     }
 
     /// <summary>
@@ -122,12 +126,12 @@ public class MapDataLog : MonoBehaviour
     private void LogExit()
     {
         PlayerShape shapeOnExit = PlayerManager.Instance.CurrentShape;
-        string message = $"플레이어가 '{zoneName}' 구역에서 이탈했습니다.";
+        string message = $"'{zoneName}' 구역 이탈 / 도형 : {shapeOnEnter}";
 
         // 구역 내에서 도형이 변경되었는지 확인하고 메시지에 추가합니다.
         if (shapeOnEnter != shapeOnExit)
         {
-            message += $" (도형 변경: {shapeOnEnter} -> {shapeOnExit})";
+            message += $" -> {shapeOnExit}";
         }
 
         // 금지 구역이었는지 여부에 따라 로그 레벨만 결정합니다.
