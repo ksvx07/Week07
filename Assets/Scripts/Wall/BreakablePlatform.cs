@@ -4,6 +4,18 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class BreakablePlatform : MonoBehaviour
 {
+    /// <summary>
+    /// 플랫폼 낙하 모드 정의
+    /// </summary>
+    public enum FallMode
+    {
+        [Tooltip("화면 밖으로 떨어져 사라짐")]
+        FreeFall = 0,
+        
+        [Tooltip("바닥까지 낙하 후 새로운 플랫폼으로 안착")]
+        SettleOnGround = 1
+    }
+
     [Header("파괴 설정")]
     [SerializeField] private float delayBeforeBreak = 1f;
     [SerializeField] private float fallGravityScale = 5f;
@@ -20,14 +32,22 @@ public class BreakablePlatform : MonoBehaviour
     [SerializeField] private string playerTag = "Player";
     [SerializeField] private LayerMask playerLayer;
 
-    [Header("낙하 시 바닥 감지")]
-    [SerializeField] private bool useFallDownMode = false;
+    [Header("낙하 모드")]
+    [Tooltip("FreeFall: 화면 밖으로 떨어져 사라짐\nSettleOnGround: 바닥까지 낙하 후 새로운 플랫폼으로 안착")]
+    [SerializeField] private FallMode fallMode = FallMode.FreeFall;
+    
+    [Tooltip("바닥 감지 활성화 (SettleOnGround 모드에서만 사용)")]
     [SerializeField] private bool enableGroundDetection = true;
+    
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float boxCastDistance = 100f;
+    
+    [Space(10)]
+    [Header("데미지 콜라이더 (낙하 중 플레이어 충돌 처리)")]
     [SerializeField] private GameObject damageColliderObject;
-    [SerializeField] private bool enableDamageColliderOnFallDownMode = true;
-    [SerializeField] private bool enableDamageColliderOnFreeFall = true;
+    
+    [Tooltip("낙하 시작 시 데미지 콜라이더 활성화 여부 (모든 낙하 모드 공통 적용)")]
+    [SerializeField] private bool enableDamageColliderOnFall = true;
 
     [Header("재생성")]
     [SerializeField] private bool respawn = true;
@@ -40,18 +60,25 @@ public class BreakablePlatform : MonoBehaviour
     private Vector3 visualOriginalLocalPos;
     private Quaternion visualOriginalLocalRot;
 
+    // 초기 옵션값 저장
     private bool originalEnableCollisionTrigger;
     private bool originalDetectByTag;
-    private bool originalUseFallDownMode;
+    private FallMode originalFallMode;
     private bool originalEnableGroundDetection;
-    private bool originalEnableDamageColliderOnFallDownMode;
-    private bool originalEnableDamageColliderOnFreeFall;
     private bool originalRespawn;
+
+    // 모드별 데미지 콜라이더 활성화 여부 (내부 관리용, 직렬화 안 함)
+    private bool enableDamageColliderOnSettleMode;
+    private bool enableDamageColliderOnFreeFall;
+    private bool originalEnableDamageColliderOnFall;
 
     private bool isTriggered = false;
     private bool isFalling = false;
     private bool isRespawning = false;
     private bool isPlayerDetectionDisabled = false;
+
+    // 내부적으로 사용할 useFallDownMode (enum 기반으로 자동 결정)
+    private bool UseFallDownMode => fallMode == FallMode.SettleOnGround;
 
     private Rigidbody2D rb;
     private BoxCollider2D platformCollider;
@@ -59,6 +86,10 @@ public class BreakablePlatform : MonoBehaviour
 
     void Awake()
     {
+        // 통합 bool 값을 각 모드별 내부 변수에 적용
+        enableDamageColliderOnSettleMode = enableDamageColliderOnFall;
+        enableDamageColliderOnFreeFall = enableDamageColliderOnFall;
+        
         InitializeComponents();
     }
 
@@ -182,10 +213,9 @@ public class BreakablePlatform : MonoBehaviour
         // bool 옵션 초기값 저장
         originalEnableCollisionTrigger = enableCollisionTrigger;
         originalDetectByTag = detectByTag;
-        originalUseFallDownMode = useFallDownMode;
+        originalFallMode = fallMode;
         originalEnableGroundDetection = enableGroundDetection;
-        originalEnableDamageColliderOnFallDownMode = enableDamageColliderOnFallDownMode;
-        originalEnableDamageColliderOnFreeFall = enableDamageColliderOnFreeFall;
+        originalEnableDamageColliderOnFall = enableDamageColliderOnFall;
         originalRespawn = respawn;
     }
 
@@ -219,7 +249,7 @@ public class BreakablePlatform : MonoBehaviour
     /// 2. delayBeforeBreak 동안 Visual에 Perlin 노이즈 흔들림 효과 적용
     /// 3. 흔들림 종료 후 Visual 원상복구
     /// 4. 낙하 시작
-    /// 5. useFallDownMode가 false면 respawnDelay 후 리스폰 시작
+    /// 5. FreeFall 모드면 respawnDelay 후 리스폰 시작
     /// </summary>
     private IEnumerator BreakRoutine()
     {
@@ -249,8 +279,8 @@ public class BreakablePlatform : MonoBehaviour
         ResetVisualOnly();
         StartFalling();
 
-        // useFallDownMode = false일 때 respawnDelay 후 리스폰
-        if (respawn && !useFallDownMode)
+        // FreeFall 모드일 때 respawnDelay 후 리스폰
+        if (respawn && fallMode == FallMode.FreeFall)
         {
             yield return new WaitForSeconds(respawnDelay);
             StartCoroutine(RespawnWhenClear(0f));
@@ -263,9 +293,9 @@ public class BreakablePlatform : MonoBehaviour
     /// 1. isFalling, isPlayerDetectionDisabled 플래그 활성화
     /// 2. platformCollider 비활성화 (충돌 방지)
     /// 3. 데미지 콜라이더 활성화 (낙하 시작 시점)
-    /// 4. useFallDownMode 여부에 따라 낙하 방식 결정:
-    ///    - true: FallAndSettleRoutine으로 바닥까지 낙하
-    ///    - false: Rigidbody Dynamic으로 자유 낙하
+    /// 4. fallMode에 따라 낙하 방식 결정:
+    ///    - SettleOnGround: FallAndSettleRoutine으로 바닥까지 낙하
+    ///    - FreeFall: Rigidbody Dynamic으로 자유 낙하
     /// </summary>
     private void StartFalling()
     {
@@ -276,8 +306,8 @@ public class BreakablePlatform : MonoBehaviour
             platformCollider.enabled = false;
 
         // 낙하 시작 시점에 데미지 콜라이더 활성화
-        bool shouldEnableDamage = useFallDownMode 
-            ? enableDamageColliderOnFallDownMode 
+        bool shouldEnableDamage = fallMode == FallMode.SettleOnGround
+            ? enableDamageColliderOnSettleMode
             : enableDamageColliderOnFreeFall;
 
         if (shouldEnableDamage && damageColliderObject != null)
@@ -290,8 +320,8 @@ public class BreakablePlatform : MonoBehaviour
         rb.angularVelocity = 0;
         rb.freezeRotation = false;
 
-        // 바닥 감지 모드일 경우 FallAndSettleRoutine 실행
-        if (useFallDownMode && enableGroundDetection)
+        // 바닥 안착 모드일 경우 FallAndSettleRoutine 실행
+        if (fallMode == FallMode.SettleOnGround && enableGroundDetection)
         {
             StartCoroutine(FallAndSettleRoutine());
         }
@@ -542,7 +572,7 @@ public class BreakablePlatform : MonoBehaviour
     /// 4. damageColliderObject 비활성화
     /// 5. Visual 원상복구
     /// 6. SpriteRenderer 알파 복구 (1.0)
-    /// 7. 모든 bool 옵션을 초기값으로 복구
+    /// 7. 모든 옵션을 초기값으로 복구
     /// 8. 모든 상태 플래그 초기화
     /// </summary>
     private void ResetPlatformImmediate()
@@ -576,14 +606,17 @@ public class BreakablePlatform : MonoBehaviour
             spriteRenderer.color = _color;
         }
 
-        // bool 옵션 초기값 복구
+        // 옵션 초기값 복구
         enableCollisionTrigger = originalEnableCollisionTrigger;
         detectByTag = originalDetectByTag;
-        useFallDownMode = originalUseFallDownMode;
+        fallMode = originalFallMode;
         enableGroundDetection = originalEnableGroundDetection;
-        enableDamageColliderOnFallDownMode = originalEnableDamageColliderOnFallDownMode;
-        enableDamageColliderOnFreeFall = originalEnableDamageColliderOnFreeFall;
+        enableDamageColliderOnFall = originalEnableDamageColliderOnFall;
         respawn = originalRespawn;
+
+        // 통합 bool 값을 각 모드별 내부 변수에 다시 적용
+        enableDamageColliderOnSettleMode = enableDamageColliderOnFall;
+        enableDamageColliderOnFreeFall = enableDamageColliderOnFall;
 
         // 상태 플래그 초기화
         isTriggered = false;
