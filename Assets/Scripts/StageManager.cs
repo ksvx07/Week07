@@ -8,8 +8,8 @@ public class StageManager : MonoBehaviour
     // 이제 이 리스트에 직접 StageScriptableObject 파일을 드래그 앤 드롭하여 사용합니다.
     public List<StageScriptableObject> stages;
 
-    public StageScriptableObject stageData { get; private set; }
-    public int currentStageID { get; private set; }
+    public StageScriptableObject CurrentStageData { get; private set; }
+    public int CurrentStageIndex { get; private set; }
 
     [SerializeField] private CameraClamp cameraClamp;
 
@@ -25,10 +25,84 @@ public class StageManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        stageData = stages[0];
-        // 현재 스테이지 데이터 카메라 정보값으로 초기화
-        cameraClamp.SetMapBounds(stageData);
+        InitializeStageData();
     }
 
+    private void InitializeStageData()
+    {
+        if (stages != null && stages.Count > 0)
+        {
+            // 0번 인덱스로 첫 스테이지 설정
+            SetStage(0);
+        }
+        else
+        {
+            Debug.LogError("StageManager에 할당된 stage가 없습니다!");
+        }
+    }
+
+    /// <summary>
+    /// 지정된 인덱스로 현재 스테이지를 변경하고 이벤트를 호출하는 통합 메서드
+    /// </summary>
+    /// <param name="index">변경할 스테이지의 인덱스</param>
+    private void SetStage(int index)
+    {
+        // 인덱스 유효성 검사
+        if (index < 0 || index >= stages.Count)
+        {
+            Debug.LogWarning($"요청한 스테이지 인덱스({index})가 유효한 범위를 벗어났습니다.");
+            return;
+        }
+
+        CurrentStageIndex = index;
+        CurrentStageData = stages[CurrentStageIndex];
+        cameraClamp.SetMapBounds(CurrentStageData);
+
+        Debug.Log($"Stage {CurrentStageIndex + 1} 로 변경되었습니다.");
+    }
+
+    /// <summary>
+    /// 특정 스테이지를 기준으로 다음 또는 이전 스테이지로 변경을 요청받는 함수
+    /// </summary>
+    public void RequestStageChange(StageScriptableObject baseStage, bool goToNext)
+    {
+        int currentIndex = stages.IndexOf(baseStage);
+
+        if (currentIndex == -1)
+        {
+            Debug.LogError($"{baseStage.name}이 StageManager의 리스트에 없습니다!", baseStage);
+            return;
+        }
+
+        int targetIndex = goToNext ? currentIndex : currentIndex - 1;
+
+        // SetStage 함수는 내부에 인덱스 범위 검사를 포함하고 있어야 안전합니다.
+        SetStage(targetIndex);
+    }
+
+    [Button]
+    public void NextStageData()
+    {
+        if (CurrentStageIndex + 1 < stages.Count)
+        {
+            SetStage(CurrentStageIndex + 1);
+        }
+        else
+        {
+            Debug.Log("마지막 스테이지입니다.");
+        }
+    }
+    [Button]
+    public void PreStageData()
+    {
+        if (CurrentStageIndex - 1 >= 0)
+        {
+            SetStage(CurrentStageIndex - 1);
+        }
+        else
+        {
+            Debug.Log("첫 스테이지입니다.");
+        }
+    }
 }
  

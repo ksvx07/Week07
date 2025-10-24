@@ -1157,6 +1157,14 @@ PrefabInstance:
       propertyPath: BeforeId
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 7336791436471908265, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
+      propertyPath: preStage_Id
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336791436471908265, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
+      propertyPath: nextStage_Id
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1259,6 +1267,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1f30ddc3b4db0644d9eef566dfe4bdd4, type: 2}
   - {fileID: 11400000, guid: 3e38305630e9a104091102f335e259bb, type: 2}
   - {fileID: 11400000, guid: 483dc87b23e8c0643a433c6c529acf39, type: 2}
+  cameraClamp: {fileID: 1318149767}
 --- !u!4 &554717745
 Transform:
   m_ObjectHideFlags: 0
@@ -1979,6 +1988,14 @@ PrefabInstance:
       propertyPath: BeforeId
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 7336791436471908265, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
+      propertyPath: preStage_Id
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336791436471908265, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
+      propertyPath: nextStage_Id
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2495,6 +2512,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7336791436471908265, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
       propertyPath: BeforeId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336791436471908265, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
+      propertyPath: nextStage_Id
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -5466,6 +5487,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7336791436471908265, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
       propertyPath: BeforeId
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336791436471908265, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
+      propertyPath: preStage_Id
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336791436471908265, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
+      propertyPath: nextStage_Id
       value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
