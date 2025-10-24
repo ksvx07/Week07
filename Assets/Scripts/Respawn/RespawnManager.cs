@@ -108,7 +108,6 @@ public class RespawnManager : MonoBehaviour
         // Debug.Log($"[RespawnManager] Player respawned at checkpoint {currentCheckpointId}: {currentSpawnPosition}");
     }
 
-
     private bool ValidatePlayer()
     {
         if (player == null)

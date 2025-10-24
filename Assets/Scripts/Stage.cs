@@ -5,17 +5,14 @@ public enum SwitchDirection
     LeftAndRight, // 좌우 방향을 하나로 통합
     TopAndBottom  // 상하 방향을 하나로 통합
 }
-public class StageSwitch : MonoBehaviour
+public class Stage : MonoBehaviour
 {
-    [Header("다음 스테이지")]
+    [Header("스테이지 데이터")]
+    [Tooltip("Trigger 통과 시 넘어가는 다음 스테이지 정보")]
     [SerializeField] private StageScriptableObject myStageSO;
 
     [Header("진행 방향")]
     [SerializeField] private SwitchDirection boundaryDirection;
-
-    // CameraClamp에 직접 접근하기보다 이벤트를 통해 알리는 것이 더 좋은 구조입니다.
-    // 여기서는 기존 구조를 유지하되, 참고용으로 주석을 남깁니다.
-    // private CameraClamp Clamp => CameraController.Instance.Clamp;
 
     // 플레이어가 트리거 영역을 나갈 때 한 번만 호출됨
     private void OnTriggerExit2D(Collider2D collision)
