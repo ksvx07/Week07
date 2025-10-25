@@ -12,10 +12,16 @@ public class BreakableObject : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            KirbyController turboMode = collision.GetComponent<KirbyController>();
-            if (turboMode != null)
+            if (collision.TryGetComponent<KirbyController>(out KirbyController turboMode))
             {
                 if (turboMode.TurboMode)
+                {
+                    TurbomodeDestoy();
+                }
+            }
+            else if (collision.TryGetComponent<SquareController>(out SquareController dashMode))
+            {
+                if (dashMode.isDashing)
                 {
                     TurbomodeDestoy();
                 }
