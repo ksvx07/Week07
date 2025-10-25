@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: 100
   minX: -16.14
-  maxX: 103.3
+  maxX: 223.3
   minY: -5.4
   maxY: 15.2
   isShapeLockStage: 1
