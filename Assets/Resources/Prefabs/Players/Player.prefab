@@ -136,13 +136,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09db47c3b6b7a904691d94d36a2ee8f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 2
+  maxSpeed: 3.5
   wallClimbSpeedAcceleration: 100
   wallClimbSpeedDeceleration: 100
   starNormalAccel: 20
   starNormalDecel: 50
   TurningSpeedAcceleration: 150
-  maxJumpSpeed: 5
+  maxJumpSpeed: 8
   jumpDcceleration: 20
   maxGravity: 50
   gravityAcceleration: 40
@@ -153,7 +153,7 @@ MonoBehaviour:
   airAccelMulti: 0.3
   airDecelMulti: 0.3
   starRayGravityDistance: 0.4
-  starWallJumpSpeed: 5
+  starWallJumpSpeed: 8
   starPivotTransform: {fileID: 8737585654859554741}
   starWallGravity: 2
   starMaxWallGravityDistance: 0.34
@@ -1762,6 +1762,11 @@ MonoBehaviour:
     m_Bits: 64
   onGround: 0
   pressingKey: 0
+  groundCheckDistance: 1
+  rotationReturnSpeed: 5
+  terboForce: 60
+  maxCollisionAngle: 30
+  fixeNormaldGravity: 4
 --- !u!114 &11389036134527591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2455,7 +2460,7 @@ MonoBehaviour:
   wallJumpXSpeed: 10
   wallJumpYSpeed: 7
   wallSlideMaxSpeed: 2
-  dashSpeed: 30
+  dashSpeed: 20
   dashTime: 0.15
   dashCooldown: 0.3
   maxSpeedAfterDashX: 5
