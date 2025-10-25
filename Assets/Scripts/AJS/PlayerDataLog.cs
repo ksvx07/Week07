@@ -310,10 +310,10 @@ public class PlayerDataLog : MonoBehaviour
             {
                 StageLogData stageData = stagePair.Value;
                 report.AppendLine();
-                report.AppendLine($"---------- [스테이지: {stageData.stageName}] ----------");
+                report.AppendLine($"---------- [🧊 스테이지: {stageData.stageName}] ----------");
 
                 // 스테이지 전체 기록 출력
-                report.Append(GenerateScopeReport("스테이지 요약", stageData.stageTotalStats));
+                report.Append(GenerateScopeReport("📝 스테이지 요약", stageData.stageTotalStats));
 
                 // 해당 스테이지의 체크포인트별 기록 출력
                 if (stageData.checkpointStats.Count > 0)
@@ -322,10 +322,9 @@ public class PlayerDataLog : MonoBehaviour
                     report.AppendLine("    --- [체크포인트별 기록] ---");
                     foreach (var checkpointPair in stageData.checkpointStats)
                     {
-                        report.Append(GenerateScopeReport("체크포인트 " + checkpointPair.Key, checkpointPair.Value, "      "));
+                        report.Append(GenerateScopeReport("✅ 체크포인트 " + checkpointPair.Key, checkpointPair.Value, "      "));
                     }
                 }
-                report.AppendLine("-------------------------------------------");
             }
         }
 
@@ -339,20 +338,30 @@ public class PlayerDataLog : MonoBehaviour
     private string GenerateScopeReport(string title, LogStats stats, string indentation = "  ")
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"{indentation}▶ {title}:");
-        sb.AppendLine($"{indentation}  - 죽음 : {stats.deadAmount}회");
-        sb.AppendLine($"{indentation}  - 능력 사용 : {stats.abilityUseAmount}회");
-        sb.AppendLine($"{indentation}  - 변신 횟수 : {stats.shapeChangeAmount}회");
 
+        string shapeChangeDetail = "(";
+        if (stats.shapeChangeAmount > 0)
+        {
+            if (stats.modeSwitchAmount > 0)
+            {
+                shapeChangeDetail += "모드 : " + stats.modeSwitchAmount;
+            }
+            if (stats.quickSwitchAmount > 0)
+            {
+                if (stats.modeSwitchAmount > 0)
+                {
+                    shapeChangeDetail += " / ";
+                }
+                shapeChangeDetail += "단축키 : " + stats.quickSwitchAmount + ")";
+            }
+        }
+        else
+        {
+            shapeChangeDetail = string.Empty;
+        }
+
+            sb.AppendLine($"{indentation} {title}: 💀 죽음 {stats.deadAmount} | ✨ 능력 {stats.abilityUseAmount} | 🔄 변신 {stats.shapeChangeAmount} {shapeChangeDetail}");
         // 변신 횟수가 0보다 클 때만 세부 정보 표시
-        if (stats.modeSwitchAmount > 0)
-        {
-            sb.AppendLine($"{indentation}       - 모드 변신: {stats.modeSwitchAmount}회");
-        }
-        if (stats.quickSwitchAmount > 0)
-        {
-            sb.AppendLine($"{indentation}       - 단축키 변신: {stats.quickSwitchAmount}회");
-        }
 
         // 변신한 모양이 있을 경우에만 상세 내역 출력 (shapeDetails.changeCount > 0)
         var changedShapesDetails = stats.shapeDetails
@@ -361,24 +370,24 @@ public class PlayerDataLog : MonoBehaviour
 
         if (changedShapesDetails.Any())
         {
-            sb.AppendLine($"{indentation}  - 모양별 상세 내역 (유지 시간 순)");
+            sb.AppendLine($"{indentation}  ⏳ 모양별 상세 내역 (유지 시간 순)");
             foreach (var pair in changedShapesDetails)
             {
                 PlayerShape shape = pair.Key;
                 ShapeLogDetail detail = pair.Value;
 
                 TimeSpan timeSpan = TimeSpan.FromSeconds(detail.playTime);
-                string formattedTime = $"{timeSpan.Minutes:D2}분 {timeSpan.Seconds:D2}.{timeSpan.Milliseconds / 100}초";
+                string formattedTime = $"[{timeSpan.Minutes:D2} 분 {timeSpan.Seconds:D2}]";
 
                 // 각 항목이 0이 아닐 경우에만 문자열에 추가하여 간결하게 표시
                 List<string> details = new List<string>();
-                if (detail.changeCount > 0) details.Add($"변신 {detail.changeCount}회");
-                if (detail.abilityUseCount > 0) details.Add($"능력 {detail.abilityUseCount}회");
-                if (detail.deadCount > 0) details.Add($"죽음 {detail.deadCount}회");
+                if (detail.deadCount > 0) details.Add($"💀 죽음 {detail.deadCount} ");
+                if (detail.abilityUseCount > 0) details.Add($"✨ 능력 {detail.abilityUseCount} ");
+                if (detail.changeCount > 0) details.Add($"🔄 변신 {detail.changeCount} ");
 
-                string detailString = details.Any() ? $" ({string.Join("/ ", details)})" : "";
+                string detailString = details.Any() ? $" {string.Join("| ", details)}" : "";
 
-                sb.AppendLine($"{indentation}       - {shape}: 유지 시간 {formattedTime}{detailString}");
+                sb.AppendLine($"{indentation}       ➡️ {($"{shape}:").PadRight(12)}  {formattedTime}{detailString} |");
             }
         }
         return sb.ToString();
