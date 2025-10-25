@@ -230,7 +230,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
     [SerializeField] private float rotationReturnSpeed = 5f; // 회전 복귀 속도
     [SerializeField] private float terboForce = 60f;
     [SerializeField] private float maxCollisionAngle = 30.0f;
-    private float fixeNormaldGravity = 4.0f;
+    [SerializeField] private float fixeNormaldGravity = 4.0f;
     private float fixeterbodGravity = 0f;
     // 즉시 속도 변경 (터보 모드)
     private void runWithoutAcceleration()
@@ -247,7 +247,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
             // }
             // else
             // {
-            //     _rb.gravityScale = fixeNormaldGravity;
+            // _rb.gravityScale = fixeNormaldGravity;
             // }
             terboLayRotation = -hit.normal;
             moveDirection = new Vector2(-terboLayRotation.y, terboLayRotation.x) * Mathf.Sign(transform.localScale.x);
