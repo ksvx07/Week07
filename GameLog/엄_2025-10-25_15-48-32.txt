@@ -1,0 +1,490 @@
+﻿[00:00.0] [DEBUG] === Game Session Started ===
+[00:07.5] [WARNING] 현재 스테이지가 설정되지 않았는데 체크포인트 도달을 시도했습니다.
+[00:22.6] [DEBUG] Square의 능력 사용 횟수: 1번
+[00:24.7] [DEBUG] Square의 능력 사용 횟수: 2번
+[00:26.1] [DEBUG] Square의 능력 사용 횟수: 3번
+[00:27.6] [DEBUG] Square의 능력 사용 횟수: 4번
+[00:33.0] [DEBUG] Square의 능력 사용 횟수: 5번
+[00:38.1] [DEBUG] Square의 능력 사용 횟수: 6번
+[00:39.2] [DEBUG] Square의 능력 사용 횟수: 7번
+[00:41.3] [DEBUG] Square의 능력 사용 횟수: 8번
+[00:42.5] [DEBUG] Square의 능력 사용 횟수: 9번
+[00:44.3] [DEBUG] Square의 능력 사용 횟수: 10번
+[00:45.4] [DEBUG] Square의 능력 사용 횟수: 11번
+[00:47.1] [DEBUG] Square의 능력 사용 횟수: 12번
+[00:48.1] [DEBUG] Square의 능력 사용 횟수: 13번
+[00:50.2] [DEBUG] Square의 능력 사용 횟수: 14번
+[00:54.4] [DEBUG] Square의 능력 사용 횟수: 15번
+[00:54.5] [WARNING] 현재 스테이지가 설정되지 않았는데 체크포인트 도달을 시도했습니다.
+[00:57.8] [DEBUG] Square의 능력 사용 횟수: 16번
+[01:02.4] [DEBUG] Square의 능력 사용 횟수: 17번
+[01:25.3] [DEBUG] Square의 능력 사용 횟수: 18번
+[01:56.2] [DEBUG] Square의 능력 사용 횟수: 19번
+[01:56.7] [WARNING] 현재 스테이지가 설정되지 않았는데 체크포인트 도달을 시도했습니다.
+[01:56.8] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 106.48
+[01:56.8] [INFO] 스테이지 [Stage2] 진입
+[01:59.3] [DEBUG] Triangle의 능력 사용 횟수: 1번
+[02:00.7] [DEBUG] Triangle의 능력 사용 횟수: 2번
+[02:04.1] [DEBUG] Triangle의 능력 사용 횟수: 3번
+[02:05.3] [INFO] 체크포인트 [2] 도달
+[02:06.2] [DEBUG] Triangle의 능력 사용 횟수: 4번
+[02:08.7] [DEBUG] Triangle의 능력 사용 횟수: 5번
+[02:12.0] [DEBUG] Triangle의 능력 사용 횟수: 6번
+[02:16.0] [DEBUG] Triangle의 능력 사용 횟수: 7번
+[02:18.1] [DEBUG] Triangle의 능력 사용 횟수: 8번
+[02:19.1] [DEBUG] Triangle의 능력 사용 횟수: 9번
+[02:24.1] [DEBUG] Triangle의 능력 사용 횟수: 10번
+[02:28.2] [DEBUG] Triangle의 능력 사용 횟수: 11번
+[02:33.8] [DEBUG] Triangle의 능력 사용 횟수: 12번
+[02:39.9] [DEBUG] Triangle의 능력 사용 횟수: 13번
+[02:44.8] [DEBUG] Triangle의 능력 사용 횟수: 14번
+[02:58.9] [DEBUG] Triangle의 능력 사용 횟수: 15번
+[03:03.5] [DEBUG] Triangle의 능력 사용 횟수: 16번
+[03:10.2] [DEBUG] Triangle의 능력 사용 횟수: 17번
+[03:16.9] [DEBUG] Triangle의 능력 사용 횟수: 18번
+[03:20.3] [DEBUG] Triangle의 능력 사용 횟수: 19번
+[03:20.4] [INFO] 체크포인트 [3] 도달
+[03:20.5] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 83.64
+[03:20.5] [INFO] 스테이지 [Stage3] 진입
+[03:21.8] [DEBUG] Circle의 능력 사용 횟수: 1번
+[03:30.9] [INFO] 체크포인트 [4] 도달
+[03:30.9] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 10.44
+[03:30.9] [INFO] 스테이지 [Stage4] 진입
+[03:53.0] [INFO] 스테이지 [Stage5] 진입
+[03:53.1] [INFO] 체크포인트 [5] 도달
+[03:56.5] [INFO] 모양 변경: Star -> Square / Star 유지시간: 24.88
+[04:01.9] [INFO] 스테이지 [Stage5] 진입
+[04:17.5] [INFO] 모양 변경: Square -> Circle / Square 유지시간: 18.33
+[04:21.1] [DEBUG] Circle의 능력 사용 횟수: 2번
+[04:22.1] [DEBUG] 플레이어 죽음 횟수: 1번
+[04:29.3] [INFO] 모양 변경: Circle -> Triangle / Circle 유지시간: 8.23
+[04:30.4] [INFO] 스테이지 [Stage5] 진입
+[04:32.8] [DEBUG] Triangle의 능력 사용 횟수: 20번
+[04:34.9] [DEBUG] Triangle의 능력 사용 횟수: 21번
+[04:39.1] [DEBUG] Triangle의 능력 사용 횟수: 22번
+[04:42.1] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 12.11
+[04:45.3] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 3.03
+[04:47.7] [INFO] 모양 변경: Circle -> Star / Circle 유지시간: 1.40
+[04:53.0] [DEBUG] 플레이어 죽음 횟수: 2번
+[04:55.2] [INFO] 스테이지 [Stage5] 진입
+[04:56.4] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 8.58
+[04:58.0] [DEBUG] Triangle의 능력 사용 횟수: 23번
+[05:00.1] [DEBUG] Triangle의 능력 사용 횟수: 24번
+[05:03.4] [DEBUG] Triangle의 능력 사용 횟수: 25번
+[05:05.5] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 9.08
+[05:06.6] [DEBUG] 플레이어 죽음 횟수: 3번
+[05:07.4] [DEBUG] 플레이어 죽음 횟수: 4번
+[05:07.6] [DEBUG] 플레이어 죽음 횟수: 5번
+[05:10.2] [INFO] 모양 변경: Circle -> Triangle / Circle 유지시간: 2.70
+[05:12.7] [DEBUG] Triangle의 능력 사용 횟수: 26번
+[05:17.4] [DEBUG] Triangle의 능력 사용 횟수: 27번
+[05:24.6] [DEBUG] Triangle의 능력 사용 횟수: 28번
+[05:29.8] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 19.53
+[05:36.4] [DEBUG] 플레이어 죽음 횟수: 6번
+[05:39.2] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 9.20
+[05:40.3] [DEBUG] Triangle의 능력 사용 횟수: 29번
+[05:44.8] [DEBUG] Triangle의 능력 사용 횟수: 30번
+[05:45.9] [DEBUG] Triangle의 능력 사용 횟수: 31번
+[05:52.6] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 12.48
+[05:52.9] [INFO] 체크포인트 [6] 도달
+[05:55.1] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 2.12
+[06:00.1] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 4.75
+[06:03.3] [DEBUG] 플레이어 죽음 횟수: 7번
+[06:05.7] [DEBUG] Circle의 능력 사용 횟수: 3번
+[06:06.1] [DEBUG] 플레이어 죽음 횟수: 8번
+[06:11.3] [INFO] 모양 변경: Circle -> Square / Circle 유지시간: 10.92
+[06:16.2] [DEBUG] Square의 능력 사용 횟수: 20번
+[06:18.5] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 5.31
+[06:19.0] [DEBUG] 플레이어 죽음 횟수: 9번
+[06:20.0] [DEBUG] Triangle의 능력 사용 횟수: 32번
+[06:20.1] [DEBUG] Triangle의 능력 사용 횟수: 33번
+[06:21.8] [DEBUG] 플레이어 죽음 횟수: 10번
+[06:24.8] [DEBUG] Triangle의 능력 사용 횟수: 34번
+[06:25.2] [DEBUG] 플레이어 죽음 횟수: 11번
+[06:31.1] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 9.55
+[06:35.6] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 4.48
+[06:37.7] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 2.16
+[06:38.5] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.79
+[06:38.8] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 0.23
+[06:39.2] [INFO] 모양 변경: Circle -> Square / Circle 유지시간: 0.48
+[06:39.9] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.62
+[06:40.4] [INFO] 모양 변경: Star -> Square / Star 유지시간: 0.57
+[06:42.3] [DEBUG] Square의 능력 사용 횟수: 21번
+[06:43.5] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 2.80
+[06:43.5] [DEBUG] 플레이어 죽음 횟수: 12번
+[06:45.4] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 1.89
+[06:46.9] [DEBUG] Square의 능력 사용 횟수: 22번
+[06:47.1] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 1.73
+[06:47.7] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 0.64
+[06:47.7] [DEBUG] 플레이어 죽음 횟수: 13번
+[06:49.8] [INFO] 모양 변경: Circle -> Square / Circle 유지시간: 2.06
+[06:51.0] [DEBUG] Square의 능력 사용 횟수: 23번
+[06:51.4] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 1.63
+[06:51.8] [DEBUG] Triangle의 능력 사용 횟수: 35번
+[06:51.9] [DEBUG] Triangle의 능력 사용 횟수: 36번
+[06:52.0] [DEBUG] 플레이어 죽음 횟수: 14번
+[06:59.9] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 8.46
+[07:04.8] [DEBUG] Square의 능력 사용 횟수: 24번
+[07:05.7] [DEBUG] 플레이어 죽음 횟수: 15번
+[07:08.1] [DEBUG] Square의 능력 사용 횟수: 25번
+[07:09.0] [DEBUG] 플레이어 죽음 횟수: 16번
+[07:11.5] [DEBUG] Square의 능력 사용 횟수: 26번
+[07:12.2] [DEBUG] 플레이어 죽음 횟수: 17번
+[07:12.2] [INFO] 모양 변경: Square -> Star / Square 유지시간: 12.37
+[07:15.3] [INFO] 모양 변경: Star -> Square / Star 유지시간: 3.06
+[07:16.8] [DEBUG] Square의 능력 사용 횟수: 27번
+[07:17.5] [INFO] 모양 변경: Square -> Star / Square 유지시간: 2.16
+[07:19.8] [INFO] 체크포인트 [7] 도달
+[07:25.3] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 7.83
+[07:29.6] [DEBUG] Triangle의 능력 사용 횟수: 37번
+[07:33.3] [DEBUG] Triangle의 능력 사용 횟수: 38번
+[08:09.8] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 44.53
+[08:23.6] [DEBUG] 플레이어 죽음 횟수: 18번
+[08:25.1] [INFO] 모양 변경: Star -> Square / Star 유지시간: 15.26
+[08:27.6] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 2.47
+[08:29.5] [DEBUG] Triangle의 능력 사용 횟수: 39번
+[08:30.6] [DEBUG] Triangle의 능력 사용 횟수: 40번
+[08:47.8] [DEBUG] 플레이어 죽음 횟수: 19번
+[08:50.2] [DEBUG] Triangle의 능력 사용 횟수: 41번
+[08:53.1] [DEBUG] Triangle의 능력 사용 횟수: 42번
+[08:55.0] [DEBUG] Triangle의 능력 사용 횟수: 43번
+[09:03.4] [DEBUG] 플레이어 죽음 횟수: 20번
+[09:03.5] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 35.95
+[09:06.7] [INFO] 모양 변경: Star -> Square / Star 유지시간: 3.15
+[09:07.8] [INFO] 모양 변경: Square -> Circle / Square 유지시간: 1.17
+[09:10.8] [DEBUG] Circle의 능력 사용 횟수: 4번
+[09:11.1] [DEBUG] 플레이어 죽음 횟수: 21번
+[09:12.8] [INFO] 모양 변경: Circle -> Square / Circle 유지시간: 4.98
+[09:13.6] [DEBUG] Square의 능력 사용 횟수: 28번
+[09:13.9] [INFO] 모양 변경: Square -> Circle / Square 유지시간: 1.13
+[09:14.1] [DEBUG] 플레이어 죽음 횟수: 22번
+[09:15.9] [INFO] 모양 변경: Circle -> Square / Circle 유지시간: 1.94
+[09:16.8] [DEBUG] Square의 능력 사용 횟수: 29번
+[09:17.3] [INFO] 모양 변경: Square -> Circle / Square 유지시간: 1.41
+[09:17.3] [DEBUG] 플레이어 죽음 횟수: 23번
+[09:17.5] [INFO] 모양 변경: Circle -> Square / Circle 유지시간: 0.21
+[09:17.6] [DEBUG] 플레이어 죽음 횟수: 24번
+[09:17.6] [DEBUG] 플레이어 죽음 횟수: 25번
+[09:17.6] [DEBUG] 플레이어 죽음 횟수: 26번
+[09:17.7] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.17
+[09:17.7] [DEBUG] 플레이어 죽음 횟수: 27번
+[09:18.0] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 0.30
+[09:18.0] [DEBUG] 플레이어 죽음 횟수: 28번
+[09:18.0] [DEBUG] 플레이어 죽음 횟수: 29번
+[09:18.0] [DEBUG] 플레이어 죽음 횟수: 30번
+[09:18.3] [DEBUG] 플레이어 죽음 횟수: 31번
+[09:18.3] [DEBUG] 플레이어 죽음 횟수: 32번
+[09:18.4] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 0.42
+[09:18.5] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 0.12
+[09:18.6] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 0.09
+[09:18.7] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 0.10
+[09:18.8] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 0.11
+[09:18.9] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 0.08
+[09:19.0] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 0.10
+[09:19.1] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 0.13
+[09:19.2] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 0.07
+[09:19.3] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 0.10
+[09:19.4] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 0.10
+[09:19.4] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.02
+[09:19.4] [INFO] 모양 변경: Star -> Square / Star 유지시간: 0.03
+[09:19.5] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.08
+[09:19.6] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 0.12
+[09:19.7] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 0.04
+[09:19.7] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.08
+[09:19.8] [INFO] 모양 변경: Star -> Circle / Star 유지시간: 0.10
+[09:19.9] [INFO] 모양 변경: Circle -> Triangle / Circle 유지시간: 0.02
+[09:19.9] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 0.06
+[09:20.0] [INFO] 모양 변경: Circle -> Triangle / Circle 유지시간: 0.07
+[09:20.0] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 0.04
+[09:21.7] [DEBUG] Square의 능력 사용 횟수: 30번
+[09:22.6] [INFO] 모양 변경: Square -> Circle / Square 유지시간: 2.60
+[09:22.8] [INFO] 모양 변경: Circle -> Square / Circle 유지시간: 0.23
+[09:22.9] [DEBUG] 플레이어 죽음 횟수: 33번
+[09:25.3] [DEBUG] Square의 능력 사용 횟수: 31번
+[09:25.7] [DEBUG] 플레이어 죽음 횟수: 34번
+[09:28.2] [DEBUG] Square의 능력 사용 횟수: 32번
+[09:28.8] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 5.95
+[09:29.2] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 0.38
+[09:29.3] [DEBUG] 플레이어 죽음 횟수: 35번
+[09:30.7] [INFO] 모양 변경: Circle -> Square / Circle 유지시간: 1.55
+[09:32.0] [DEBUG] Square의 능력 사용 횟수: 33번
+[09:32.6] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 1.85
+[09:32.7] [DEBUG] Triangle의 능력 사용 횟수: 44번
+[09:33.1] [DEBUG] Triangle의 능력 사용 횟수: 45번
+[09:35.3] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 2.70
+[09:40.4] [DEBUG] 플레이어 죽음 횟수: 36번
+[09:43.5] [INFO] 모양 변경: Star -> Square / Star 유지시간: 8.09
+[09:44.6] [DEBUG] Square의 능력 사용 횟수: 34번
+[09:45.2] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 1.73
+[09:45.5] [DEBUG] Triangle의 능력 사용 횟수: 46번
+[09:50.7] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 5.43
+[09:59.0] [INFO] 모양 변경: Star -> Square / Star 유지시간: 8.30
+[10:00.6] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 1.61
+[10:00.8] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 0.19
+[10:00.8] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.02
+[10:00.8] [DEBUG] 플레이어 죽음 횟수: 37번
+[10:00.8] [INFO] 모양 변경: Star -> Square / Star 유지시간: 0.04
+[10:00.8] [DEBUG] 플레이어 죽음 횟수: 38번
+[10:00.9] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 0.06
+[10:00.9] [DEBUG] 플레이어 죽음 횟수: 39번
+[10:01.0] [DEBUG] 플레이어 죽음 횟수: 40번
+[10:01.0] [DEBUG] 플레이어 죽음 횟수: 41번
+[10:01.1] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 0.17
+[10:01.1] [DEBUG] Circle의 능력 사용 횟수: 5번
+[10:01.1] [DEBUG] 플레이어 죽음 횟수: 42번
+[10:01.2] [INFO] 모양 변경: Circle -> Triangle / Circle 유지시간: 0.09
+[10:01.2] [DEBUG] 플레이어 죽음 횟수: 43번
+[10:01.2] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 0.05
+[10:01.2] [DEBUG] 플레이어 죽음 횟수: 44번
+[10:02.7] [INFO] 모양 변경: Circle -> Triangle / Circle 유지시간: 1.48
+[10:05.8] [DEBUG] Triangle의 능력 사용 횟수: 47번
+[10:06.8] [DEBUG] Triangle의 능력 사용 횟수: 48번
+[10:12.6] [DEBUG] Triangle의 능력 사용 횟수: 49번
+[10:13.0] [DEBUG] Triangle의 능력 사용 횟수: 50번
+[10:15.4] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 12.71
+[10:26.2] [INFO] 모양 변경: Star -> Square / Star 유지시간: 10.81
+[10:26.2] [DEBUG] 플레이어 죽음 횟수: 45번
+[10:29.3] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 3.08
+[10:30.5] [DEBUG] Triangle의 능력 사용 횟수: 51번
+[10:31.9] [DEBUG] Triangle의 능력 사용 횟수: 52번
+[10:35.5] [DEBUG] Triangle의 능력 사용 횟수: 53번
+[10:52.1] [DEBUG] 플레이어 죽음 횟수: 46번
+[10:54.7] [DEBUG] Triangle의 능력 사용 횟수: 54번
+[10:58.7] [DEBUG] Triangle의 능력 사용 횟수: 55번
+[11:02.3] [DEBUG] Triangle의 능력 사용 횟수: 56번
+[11:02.4] [DEBUG] 플레이어 죽음 횟수: 47번
+[11:05.0] [DEBUG] Triangle의 능력 사용 횟수: 57번
+[11:05.9] [DEBUG] Triangle의 능력 사용 횟수: 58번
+[11:09.1] [DEBUG] Triangle의 능력 사용 횟수: 59번
+[11:11.3] [DEBUG] 플레이어 죽음 횟수: 48번
+[11:13.8] [DEBUG] Triangle의 능력 사용 횟수: 60번
+[11:14.5] [DEBUG] Triangle의 능력 사용 횟수: 61번
+[11:17.7] [DEBUG] Triangle의 능력 사용 횟수: 62번
+[11:26.2] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 56.91
+[11:34.3] [INFO] 모양 변경: Star -> Square / Star 유지시간: 8.08
+[11:35.7] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 1.43
+[11:36.2] [DEBUG] 플레이어 죽음 횟수: 49번
+[11:38.9] [DEBUG] Triangle의 능력 사용 횟수: 63번
+[11:39.9] [DEBUG] Triangle의 능력 사용 횟수: 64번
+[11:43.9] [DEBUG] Triangle의 능력 사용 횟수: 65번
+[11:49.2] [DEBUG] 플레이어 죽음 횟수: 50번
+[11:51.9] [DEBUG] Triangle의 능력 사용 횟수: 66번
+[11:53.0] [DEBUG] Triangle의 능력 사용 횟수: 67번
+[11:54.6] [DEBUG] Triangle의 능력 사용 횟수: 68번
+[11:57.0] [DEBUG] Triangle의 능력 사용 횟수: 69번
+[11:59.0] [DEBUG] 플레이어 죽음 횟수: 51번
+[12:01.5] [DEBUG] Triangle의 능력 사용 횟수: 70번
+[12:03.2] [DEBUG] Triangle의 능력 사용 횟수: 71번
+[12:10.8] [DEBUG] Triangle의 능력 사용 횟수: 72번
+[12:11.2] [DEBUG] 플레이어 죽음 횟수: 52번
+[12:14.0] [DEBUG] Triangle의 능력 사용 횟수: 73번
+[12:18.5] [DEBUG] Triangle의 능력 사용 횟수: 74번
+[12:21.0] [DEBUG] 플레이어 죽음 횟수: 53번
+[12:21.2] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 45.52
+[12:21.2] [DEBUG] 플레이어 죽음 횟수: 54번
+[12:23.6] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 2.35
+[12:23.8] [DEBUG] Triangle의 능력 사용 횟수: 75번
+[12:24.8] [DEBUG] Triangle의 능력 사용 횟수: 76번
+[12:29.2] [DEBUG] 플레이어 죽음 횟수: 55번
+[12:32.0] [DEBUG] Triangle의 능력 사용 횟수: 77번
+[12:33.7] [DEBUG] Triangle의 능력 사용 횟수: 78번
+[12:53.7] [DEBUG] Triangle의 능력 사용 횟수: 79번
+[13:01.7] [DEBUG] 플레이어 죽음 횟수: 56번
+[13:04.4] [DEBUG] Triangle의 능력 사용 횟수: 80번
+[13:08.2] [DEBUG] Triangle의 능력 사용 횟수: 81번
+[13:12.4] [DEBUG] Triangle의 능력 사용 횟수: 82번
+[13:16.2] [DEBUG] 플레이어 죽음 횟수: 57번
+[13:18.9] [DEBUG] Triangle의 능력 사용 횟수: 83번
+[13:20.2] [DEBUG] Triangle의 능력 사용 횟수: 84번
+[13:37.0] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 73.38
+[13:37.0] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.00
+[13:37.8] [DEBUG] 플레이어 죽음 횟수: 58번
+[13:40.0] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 2.99
+[13:42.5] [DEBUG] Triangle의 능력 사용 횟수: 85번
+[13:43.6] [DEBUG] Triangle의 능력 사용 횟수: 86번
+[13:46.9] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 6.96
+[13:47.2] [DEBUG] Square의 능력 사용 횟수: 35번
+[13:48.1] [DEBUG] 플레이어 죽음 횟수: 59번
+[13:50.4] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 3.46
+[13:52.7] [DEBUG] Triangle의 능력 사용 횟수: 87번
+[13:53.7] [DEBUG] Triangle의 능력 사용 횟수: 88번
+[13:59.0] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 8.61
+[13:59.1] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 0.10
+[13:59.3] [DEBUG] Triangle의 능력 사용 횟수: 89번
+[13:59.5] [DEBUG] Triangle의 능력 사용 횟수: 90번
+[13:59.7] [DEBUG] Triangle의 능력 사용 횟수: 91번
+[14:10.8] [DEBUG] Triangle의 능력 사용 횟수: 92번
+[14:14.5] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 15.43
+[14:18.0] [INFO] 모양 변경: Star -> Square / Star 유지시간: 3.51
+[14:19.8] [DEBUG] Square의 능력 사용 횟수: 36번
+[14:20.4] [DEBUG] 플레이어 죽음 횟수: 60번
+[14:22.7] [DEBUG] Square의 능력 사용 횟수: 37번
+[14:24.2] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 6.16
+[14:24.3] [DEBUG] 플레이어 죽음 횟수: 61번
+[14:24.4] [INFO] 모양 변경: Triangle -> Circle / Triangle 유지시간: 0.17
+[14:24.4] [DEBUG] 플레이어 죽음 횟수: 62번
+[14:26.2] [INFO] 모양 변경: Circle -> Square / Circle 유지시간: 1.80
+[14:27.3] [DEBUG] Square의 능력 사용 횟수: 38번
+[14:28.0] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 1.81
+[14:28.5] [DEBUG] Triangle의 능력 사용 횟수: 93번
+[14:35.1] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 7.15
+[14:35.7] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 0.61
+[14:35.7] [DEBUG] Triangle의 능력 사용 횟수: 94번
+[14:35.9] [DEBUG] Triangle의 능력 사용 횟수: 95번
+[14:36.0] [DEBUG] Triangle의 능력 사용 횟수: 96번
+[14:36.2] [DEBUG] Triangle의 능력 사용 횟수: 97번
+[14:36.3] [DEBUG] Triangle의 능력 사용 횟수: 98번
+[14:36.6] [DEBUG] Triangle의 능력 사용 횟수: 99번
+[14:37.0] [DEBUG] Triangle의 능력 사용 횟수: 100번
+[14:38.8] [DEBUG] 플레이어 죽음 횟수: 63번
+[14:43.1] [DEBUG] Triangle의 능력 사용 횟수: 101번
+[14:44.6] [DEBUG] Triangle의 능력 사용 횟수: 102번
+[14:55.1] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 19.34
+[14:55.4] [DEBUG] Square의 능력 사용 횟수: 39번
+[14:55.9] [INFO] 모양 변경: Square -> Triangle / Square 유지시간: 0.89
+[14:57.5] [DEBUG] 플레이어 죽음 횟수: 64번
+[15:00.7] [DEBUG] Triangle의 능력 사용 횟수: 103번
+[15:05.4] [DEBUG] Triangle의 능력 사용 횟수: 104번
+[15:12.8] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 16.82
+[15:13.0] [DEBUG] Square의 능력 사용 횟수: 40번
+[15:13.6] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.83
+[15:13.8] [DEBUG] 플레이어 죽음 횟수: 65번
+[15:17.9] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 4.29
+[15:20.8] [DEBUG] Triangle의 능력 사용 횟수: 105번
+[15:24.8] [DEBUG] Triangle의 능력 사용 횟수: 106번
+[15:35.2] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 17.34
+[15:35.6] [DEBUG] Square의 능력 사용 횟수: 41번
+[15:36.3] [INFO] 모양 변경: Square -> Star / Square 유지시간: 1.03
+[15:38.5] [DEBUG] 플레이어 죽음 횟수: 66번
+[15:39.4] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 3.18
+[15:39.4] [DEBUG] 플레이어 죽음 횟수: 67번
+[15:41.8] [DEBUG] Triangle의 능력 사용 횟수: 107번
+[15:44.5] [DEBUG] 플레이어 죽음 횟수: 68번
+[15:44.5] [DEBUG] 플레이어 죽음 횟수: 69번
+[15:46.5] [DEBUG] Triangle의 능력 사용 횟수: 108번
+[15:47.9] [DEBUG] Triangle의 능력 사용 횟수: 109번
+[15:52.8] [INFO] 모양 변경: Triangle -> Square / Triangle 유지시간: 13.35
+[15:52.8] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.00
+[15:52.8] [INFO] 모양 변경: Star -> Square / Star 유지시간: 0.06
+[15:53.1] [DEBUG] Square의 능력 사용 횟수: 42번
+[15:53.7] [INFO] 모양 변경: Square -> Star / Square 유지시간: 0.81
+[15:57.2] [INFO] 체크포인트 [8] 도달
+[16:00.3] [INFO] 모양 변경: Star -> Square / Star 유지시간: 6.62
+[16:03.1] [DEBUG] Square의 능력 사용 횟수: 43번
+[16:03.1] [DEBUG] 플레이어 죽음 횟수: 70번
+[16:03.1] [DEBUG] 플레이어 죽음 횟수: 71번
+[16:07.4] [DEBUG] Square의 능력 사용 횟수: 44번
+[16:07.7] [INFO] 모양 변경: Square -> Star / Square 유지시간: 7.41
+[16:13.6] [INFO] 모양 변경: Star -> Triangle / Star 유지시간: 5.89
+[16:14.4] [DEBUG] Triangle의 능력 사용 횟수: 110번
+[16:17.3] [DEBUG] Triangle의 능력 사용 횟수: 111번
+[16:21.3] [INFO] 모양 변경: Triangle -> Star / Triangle 유지시간: 7.74
+[16:26.2] [DEBUG] 플레이어 죽음 횟수: 72번
+[16:28.5] [INFO] 모양 변경: Star -> Square / Star 유지시간: 7.16
+[16:31.8] [DEBUG] Square의 능력 사용 횟수: 45번
+[16:34.8] [INFO] 모양 변경: Square -> Star / Square 유지시간: 6.36
+[16:54.4] [INFO] 체크포인트 [1000] 도달
+[16:59.5] [INFO] 
+#########################################
+      >>>>> 최종 플레이어 데이터 <<<<<
+#########################################
+
+--------- [전체 플레이 요약] ---------
+총 변신 횟수: 134번
+총 모드 변신 횟수: 6번
+총 단축키 변신 횟수: 128번
+총 죽음 횟수: 72번
+------------------------------------
+
+--------- [모양별 상세 기록 (플레이 시간 순)] ---------
+1. Triangle
+    - 총 유지 시간: 09분: 16.1초
+    - 변신 횟수: 42회
+    - 최대 연속 유지 시간: 01분: 23.6초
+    - 능력 사용 횟수: 111회
+2. Square
+    - 총 유지 시간: 03분: 31.0초
+    - 변신 횟수: 41회
+    - 최대 연속 유지 시간: 01분: 46.4초
+    - 능력 사용 횟수: 45회
+3. Star
+    - 총 유지 시간: 02분: 55.0초
+    - 변신 횟수: 35회
+    - 최대 연속 유지 시간: 00분: 24.8초
+    - 능력 사용 횟수: 0회
+4. Circle
+    - 총 유지 시간: 00분: 48.5초
+    - 변신 횟수: 17회
+    - 최대 연속 유지 시간: 00분: 10.9초
+    - 능력 사용 횟수: 5회
+-------------------------------------------------
+
+#########################################
+      >>>>> 스테이지별 상세 데이터 <<<<<
+#########################################
+
+---------- [🧊 스테이지: Stage2] ----------
+   📝 스테이지 요약: 💀 죽음 0 | ✨ 능력 19 | 🔄 변신 1 (모드 : 1
+    ⏳ 모양별 상세 내역 (유지 시간 순)
+        ➡️ Triangle  [01:23]    ✨ 능력 19  
+        ➡️ Circle    [00:00]    🔄 변신 1  
+
+    --- [체크포인트별 기록] ---
+       ✅ 체크포인트 2: 💀 죽음 0 | ✨ 능력 16 | 🔄 변신 0 
+        ⏳ 모양별 상세 내역 (유지 시간 순)
+            ➡️ Triangle  [01:15]    ✨ 능력 16  
+       ✅ 체크포인트 3: 💀 죽음 0 | ✨ 능력 0 | 🔄 변신 1 (모드 : 1
+        ⏳ 모양별 상세 내역 (유지 시간 순)
+            ➡️ Circle    [00:00]    🔄 변신 1  
+
+---------- [🧊 스테이지: Stage3] ----------
+   📝 스테이지 요약: 💀 죽음 0 | ✨ 능력 1 | 🔄 변신 1 (모드 : 1
+    ⏳ 모양별 상세 내역 (유지 시간 순)
+        ➡️ Circle    [00:10]    ✨ 능력 1   
+        ➡️ Star      [00:00]    🔄 변신 1  
+
+    --- [체크포인트별 기록] ---
+       ✅ 체크포인트 4: 💀 죽음 0 | ✨ 능력 0 | 🔄 변신 1 (모드 : 1
+        ⏳ 모양별 상세 내역 (유지 시간 순)
+            ➡️ Star      [00:00]    🔄 변신 1  
+
+---------- [🧊 스테이지: Stage4] ----------
+   📝 스테이지 요약: 💀 죽음 0 | ✨ 능력 0 | 🔄 변신 0 
+    ⏳ 모양별 상세 내역 (유지 시간 순)
+        ➡️ Star      [00:22]             
+
+---------- [🧊 스테이지: Stage5] ----------
+   📝 스테이지 요약: 💀 죽음 72 | ✨ 능력 122 | 🔄 변신 131 (모드 : 3 / 단축키 : 128)
+    ⏳ 모양별 상세 내역 (유지 시간 순)
+        ➡️ Triangle  [07:52]    💀 죽음 33 | ✨ 능력 92 | 🔄 변신 41 
+        ➡️ Star      [02:32]    💀 죽음 11 | 🔄 변신 34 
+        ➡️ Square    [01:44]    💀 죽음 14 | ✨ 능력 26 | 🔄 변신 40 
+        ➡️ Circle    [00:38]    💀 죽음 14 | ✨ 능력 4 | 🔄 변신 16 
+
+    --- [체크포인트별 기록] ---
+       ✅ 체크포인트 5: 💀 죽음 0 | ✨ 능력 0 | 🔄 변신 1 (모드 : 1
+        ⏳ 모양별 상세 내역 (유지 시간 순)
+            ➡️ Square    [00:03]    🔄 변신 1  
+            ➡️ Star      [00:02]             
+       ✅ 체크포인트 6: 💀 죽음 11 | ✨ 능력 14 | 🔄 변신 22 (모드 : 1 / 단축키 : 21)
+        ⏳ 모양별 상세 내역 (유지 시간 순)
+            ➡️ Square    [00:31]    💀 죽음 3 | ✨ 능력 8 | 🔄 변신 9 
+            ➡️ Triangle  [00:27]    💀 죽음 5 | ✨ 능력 5 | 🔄 변신 6 
+            ➡️ Circle    [00:13]    💀 죽음 3 | ✨ 능력 1 | 🔄 변신 3 
+            ➡️ Star      [00:08]    🔄 변신 4  
+       ✅ 체크포인트 7: 💀 죽음 52 | ✨ 능력 90 | 🔄 변신 91 (단축키 : 91)
+        ⏳ 모양별 상세 내역 (유지 시간 순)
+            ➡️ Triangle  [06:24]    💀 죽음 28 | ✨ 능력 73 | 🔄 변신 30 
+            ➡️ Star      [01:20]    💀 죽음 8 | 🔄 변신 23 
+            ➡️ Square    [00:40]    💀 죽음 9 | ✨ 능력 15 | 🔄 변신 28 
+            ➡️ Circle    [00:12]    💀 죽음 7 | ✨ 능력 2 | 🔄 변신 10 
+       ✅ 체크포인트 8: 💀 죽음 3 | ✨ 능력 5 | 🔄 변신 6 (단축키 : 6)
+        ⏳ 모양별 상세 내역 (유지 시간 순)
+            ➡️ Star      [00:35]    💀 죽음 1 | 🔄 변신 3 
+            ➡️ Square    [00:13]    💀 죽음 2 | ✨ 능력 3 | 🔄 변신 2 
+            ➡️ Triangle  [00:07]    ✨ 능력 2 | 🔄 변신 1 
+       ✅ 체크포인트 1000: 💀 죽음 0 | ✨ 능력 0 | 🔄 변신 0 
+        ⏳ 모양별 상세 내역 (유지 시간 순)
+            ➡️ Star      [00:05]             
+
+[00:00.0] [DEBUG] === Game Session Ended ===
