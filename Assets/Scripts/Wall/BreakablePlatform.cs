@@ -236,9 +236,16 @@ public class BreakablePlatform : MonoBehaviour
     /// <summary>
     /// 외부 인터페이스: 플랫폼 파괴 시작
     /// 레이캐스트 등 외부에서 호출 가능
+    /// 수도코드:
+    /// 1. 이미 낙하 처리가 진행 중이면 무시
+    /// 2. BreakRoutine 시작
     /// </summary>
     public void TriggerBreak()
     {
+        // 이미 낙하 관련 처리가 진행 중인 경우 중복 실행 방지
+        if (isTriggered || isFalling || isRespawning)
+            return;
+
         StartCoroutine(BreakRoutine());
     }
 
