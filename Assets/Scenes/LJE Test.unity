@@ -984,10 +984,6 @@ MonoBehaviour:
   deadZoneSize: {x: 6, y: 2.5}
   softZoneSize: {x: 4, y: 1}
   _velocity: {x: 3, y: 3, z: 3}
-  MaxZoomIn: 5
-  MaxZoomOut: 10
-  ZoomLerpSpeed: 1
-  SpeedThreshold: 999
 --- !u!114 &1318149769
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1585,6 +1581,22 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2888391955349680281}
     - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+      propertyPath: 'shapes.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2838019288967511636}
+    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+      propertyPath: 'shapes.Array.data[1]'
+      value: 
+      objectReference: {fileID: 3077870103139330319}
+    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+      propertyPath: 'shapes.Array.data[2]'
+      value: 
+      objectReference: {fileID: 4786138254855408591}
+    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
+      propertyPath: 'shapes.Array.data[3]'
+      value: 
+      objectReference: {fileID: 154410628}
+    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
       propertyPath: 'pannels.Array.data[0]'
       value: 
       objectReference: {fileID: 3576391744898493381}
@@ -1600,22 +1612,6 @@ PrefabInstance:
       propertyPath: 'pannels.Array.data[3]'
       value: 
       objectReference: {fileID: 3316286845769201726}
-    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
-      propertyPath: 'players.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2838019288967511636}
-    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
-      propertyPath: 'players.Array.data[1]'
-      value: 
-      objectReference: {fileID: 3077870103139330319}
-    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
-      propertyPath: 'players.Array.data[2]'
-      value: 
-      objectReference: {fileID: 4786138254855408591}
-    - target: {fileID: 2143235623335957623, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
-      propertyPath: 'players.Array.data[3]'
-      value: 
-      objectReference: {fileID: 154410628}
     - target: {fileID: 7826722241867851921, guid: 08963ef51116c654b8a81bfa90ce0fd0, type: 3}
       propertyPath: m_Name
       value: PlayerManager

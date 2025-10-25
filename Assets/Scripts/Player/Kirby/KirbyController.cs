@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class KirbyController : MonoBehaviour, IPlayerController
 {
-    // Hack: 능력 Data log 용
+    // 능력 사용 데이터 로그
     [Header("Game Log 용")]
     [SerializeField] PlayerDataLog playerDataLog;
 
@@ -13,44 +13,43 @@ public class KirbyController : MonoBehaviour, IPlayerController
     #endregion
 
     [Header("Movement Stats")]
-    [SerializeField, Range(0f, 20f)][Tooltip("�ְ��ӵ�")] private float maxSpeed = 10f;
-    [SerializeField, Range(0f, 100f)][Tooltip("�󸶳� ���� �ְ��ӵ��� ����")] private float maxAcceleration = 52f;
-    [SerializeField, Range(0f, 100f)][Tooltip("�Է°� ������, �󸶳� ���� ����")] private float maxDecceleration = 52f;
-    [SerializeField, Range(1f, 100f)][Tooltip("���� ��ȯ��, �󸶳� ���� ����")] private float maxTurnSpeed = 80f;
-    [SerializeField, Range(0f, 100f)][Tooltip("���߿���, �󸶳� ���� �ְ��ӵ��� ����")] private float maxAirAcceleration;
-    [SerializeField, Range(0f, 100f)][Tooltip("���߿���, �Է°� ������, �󸶳� ���� ����")] private float maxAirDeceleration; // �ٿ��� AirBreak
-    [SerializeField, Range(0f, 100f)][Tooltip("���߿���, ���� ��ȯ��, �󸶳� ���� ����")] private float maxAirTurnSpeed = 80f;// �ٿ��� AirControl
+    [SerializeField, Range(0f, 20f)][Tooltip("최대 속도")] private float maxSpeed = 10f;
+    [SerializeField, Range(0f, 100f)][Tooltip("가속도")] private float maxAcceleration = 52f;
+    [SerializeField, Range(0f, 100f)][Tooltip("감속도")] private float maxDecceleration = 52f;
+    [SerializeField, Range(1f, 100f)][Tooltip("방향 전환 속도")] private float maxTurnSpeed = 80f;
+    [SerializeField, Range(0f, 100f)][Tooltip("공중 가속도")] private float maxAirAcceleration;
+    [SerializeField, Range(0f, 100f)][Tooltip("공중 감속도")] private float maxAirDeceleration;
+    [SerializeField, Range(0f, 100f)][Tooltip("공중 방향 전환 속도")] private float maxAirTurnSpeed = 80f;
 
     [Header("Turbo Stats")]
-    [SerializeField, Range(0f, 20f)][Tooltip("�ͺ��ӵ�")] private float turboSpeed = 20f;
-    [SerializeField, Range(0f, 100f)][Tooltip("���� ��ȯ��, �󸶳� ���� ����")] private float turboDecceleration = 52f;
+    [SerializeField, Range(0f, 20f)][Tooltip("터보 속도")] private float turboSpeed = 20f;
+    [SerializeField, Range(0f, 100f)][Tooltip("터보 감속도")] private float turboDecceleration = 52f;
 
     [Header("Bounce Settings")]
-    [Tooltip("X������ ƨ�� ������ ��")]
+    [Tooltip("X방향 튀어오르는 힘")]
     [SerializeField] private float bounceStrength = 5f;
-    [Tooltip("Y������ ƨ�� ������ ��")]
+    [Tooltip("Y방향 튀어오르는 힘")]
     [SerializeField] private float bounceHeight = 10f;
-    [Tooltip("ƨ�� ������ ȿ���� ���ӵǴ� �ּҽð�")]
+    [Tooltip("튀어오르는 효과가 지속되는 최소 시간")]
     [SerializeField] private float bounceDuration = 0.3f;
-    private bool isBouncing = false; // ���絵 ƨ�� �������� 
-    private bool isFixedBouncing = false; // ƨ�� �������� �ּ� ���� �ð�
+    private bool isBouncing = false; // 벽에 튀어오르는 상태
+    private bool isFixedBouncing = false; // 튀어오르는 동안 입력 무시 시간
 
     [Header("Current State")]
     [SerializeField]
     private LayerMask groundLayer;
     public bool onGround;
-    public bool pressingKey; // �̵�Ű�� ������ �ִ��� ����
+    public bool pressingKey; // 이동 키를 누르고 있는지 확인
     private bool turboMode;
 
     #region Private - Speed Caculation Variables
-    private Vector2 desiredVelocity; // �̵��ϰ� �;� �ϴ� Velocity��
-    private Vector2 moveVelocity; // ���� �̵��� Velocity ��
-    private float directionX; // ������ �ִ� ���� ����: -1, ������ +1
-    private float turboDirectionX; // ������ �ִ� ���� ����: -1, ������ +1
-    private float maxSpeedChangeAmount; // ���� ���� �� �� �ִ� �ִ� �ӵ� ���淮
-    private float acceleration; // ���� ����Ǵ� ���ӵ�
-    private float deceleration; // ���� ����Ǵ� ���ӵ�
-    private float turnSpeed; // ������ȯ �ӵ�
+    private Vector2 desiredVelocity; // 원하는 목표 속도
+    private float directionX; // 이동 방향: -1(왼쪽), +1(오른쪽)
+    private float turboDirectionX; // 터보 모드 이동 방향
+    private float maxSpeedChangeAmount; // 한 프레임당 변경 가능한 최대 속도 변화량
+    private float acceleration; // 현재 가속도
+    private float deceleration; // 현재 감속도
+    private float turnSpeed; // 방향 전환 속도
     #endregion
 
     #region Public - Return Speed Variables
@@ -72,22 +71,27 @@ public class KirbyController : MonoBehaviour, IPlayerController
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-        _groundCheck = GetComponent<KirbyGroundCheck>(); // �� ��Ҵ��� �˱����� ��ũ��Ʈ
+        _groundCheck = GetComponent<KirbyGroundCheck>();
     }
 
     private void OnDisable()
     {
         InitializedCircle();
     }
+
     private void Update()
     {
-        // �Է�Ű�� ������ ���� �ּ� �����ؾ� �ϴ� boucning�ð�
+        // 지상에 있으면 대시 횟수 초기화
+        if (_groundCheck.GetOnGround())
+            dashCount = maxDashCount;
+
+        // 튀어오르는 동안 최소 시간 동안은 입력 무시
         if (isFixedBouncing)
         {
             return;
         }
 
-        // �Է°��� ������, ���� �������� ������ȯ
+        // 입력값에 따라 캐릭터 방향 전환
         if (directionX != 0)
         {
             transform.localScale = new Vector3(directionX > 0 ? 1 : -1, 1, 1);
@@ -98,70 +102,63 @@ public class KirbyController : MonoBehaviour, IPlayerController
             pressingKey = false;
         }
 
-        // �ٿ ���¿��� �Է��� ������, ��� �ٿ vector ����
+        // 튀어오르는 상태에서 입력이 있으면 바운스 상태 해제
         if (isBouncing)
         {
             if (pressingKey) { isBouncing = false; }
             else return;
         }
 
-
-        if (turboMode)
-        {
-            // �ͺ� speed�� �̵�
-            desiredVelocity = new Vector2(transform.localScale.x, 0f) * turboSpeed;
-            turboDirectionX = desiredVelocity.x; // ���� ������ ����
-        }
-        else
-        {
-            // ���� ������ �ִ� ���⿡, maxSpeed�� ����, desiredVelocity�� ���ϱ� (�ٷ� maxSpeed�� �������� �ʰ�, ���ӵ� ���η� ���ϱ�)
-            desiredVelocity = new Vector2(directionX, 0f) * Mathf.Max(maxSpeed, 0f);
-        }
+        // 터보 모드 여부에 따라 목표 속도 설정
     }
 
     private void FixedUpdate()
     {
-        if (isFixedBouncing) return; // �ּ� �ٿ ���� �ð����� return
+        // 튀어오르는 동안 최소 시간 동안은 물리 처리 무시
+        if (isFixedBouncing) return;
 
         onGround = _groundCheck.GetOnGround();
 
-        // �ٿ ���¿����� ���� ������, �ٿ ���� ����
+        // 튀어오르는 상태에서 지상에 착지하면 바운스 해제
         if (isBouncing)
         {
             if (onGround) { isBouncing = false; }
             return;
         }
-        //���� velocity ���� ��������
-        moveVelocity = _rb.linearVelocity;
+
 
         if (turboMode)
         {
-            // �ͺ� ��忡���� �����̳�, ���� ����
+            // 터보 모드: 즉시 속도 변경
             runWithoutAcceleration();
         }
         else
         {
+            terboLayRotation = Vector2.down;
+            // 일반 모드: 가속도를 적용한 이동
             runWithAcceleration();
         }
     }
 
-    // Hack: �ӽ÷� Wall tag ����
+    private Vector2 previousVelocity;
+
+    // 벽과 충돌 시 바운스 처리
     private void OnCollisionStay2D(Collision2D collision)
     {
-        // �ٿ ���°ų� �ͺ���尡 �ƴϸ� ������ �ʿ� ����
+        // 바운스 중이거나 터보 모드가 아니면 무시
         if (isBouncing || !turboMode) return;
-        if ((groundLayer) != 0)
+
+        if (groundLayer != 0)
         {
-            // ��� �浹 ������ ��ȸ�ϸ� ���� ������ Ȯ���մϴ�.
+            // 모든 충돌 지점을 확인하여 벽인지 판단
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 Vector2 normal = contact.normal;
+                float angle = Vector2.Angle(terboLayRotation, normal) - 90f;
 
-                // ���� ������ y ������ 0�� ������� Ȯ���մϴ�.
-                if (Mathf.Abs(normal.y) < 0.01f)
+                if (angle < maxCollisionAngle)
                 {
                     turboMode = false;
-                    // �浹 �� �ٿ �ڷ�ƾ ����
                     StartCoroutine(Bounce(collision));
                     return;
                 }
@@ -169,7 +166,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
         }
     }
 
-
+    // 커비 상태 초기화
     private void InitializedCircle()
     {
         turboMode = false;
@@ -177,19 +174,23 @@ public class KirbyController : MonoBehaviour, IPlayerController
         isBouncing = false;
     }
 
-    // �ְ��ӵ� ������ ���� ���ӵ� �����
+    // 가속도를 적용한 이동 (일반 모드)
     private void runWithAcceleration()
     {
-        // ���߿� �ִ����� ����, ������ ���ӵ�, ���ӵ�, ������ȯ�ӵ� �� ����
+        _rb.gravityScale = fixeNormaldGravity;
+
+        // 지상/공중 여부에 따라 가속도 설정
         acceleration = onGround ? maxAcceleration : maxAirAcceleration;
         deceleration = onGround ? maxDecceleration : maxAirDeceleration;
         turnSpeed = onGround ? maxTurnSpeed : maxAirTurnSpeed;
 
-        // �̵�Ű�� ��������
+        // 이동 키를 누르고 있을 때
         if (pressingKey)
         {
-            if (Mathf.Sign(directionX) == Mathf.Sign(moveVelocity.x))
+            // 같은 방향으로 이동 중
+            if (Mathf.Sign(directionX) == Mathf.Sign(_rb.linearVelocity.x))
             {
+                // 최대 속도 미만이면 가속
                 if (Mathf.Abs(_rb.linearVelocity.x) < maxSpeed)
                 {
                     if (Mathf.Abs(_rb.linearVelocity.x + acceleration * directionX * Time.fixedDeltaTime) >= maxSpeed)
@@ -198,22 +199,25 @@ public class KirbyController : MonoBehaviour, IPlayerController
                     }
                     else
                         _rb.linearVelocityX += acceleration * directionX * Time.deltaTime;
-
                 }
                 else
                 {
+                    // 최대 속도 초과 시 감속
                     _rb.linearVelocityX -= deceleration * Mathf.Sign(_rb.linearVelocity.x) * Time.deltaTime;
                 }
-
             }
             else
             {
+                // 반대 방향으로 전환 시 턴 속도 적용
                 _rb.linearVelocityX += turnSpeed * directionX * Time.deltaTime;
             }
         }
         else
         {
+            // 키를 떼면 감속
             _rb.linearVelocityX -= deceleration * Mathf.Sign(_rb.linearVelocity.x) * Time.deltaTime;
+
+            // 속도가 0을 넘어가면 정지
             if (Mathf.Sign(_rb.linearVelocity.x) != Mathf.Sign(_rb.linearVelocity.x - deceleration * Mathf.Sign(_rb.linearVelocity.x) * Time.fixedDeltaTime))
             {
                 _rb.linearVelocityX = 0;
@@ -221,93 +225,100 @@ public class KirbyController : MonoBehaviour, IPlayerController
         }
     }
 
-    // ���ӵ� ���� ���� �ٷ� �ְ� �ӵ��� �̵�
+    private Vector2 terboLayRotation = Vector2.down;
+    [SerializeField] private float groundCheckDistance = 1f;
+    [SerializeField] private float rotationReturnSpeed = 5f; // 회전 복귀 속도
+    [SerializeField] private float terboForce = 60f;
+    [SerializeField] private float maxCollisionAngle = 30.0f;
+    private float fixeNormaldGravity = 4.0f;
+    private float fixeterbodGravity = 0f;
+    // 즉시 속도 변경 (터보 모드)
     private void runWithoutAcceleration()
     {
-
-        //���� �̵� x �����, �������� �ϴ� ���� x���� ��ȣ�� �ٸ��ٴ� ����. ����Ű�� �ٲ�ٴ� ������, turnSpeed�� �����Ѵ�
-        if (Mathf.Sign(turboDirectionX) != Mathf.Sign(moveVelocity.x))
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, terboLayRotation, groundCheckDistance, groundLayer);
+        Debug.DrawRay(transform.position, terboLayRotation * groundCheckDistance, Color.red);
+        Vector2 moveDirection;
+        if (hit.collider != null)
         {
-            maxSpeedChangeAmount = turboDecceleration * Time.deltaTime;
-
-            //���� velocity ����, ���� �Ǵ� velocity ���� ���̸� ���ϵ�, ���� �ִ� �ӵ����淮�� ���� ���� ���� ��ȯ
-            moveVelocity.x = Mathf.MoveTowards(moveVelocity.x, desiredVelocity.x, maxSpeedChangeAmount);
+            // if (_rb.linearVelocity.magnitude > turboSpeed / 2f)
+            // {
+            _rb.gravityScale = fixeterbodGravity;
+            _rb.AddForce(9.81f * fixeNormaldGravity * terboLayRotation * _rb.mass, ForceMode2D.Force);
+            // }
+            // else
+            // {
+            //     _rb.gravityScale = fixeNormaldGravity;
+            // }
+            terboLayRotation = -hit.normal;
+            moveDirection = new Vector2(-terboLayRotation.y, terboLayRotation.x) * Mathf.Sign(transform.localScale.x);
         }
         else
         {
-            // ������ ������ �ܼ��ϰ�, ���� ���� * �ִ�ӵ� linearVelocity ���� Rigidbody ����
-            moveVelocity.x = desiredVelocity.x;
+            _rb.gravityScale = fixeNormaldGravity;
+            terboLayRotation = Vector2.Lerp(terboLayRotation, Vector2.down, rotationReturnSpeed * Time.fixedDeltaTime);
+            moveDirection = new Vector2(Mathf.Sign(transform.localScale.x), 0);
         }
-        _rb.linearVelocity = moveVelocity;
+        _rb.AddForce(terboForce * moveDirection * _rb.mass, ForceMode2D.Force);
+
+        // 속도 제한
+        if (_rb.linearVelocity.magnitude > turboSpeed)
+        {
+            _rb.linearVelocity = _rb.linearVelocity.normalized * turboSpeed;
+        }
     }
 
-    private void TurboWithAcceleration()
-    {
-        // ���ӵ��� ������ ������
-        //�ܼ��ϰ�, ���� ���� * �ִ�ӵ� linearVelocity ���� Rigidbody ����
-        moveVelocity.x = desiredVelocity.x;
-        _rb.linearVelocity = moveVelocity;
-    }
-
+    // 벽 충돌 시 바운스 효과
     private IEnumerator Bounce(Collision2D collision)
     {
         isFixedBouncing = true;
         isBouncing = true;
 
-        Vector2 normal = Vector2.zero;
 
-        // collision.contacts 배열을 순회하며 조건을 만족하는 normal을 찾습니다.
-        foreach (ContactPoint2D contact in collision.contacts)
-        {
-            // y 성분의 절대값이 0.01f보다 작은 normal을 찾습니다.
-            if (Mathf.Abs(contact.normal.y) < 0.01f)
-            {
-                normal = contact.normal;
-                break; // 조건을 만족하는 normal을 찾았으므로 루프를 종료합니다.
-            }
-        }
+        isFixedBouncing = true;
+        isBouncing = true;
+        Vector2 fixedBounceVelocity = new Vector2(
+            -transform.localScale.x * bounceStrength,
+            bounceHeight
+        );
 
-        // 조건을 만족하는 normal이 있을 경우에만 나머지 로직을 실행합니다.
-        if (normal != Vector2.zero)
-        {
-            isFixedBouncing = true;
-            isBouncing = true;
-            Vector2 fixedBounceVelocity = new Vector2(
-                normal.x * bounceStrength,
-                bounceHeight
-            );
+        _rb.linearVelocity = fixedBounceVelocity;
 
-            _rb.linearVelocity = fixedBounceVelocity;
+        yield return new WaitForSeconds(bounceDuration);
+        isFixedBouncing = false;
 
-            yield return new WaitForSeconds(bounceDuration);
-            isFixedBouncing = false;
-        }
     }
 
     #region Public - PlayerInput
+    // 이동 입력 처리
     public void OnMoveInput(Vector2 movementInput)
     {
         directionX = movementInput.x;
     }
 
+    // 터보 모드 토글
     public void OnTurboModePressed()
     {
-        // �ٿ ���¿����� TurboMode �Ұ���
+        // 바운스 중에는 터보 모드 변경 불가
         if (isBouncing) return;
 
         if (turboMode == false)
         {
-            // 터보 모드는 비활성화는 능력 사용으로 보지 않음
-            playerDataLog.OnPlayerUseAbility(); // Hack : 원 능력 사용 로그
+            // 터보 활성화 시 능력 사용 로그
+            playerDataLog.OnPlayerUseAbility();
         }
         turboMode = !turboMode;
     }
 
-    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    private int maxDashCount = 1;
+    public int dashCount { get; set; }
+
+    // 플레이어 상태 전환 시 속도 설정
+    public void OnEnableSetVelocity(float newVelX, float newVelY, int currentDashCount)
     {
         _rb = GetComponent<Rigidbody2D>();
-        _groundCheck = GetComponent<KirbyGroundCheck>(); // �� ��Ҵ��� �˱����� ��ũ��Ʈ
+        _groundCheck = GetComponent<KirbyGroundCheck>();
         _rb.linearVelocity = new Vector2(newVelX, newVelY);
+        dashCount = currentDashCount;
     }
     #endregion
 }

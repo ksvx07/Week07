@@ -1068,7 +1068,7 @@ Transform:
   m_GameObject: {fileID: 2653882836057823696}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -1, w: 0}
-  m_LocalPosition: {x: -0.239, y: -0.237, z: -0.12994352}
+  m_LocalPosition: {x: 0.235, y: -0.237, z: -0.12994352}
   m_LocalScale: {x: 0.11121116, y: 0.12596348, z: 0.09172056}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1294,7 +1294,7 @@ MonoBehaviour:
   groundDashDuration: 0.2
   ropeSegments: 20
   ropeSagMultiplier: 0.5
-  swingPointSaveTime: 0.5
+  indicatorStabilityThreshold: 0.5
   playerDataLog: {fileID: 0}
 --- !u!212 &3693717418050999450
 SpriteRenderer:
@@ -1446,7 +1446,7 @@ DistanceJoint2D:
   m_Anchor: {x: 0, y: 0}
   m_ConnectedAnchor: {x: 0, y: 0}
   m_AutoConfigureDistance: 1
-  m_Distance: 1
+  m_Distance: 8.551023
   m_MaxDistanceOnly: 0
 --- !u!120 &4029033951336266138
 LineRenderer:
@@ -2184,7 +2184,7 @@ Transform:
   m_GameObject: {fileID: 4372297545852354472}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -1, w: 0}
-  m_LocalPosition: {x: 0.072, y: -0.242, z: -0.12994352}
+  m_LocalPosition: {x: -0.088, y: -0.242, z: -0.12994352}
   m_LocalScale: {x: 0.18333812, y: 0.20765816, z: 0.15120672}
   m_ConstrainProportionsScale: 0
   m_Children: []
