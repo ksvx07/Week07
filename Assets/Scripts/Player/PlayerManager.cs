@@ -37,6 +37,7 @@ public class PlayerManager : MonoBehaviour
     public bool IsTimeSlow { get; private set; }
     private Vector3 _MaxScale = new Vector3(1.2f, 1.2f, 1.2f);
     [SerializeField] private float _selectPanelSpeed = 60f;
+    [SerializeField] private float transformTimeScale = 0.02f;
     private Coroutine pannelActive;
 
     #region 게임 로그용
