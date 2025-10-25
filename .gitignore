@@ -106,3 +106,7 @@ InitTestScene*.unity*
 /Assets/vInspector/
 /Assets/vRuler/
 /Assets/vTabs/
+/Assets/Plugins/CodeStage/
+/Assets/Plugins.meta
+/Assets/Plugins/*.meta
+/ProjectSettings/

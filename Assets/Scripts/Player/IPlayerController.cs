@@ -2,5 +2,6 @@ using UnityEngine;
 
 public interface IPlayerController
 {
-    void OnEnableSetVelocity(float newVelX, float newVelY);
+    int dashCount { get; set; }
+    void OnEnableSetVelocity(float newVelX, float newVelY, int currentDashCount);
 }
