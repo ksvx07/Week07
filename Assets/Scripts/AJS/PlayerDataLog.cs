@@ -10,14 +10,17 @@ public class LogStats
     public int deadAmount = 0;
     public int abilityUseAmount = 0;
     public int shapeChangeAmount = 0;
-    public Dictionary<PlayerShape, int> shapeChangeCounts = new Dictionary<PlayerShape, int>();
+
+    public int modeSwitchAmount = 0;
+    public int quickSwitchAmount = 0;
+
+    public Dictionary<PlayerShape, ShapeLogDetail> shapeDetails = new Dictionary<PlayerShape, ShapeLogDetail>();
 
     public LogStats()
     {
-        // 모든 PlayerShape Enum 값에 대해 Dictionary를 초기화합니다.
         foreach (PlayerShape shape in Enum.GetValues(typeof(PlayerShape)))
         {
-            shapeChangeCounts[shape] = 0;
+            shapeDetails[shape] = new ShapeLogDetail();
         }
     }
 }
@@ -33,6 +36,15 @@ public class StageLogData
     {
         this.stageName = name;
     }
+}
+
+// 각 모양에 대한 상세 데이터를 담는 클래스
+public class ShapeLogDetail
+{
+    public int changeCount = 0;
+    public float playTime = 0f;
+    public int abilityUseCount = 0;
+    public int deadCount = 0;
 }
 
 
@@ -63,7 +75,18 @@ public class PlayerDataLog : MonoBehaviour
         // currentShape가 초기화된 후에만 실행
         if (shapePlayTimes.ContainsKey(currentShape))
         {
-            shapePlayTimes[currentShape] += Time.deltaTime;
+            float deltaTime = Time.deltaTime;
+            shapePlayTimes[currentShape] += deltaTime;
+
+            // 현재 스테이지/체크포인트의 모양별 유지 시간을 누적
+            if (currentStageLog != null)
+            {
+                currentStageLog.stageTotalStats.shapeDetails[currentShape].playTime += deltaTime;
+            }
+            if (currentCheckpointLog != null)
+            {
+                currentCheckpointLog.shapeDetails[currentShape].playTime += deltaTime;
+            }
         }
     }
 
@@ -150,12 +173,12 @@ public class PlayerDataLog : MonoBehaviour
         if (currentStageLog != null)
         {
             currentStageLog.stageTotalStats.shapeChangeAmount++;
-            currentStageLog.stageTotalStats.shapeChangeCounts[newShape]++;
+            currentStageLog.stageTotalStats.shapeDetails[newShape].changeCount++;
         }
         if (currentCheckpointLog != null)
         {
             currentCheckpointLog.shapeChangeAmount++;
-            currentCheckpointLog.shapeChangeCounts[newShape]++;
+            currentCheckpointLog.shapeDetails[newShape].changeCount++;
         }
     }
 
@@ -169,10 +192,12 @@ public class PlayerDataLog : MonoBehaviour
         if (currentStageLog != null)
         {
             currentStageLog.stageTotalStats.deadAmount++;
+            currentStageLog.stageTotalStats.shapeDetails[currentShape].deadCount++; // 추가
         }
         if (currentCheckpointLog != null)
         {
             currentCheckpointLog.deadAmount++;
+            currentCheckpointLog.shapeDetails[currentShape].deadCount++; // 추가
         }
     }
 
@@ -186,10 +211,12 @@ public class PlayerDataLog : MonoBehaviour
         if (currentStageLog != null)
         {
             currentStageLog.stageTotalStats.abilityUseAmount++;
+            currentStageLog.stageTotalStats.shapeDetails[currentShape].abilityUseCount++; // 추가
         }
         if (currentCheckpointLog != null)
         {
             currentCheckpointLog.abilityUseAmount++;
+            currentCheckpointLog.shapeDetails[currentShape].abilityUseCount++; // 추가
         }
     }
 
@@ -197,6 +224,10 @@ public class PlayerDataLog : MonoBehaviour
     {
         if (newShape == currentShape) return;
         quickSwitchAmount++;
+
+        if (currentStageLog != null) currentStageLog.stageTotalStats.quickSwitchAmount++;
+        if (currentCheckpointLog != null) currentCheckpointLog.quickSwitchAmount++;
+
         OnPlayerShapeChange(newShape);
     }
 
@@ -204,6 +235,10 @@ public class PlayerDataLog : MonoBehaviour
     {
         if (newShape == currentShape) return;
         modeSwitchAmount++;
+
+        if (currentStageLog != null) currentStageLog.stageTotalStats.modeSwitchAmount++;
+        if (currentCheckpointLog != null) currentCheckpointLog.modeSwitchAmount++;
+
         OnPlayerShapeChange(newShape);
     }
 
@@ -278,7 +313,7 @@ public class PlayerDataLog : MonoBehaviour
                 report.AppendLine($"---------- [스테이지: {stageData.stageName}] ----------");
 
                 // 스테이지 전체 기록 출력
-                report.Append(GenerateScopeReport("스테이지 전체", stageData.stageTotalStats));
+                report.Append(GenerateScopeReport("스테이지 요약", stageData.stageTotalStats));
 
                 // 해당 스테이지의 체크포인트별 기록 출력
                 if (stageData.checkpointStats.Count > 0)
@@ -299,24 +334,48 @@ public class PlayerDataLog : MonoBehaviour
     }
 
     /// <summary>
-    /// 스테이지/체크포인트별 기록 문자열을 생성하는 헬퍼 함수
+    /// 체크포인트별 기록 문자열을 생성하는 헬퍼 함수
     /// </summary>
     private string GenerateScopeReport(string title, LogStats stats, string indentation = "  ")
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"{indentation}▶ {title}:");
+        sb.AppendLine($"{indentation}▶ 체크포인트 {title}:");
         sb.AppendLine($"{indentation}  - 죽음 횟수: {stats.deadAmount}회");
         sb.AppendLine($"{indentation}  - 능력 사용 횟수: {stats.abilityUseAmount}회");
         sb.AppendLine($"{indentation}  - 총 변신 횟수: {stats.shapeChangeAmount}회");
 
-        // 변신한 모양이 있을 경우에만 상세 내역 출력
-        var shapeChanges = stats.shapeChangeCounts.Where(kv => kv.Value > 0).OrderByDescending(kv => kv.Value);
-        if (shapeChanges.Any())
+        // 변신 횟수가 0보다 클 때만 세부 정보 표시
+        if (stats.shapeChangeAmount > 0)
         {
-            sb.AppendLine($"{indentation}  - 모양별 변신 내역:");
-            foreach (var pair in shapeChanges)
+            sb.AppendLine($"{indentation}    - 모드 변신: {stats.modeSwitchAmount}회");
+            sb.AppendLine($"{indentation}    - 단축키 변신: {stats.quickSwitchAmount}회");
+        }
+
+        // 변신한 모양이 있을 경우에만 상세 내역 출력 (shapeDetails.changeCount > 0)
+        var changedShapesDetails = stats.shapeDetails
+            .Where(kv => kv.Value.changeCount > 0 || kv.Value.abilityUseCount > 0 || kv.Value.deadCount > 0 || kv.Value.playTime > 0.1f)
+            .OrderByDescending(kv => kv.Value.playTime);
+
+        if (changedShapesDetails.Any())
+        {
+            sb.AppendLine($"{indentation}  - 모양별 상세 내역 (유지 시간 순):");
+            foreach (var pair in changedShapesDetails)
             {
-                sb.AppendLine($"{indentation}    - {pair.Key}: {pair.Value}회");
+                PlayerShape shape = pair.Key;
+                ShapeLogDetail detail = pair.Value;
+
+                TimeSpan timeSpan = TimeSpan.FromSeconds(detail.playTime);
+                string formattedTime = $"{timeSpan.Minutes:D2}분 {timeSpan.Seconds:D2}초";
+
+                // 각 항목이 0이 아닐 경우에만 문자열에 추가하여 간결하게 표시
+                List<string> details = new List<string>();
+                if (detail.changeCount > 0) details.Add($"변신 {detail.changeCount}회");
+                if (detail.abilityUseCount > 0) details.Add($"능력 {detail.abilityUseCount}회");
+                if (detail.deadCount > 0) details.Add($"죽음 {detail.deadCount}회");
+
+                string detailString = details.Any() ? $" ({string.Join(", ", details)})" : "";
+
+                sb.AppendLine($"{indentation}    - {shape}: 유지 시간 {formattedTime}{detailString}");
             }
         }
         return sb.ToString();
