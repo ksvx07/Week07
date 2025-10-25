@@ -58,6 +58,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private float groundDashCheckDistance = 1.0f;
     [SerializeField] private float groundDashForce = 10f;
     [SerializeField] private float groundDashDuration = 0.2f;
+    [SerializeField] private float swingCooldown = 0.1f; // 스윙 쿨타임
 
     [Header("Rope Visuals")] // [새로 추가]
     [SerializeField] private int ropeSegments = 20; // 로프를 그릴 포인트 수 (부드러움)
@@ -82,6 +83,8 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     private Vector3 originalScale;
     private bool isSwinging = false;
     private bool isDashingToSwing = false;
+    private float swingCooldownCounter = 0f; // 스윙 쿨타임 카운터
+    private bool isSwingKeyHeld = false; // 스윙 키를 누르고 있는지 확인
 
     private DistanceJoint2D swingJoint;
     private LineRenderer lineRenderer;
@@ -181,6 +184,8 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     private void OnSwing(InputAction.CallbackContext ctx)
     {
+        isSwingKeyHeld = true;
+
         if (!toggleSwing)
         {
             if (isSwinging)
@@ -199,19 +204,23 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             }
             else
             {
-                StartSwing();
+                if (swingCooldownCounter <= 0)
+                {
+                    StartSwing();
+                }
             }
         }
         else
         {
-            if (!isSwinging)
+            if (!isSwinging && swingCooldownCounter <= 0)
                 StartSwing();
         }
-
     }
 
     private void OffSwing(InputAction.CallbackContext ctx)
     {
+        isSwingKeyHeld = false;
+
         if (!toggleSwing) return;
         if (isSwinging)
         {
@@ -305,6 +314,17 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         else
             coyoteTimeCounter -= Time.deltaTime;
 
+        // 스윙 쿨타임 감소
+        if (swingCooldownCounter > 0)
+        {
+            swingCooldownCounter -= Time.deltaTime;
+
+            // 쿨타임이 끝나고 키를 누르고 있으면 즉시 스윙 시작
+            if (swingCooldownCounter <= 0 && isSwingKeyHeld && !isSwinging)
+            {
+                StartSwing();
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -570,7 +590,11 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     private void StartSwing()
     {
         if (isDashingToSwing) return;
+        if (swingCooldownCounter > 0) return; // 쿨타임 중이면 스윙 불가
+
         swingHitCollider = null;
+
+        // ...existing code... (기존 스윙 로직)
 
         // 인디케이터가 활성화되어 있고 캐시된 스윙 포인트가 있으면 그것을 사용
         Vector2 swingPoint = Vector2.zero;
@@ -578,10 +602,8 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
         if (swingPointIndicator != null && swingPointIndicator.activeSelf && cachedSwingPoint.HasValue)
         {
-            // 인디케이터 위치를 스윙 포인트로 사용
             swingPoint = cachedSwingPoint.Value;
 
-            // 해당 위치에 실제로 스윙 가능한 오브젝트가 있는지 확인
             RaycastHit2D verifyHit = Physics2D.Raycast(transform.position,
                 (swingPoint - (Vector2)transform.position).normalized,
                 swingRayDistance,
@@ -599,7 +621,6 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             }
         }
 
-        // 유효한 스윙 포인트가 없으면 기존 방식으로 찾기
         if (!hasValidSwingPoint)
         {
             RaycastHit2D hit = FindBestSwingPoint();
@@ -615,7 +636,6 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             }
         }
 
-        // 스윙 시작 시 인디케이터 숨김
         if (swingPointIndicator != null && swingPointIndicator.activeSelf)
             swingPointIndicator.SetActive(false);
 
@@ -677,6 +697,9 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         isSwinging = false;
         swingJoint.enabled = false;
         lineRenderer.enabled = false;
+
+        // 스윙 종료 시 쿨타임 시작
+        swingCooldownCounter = swingCooldown;
 
         if (isDashingToSwing)
         {

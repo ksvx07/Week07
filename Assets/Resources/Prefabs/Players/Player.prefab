@@ -150,7 +150,7 @@ MonoBehaviour:
   coyoteTime: 0.1
   jumpBufferTime: 0.1
   wallSlideMaxSpeed: 2
-  airAccelMulti: 0.3
+  airAccelMulti: 0.65
   airDecelMulti: 0.3
   starRayGravityDistance: 0.4
   starWallJumpSpeed: 8
@@ -1273,7 +1273,7 @@ MonoBehaviour:
   wallJumpYSpeed: 0
   wallSlideMaxSpeed: 2
   centerOffset: 0.3
-  airAccelMulti: 0.3
+  airAccelMulti: 0.65
   airDecelMulti: 0.3
   toggleSwing: 1
   swingPointIndicator: {fileID: 4832550492504442447}
@@ -2458,8 +2458,9 @@ MonoBehaviour:
   cornerRayLength: 0.5
   wallCheckDistance: 0.4
   wallJumpXSpeed: 10
-  wallJumpYSpeed: 7
+  wallJumpYSpeed: 8
   wallSlideMaxSpeed: 2
+  wallDetachTime: 0.3
   dashSpeed: 20
   dashTime: 0.15
   dashCooldown: 0.3
@@ -2469,9 +2470,11 @@ MonoBehaviour:
   afterImagePrefab: {fileID: 0}
   afterImageLifetime: 0.3
   afterImageSpawnRate: 0.05
-  airAccelMulti: 0.3
+  defaultColor: {r: 0.8745098, g: 0.8784314, b: 0.42745098, a: 1}
+  noDashColor: {r: 0.27058825, g: 0.38431373, b: 1, a: 1}
+  airAccelMulti: 0.65
   airDecelMulti: 0.3
-  walljumpTime: 0
+  walljumpTime: 0.1
   wallJumpAccelMulti: 0.1
   wallJumpDecelMulti: 0.1
   playerDataLog: {fileID: 0}
