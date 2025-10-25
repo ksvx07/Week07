@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Circle Stage 2
   m_EditorClassIdentifier: 
   Id: 101
-  minX: -17.07
-  maxX: 11.8
-  minY: -19
-  maxY: 12.7
-  isShapeLockStage: 1
+  minX: 11.9
+  maxX: 114.9
+  minY: -27.2
+  maxY: -0.8
+  isShapeLockStage: 0
   initailizeShape: 0
   unlockAll: 0
