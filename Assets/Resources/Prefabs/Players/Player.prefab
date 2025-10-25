@@ -155,7 +155,7 @@ MonoBehaviour:
   starRayGravityDistance: 0.4
   starWallJumpSpeed: 8
   starPivotTransform: {fileID: 8737585654859554741}
-  starWallGravity: 2
+  starWallGravity: 3
   starMaxWallGravityDistance: 0.34
   abilityOnObject: {fileID: 2237681633736548133}
   abilityOffObject: {fileID: 8121962595680718066}
