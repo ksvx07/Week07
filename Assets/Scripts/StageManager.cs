@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.LowLevel;
 
 public class StageManager : MonoBehaviour
 {
+    public PlayerDataLog playerLog; // Inspector에서 할당하거나 FindObjectOfType으로 찾기
+
     public static StageManager Instance;
 
     // 이제 이 리스트에 직접 StageScriptableObject 파일을 드래그 앤 드롭하여 사용합니다.
@@ -59,8 +62,8 @@ public class StageManager : MonoBehaviour
         cameraClamp.SetMapBounds(CurrentStageData);
 
         CheckShapeStageLock(); // 스테이지에 맞게 도형 잠금
-
         Debug.Log($"Stage {CurrentStageIndex + 1} 로 변경되었습니다.");
+        playerLog.OnEnterStage(CurrentStageData.name);
     }
 
     /// <summary>
