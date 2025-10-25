@@ -377,7 +377,7 @@ public class PlayerDataLog : MonoBehaviour
                 ShapeLogDetail detail = pair.Value;
 
                 TimeSpan timeSpan = TimeSpan.FromSeconds(detail.playTime);
-                string formattedTime = $"[{timeSpan.Minutes:D2} 분 {timeSpan.Seconds:D2}]";
+                string formattedTime = $"[{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}]";
 
                 // 각 항목이 0이 아닐 경우에만 문자열에 추가하여 간결하게 표시
                 List<string> details = new List<string>();
@@ -387,7 +387,7 @@ public class PlayerDataLog : MonoBehaviour
 
                 string detailString = details.Any() ? $" {string.Join("| ", details)}" : "";
 
-                sb.AppendLine($"{indentation}       ➡️ {($"{shape}:").PadRight(12)}  {formattedTime}{detailString} |");
+                sb.AppendLine($"{indentation}      ➡️ {($"{shape}").PadRight(10)}{formattedTime.PadRight(10)}{detailString.PadRight(10)}");
             }
         }
         return sb.ToString();
