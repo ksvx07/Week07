@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3be35d7407d4eb545885102775eb30e6, type: 3}
-  m_Name: Stage2
+  m_Name: Circle Stage 1
   m_EditorClassIdentifier: 
-  Id: 2
-  minX: 65
-  maxX: 119
-  minY: -7.8
-  maxY: 14.58
+  Id: 101
+  minX: -17.07
+  maxX: 11.8
+  minY: -19
+  maxY: 12.7
   isShapeLockStage: 1
-  initailizeShape: 3
+  initailizeShape: 0
   unlockAll: 0
