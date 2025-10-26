@@ -61,6 +61,7 @@ MonoBehaviour:
   camControlelr: {fileID: 0}
   selectPlayerPanel: {fileID: 0}
   _selectPanelSpeed: 0.02
+  transformTimeScale: 0.05
 --- !u!114 &1888020421528319932
 MonoBehaviour:
   m_ObjectHideFlags: 0
