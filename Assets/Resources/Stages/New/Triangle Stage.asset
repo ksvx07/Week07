@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Triangle Stage
   m_EditorClassIdentifier: 
   Id: 100
-  minX: -16.14
-  maxX: 132.78
+  minX: 63.84
+  maxX: 214.07
   minY: -5.4
   maxY: 15.2
   isShapeLockStage: 1

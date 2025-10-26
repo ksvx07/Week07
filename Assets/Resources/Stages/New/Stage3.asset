@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Stage3
   m_EditorClassIdentifier: 
   Id: 3
-  minX: 119
-  maxX: 171
+  minX: 214.2
+  maxX: 292.9
   minY: -10.4
   maxY: 14.36
   isShapeLockStage: 1
