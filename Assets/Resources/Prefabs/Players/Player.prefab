@@ -157,6 +157,7 @@ MonoBehaviour:
   starPivotTransform: {fileID: 8737585654859554741}
   starWallGravity: 3
   starMaxWallGravityDistance: 0.34
+  wallClimbDisableTime: 0.05
   abilityOnObject: {fileID: 2237681633736548133}
   abilityOffObject: {fileID: 8121962595680718066}
 --- !u!50 &1617188163437989074
@@ -620,7 +621,7 @@ GameObject:
   - component: {fileID: 165907923382301145}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2474,6 +2475,7 @@ MonoBehaviour:
   noDashColor: {r: 0.27058825, g: 0.38431373, b: 1, a: 1}
   airAccelMulti: 0.65
   airDecelMulti: 0.3
+  isDashing: 0
   walljumpTime: 0.1
   wallJumpAccelMulti: 0.1
   wallJumpDecelMulti: 0.1
