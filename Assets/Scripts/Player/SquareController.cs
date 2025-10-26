@@ -405,16 +405,6 @@ public class SquareController : MonoBehaviour, IPlayerController
 
     }
 
-    private void DashActive()
-    {
-        rb.excludeLayers = LayerMask.GetMask("Breakable");
-    }
-
-    private void DashDeActive()
-    {
-        rb.excludeLayers = 0;
-    }
-
     // // ??? ???? (BoxCast)
     // private void DetectGround()
     // {
