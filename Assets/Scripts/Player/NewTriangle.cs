@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Data.Common;
 
 [RequireComponent(typeof(DistanceJoint2D))]
 [RequireComponent(typeof(LineRenderer))]
@@ -58,6 +59,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private float groundDashCheckDistance = 1.0f;
     [SerializeField] private float groundDashForce = 10f;
     [SerializeField] private float groundDashDuration = 0.2f;
+
 
     [Header("Rope Visuals")] // [새로 추가]
     [SerializeField] private int ropeSegments = 20; // 로프를 그릴 포인트 수 (부드러움)
@@ -625,8 +627,9 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         lineRenderer.enabled = true;
 
         Bounds bounds = col.bounds;
-        RaycastHit2D groundHit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
+        RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down,
             groundDashCheckDistance, wallLayer);
+        Debug.DrawRay(transform.position, Vector2.down * groundDashCheckDistance, Color.blue);
 
         if (groundHit.collider != null)
         {
@@ -640,6 +643,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     private IEnumerator GroundDashSwing(Vector2 anchorPoint)
     {
+        Debug.Log("Ground Dash Swing");
         isDashingToSwing = true;
 
         Vector2 dashDir = (anchorPoint - (Vector2)transform.position).normalized;

@@ -121,19 +121,19 @@ public class StarController : MonoBehaviour, IPlayerController
 
     private void OnDash(InputAction.CallbackContext ctx)
     {
-        // if (isActiveAbility)
-        // {
-        //     isActiveAbility = false;
-        //     abilityOffObject.SetActive(true);
-        //     abilityOnObject.SetActive(false);
-        // }
+        if (abilityOnObject.activeSelf)
+        {
+            // isActiveAbility = false;
+            abilityOffObject.SetActive(true);
+            abilityOnObject.SetActive(false);
+        }
 
-        // else
-        // {
-        //     isActiveAbility = true;
-        //     abilityOffObject.SetActive(false);
-        //     abilityOnObject.SetActive(true);
-        // }
+        else
+        {
+            // isActiveAbility = true;
+            abilityOffObject.SetActive(false);
+            abilityOnObject.SetActive(true);
+        }
 
     }
 
