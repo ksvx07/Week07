@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 101
   minX: -58.7
   maxX: -11.8
-  minY: 15.1
+  minY: 15.3
   maxY: 41.3
   isShapeLockStage: 1
   initailizeShape: 1
