@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: CJY Stage
   m_EditorClassIdentifier: 
   Id: 304
-  minX: -13.87
-  maxX: 61.1
-  minY: -6.9
-  maxY: 15.12
+  minX: -16
+  maxX: 150
+  minY: -7.5
+  maxY: 50
   isShapeLockStage: 0
   initailizeShape: 0
   unlockAll: 1
