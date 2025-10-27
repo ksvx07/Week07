@@ -36,6 +36,9 @@ public class SquareController : MonoBehaviour, IPlayerController
     [SerializeField] private float wallJumpXSpeed = 5f;
     [SerializeField] private float wallJumpYSpeed = 5f;
     [SerializeField] private float wallSlideMaxSpeed = 5f;
+    [SerializeField] private float wallDetachTime = 0.2f; // 벽에서 떨어지기 위한 최소 입력 시간
+    private float wallDetachCounter = 0f; // 벽 떨어지기 타이머
+    private bool isWallGrabbing = false; // 벽을 잡고 있는 상태
 
     // [Header("Wall Jump Options")]
     // [SerializeField] private float wallJumpStaggerDuration = 0.15f;
@@ -54,6 +57,8 @@ public class SquareController : MonoBehaviour, IPlayerController
     [SerializeField] private float afterImageLifetime = 0.3f; // 잔상 지속 시간
     [SerializeField] private float afterImageSpawnRate = 0.05f; // 잔상 생성 간격
     private float afterImageTimer; // 잔상 생성 타이머
+    [SerializeField] private Color defaultColor = Color.white;
+    [SerializeField] private Color noDashColor = Color.white;
 
 
     [Header("AirTimeMultiplier")]
@@ -72,7 +77,7 @@ public class SquareController : MonoBehaviour, IPlayerController
     public bool IsJumping { get; private set; }
     private bool isTouchingWallRight;
     private bool isTouchingWallLeft;
-    private bool isDashing;
+    public bool isDashing;
     public int dashCount { get; set; }
     private bool isFastFalling;
     private int facingDirection = 1; // 1: ?��른쪽, -1: ?���?
@@ -98,7 +103,7 @@ public class SquareController : MonoBehaviour, IPlayerController
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
-
+        ChangeColor();
         // ?���? ?���? ????��
         originalScale = transform.localScale;
 
@@ -130,6 +135,7 @@ public class SquareController : MonoBehaviour, IPlayerController
         inputActions.Player.Disable();
         moveInput = Vector2.zero;
         IsGrounded = false;
+        rb.excludeLayers = 0;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
@@ -157,6 +163,55 @@ public class SquareController : MonoBehaviour, IPlayerController
     private void Update()
     {
         TimeCounters();
+        CheckWallGrab();
+    }
+
+    // 벽 잡기 상태 체크
+    private void CheckWallGrab()
+    {
+        // 벽을 잡고 있는 상태 확인
+        if (!IsGrounded && (isTouchingWallRight || isTouchingWallLeft))
+        {
+            isWallGrabbing = true;
+
+            // 반대 방향 입력 확인
+            bool pressingAwayFromWall = false;
+            if (isTouchingWallRight && moveInput.x < -0.1f)
+                pressingAwayFromWall = true;
+            else if (isTouchingWallLeft && moveInput.x > 0.1f)
+                pressingAwayFromWall = true;
+
+            if (pressingAwayFromWall)
+            {
+                wallDetachCounter += Time.deltaTime;
+                if (wallDetachCounter >= wallDetachTime)
+                {
+                    DetachFromWall();
+                }
+            }
+            else
+            {
+                wallDetachCounter = 0f;
+            }
+        }
+        else
+        {
+            isWallGrabbing = false;
+            wallDetachCounter = 0f;
+        }
+    }
+    // 벽에서 떨어지기
+    private void DetachFromWall()
+    {
+        isWallGrabbing = false;
+        wallDetachCounter = 0f;
+
+        // 벽에서 살짝 밀어내기 (선택사항)
+        float pushForce = 2f;
+        if (isTouchingWallRight)
+            rb.linearVelocity = new Vector2(-pushForce, rb.linearVelocity.y);
+        else if (isTouchingWallLeft)
+            rb.linearVelocity = new Vector2(pushForce, rb.linearVelocity.y);
     }
 
     // ?��? ??????
@@ -170,7 +225,11 @@ public class SquareController : MonoBehaviour, IPlayerController
         {
             coyoteTimeCounter = coyoteTime;
             if (!isDashing)
+            {
                 dashCount = maxDashCount;
+                ChangeColor();
+            }
+
         }
         else
             coyoteTimeCounter -= Time.deltaTime;
@@ -214,12 +273,14 @@ public class SquareController : MonoBehaviour, IPlayerController
             Jump();
             CornerCorrection();
             ApplyGravity();
-            Move();
+            if (!isWallGrabbing)
+                Move();
         }
 
 
         // Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
+
 
 
 
@@ -244,8 +305,7 @@ public class SquareController : MonoBehaviour, IPlayerController
         }
     }
 
-
-
+    bool isWallJumping = false;
     private void WallJump()
     {
         if ((isTouchingWallRight || isTouchingWallLeft) && jumpBufferCounter > 0 && !IsGrounded)
@@ -258,91 +318,16 @@ public class SquareController : MonoBehaviour, IPlayerController
 
             // isWallJumping = true;
             walljumpTimerCounter = walljumpTime;
+            isWallJumping = true;
+            isWallGrabbing = false;
+            wallDetachCounter = 0f;
             IsJumping = true;
             rb.linearVelocity = new Vector2(wallJumpXSpeed * wallJumpDir, wallJumpYSpeed);
+            jumpBufferCounter = 0;
             // Debug.Log("Wall Jump");
         }
     }
 
-    /// <summary>
-    /// 벽점프 발딛움 상태 관리
-    /// - 시간 경과 추적
-    /// - 발딛움 시간 종료 감지
-    /// - 반대 벽 충돌 시 즉시 중단
-    /// </summary>
-    // private void UpdateWallJumpState()
-    // {
-    //     if (!isWallJumping)
-    //         return;
-
-    //     wallJumpElapsedTime += Time.fixedDeltaTime;
-
-    //     // ===== Phase 1: 발딛움 단계 (벽에 붙어있음) =====
-    //     if (wallJumpElapsedTime < wallJumpStaggerDuration)
-    //     {
-    //         rb.linearVelocity = Vector2.zero;
-    //         return;
-    //     }
-
-    //     // ===== Phase 2: 곡선 적용 단계 =====
-    //     float curveElapsedTime = wallJumpElapsedTime - wallJumpStaggerDuration;
-
-    //     // 0~1로 정규화
-    //     float normalizedTime = Mathf.Clamp01(curveElapsedTime / wallJumpCurveDuration);
-
-    //     // X, Y 각각 커브로 관리
-    //     float velocityMultiplierX = wallJumpSpeedCurveX.Evaluate(normalizedTime);
-    //     float velocityMultiplierY = wallJumpSpeedCurveY.Evaluate(normalizedTime);
-
-    //     // X, Y 속도 각각 계산
-    //     float adjustedVelX = wallJumpInitialVelX * velocityMultiplierX;
-    //     float adjustedVelY = wallJumpYSpeed * velocityMultiplierY;
-
-    //     rb.linearVelocity = new Vector2(adjustedVelX, adjustedVelY);
-
-    //     // 곡선 단계가 끝나면 상태 해제
-    //     if (curveElapsedTime >= wallJumpCurveDuration)
-    //     {
-    //         isWallJumping = false;
-    //         canMove = true;
-
-    //         // ✨ Y 속도가 음수면 IsJumping을 false로 해서 강한 중력 자동 적용
-    //         if (rb.linearVelocity.y < 0)
-    //         {
-    //             IsJumping = false;
-    //         }
-
-    //         return;
-    //     }
-
-    //     // 반대 벽 감지 시 즉시 중단
-    //     if (isTouchingWallRight && rb.linearVelocity.x > 0)
-    //     {
-    //         isWallJumping = false;
-    //         canMove = true;
-    //         rb.linearVelocityY = 0;  // ✨ Y 속도 제거 (벽에 붙게 함)
-    //         // ✨ Y 속도가 음수면 IsJumping을 false로
-    //         if (rb.linearVelocity.y < 0)
-    //         {
-    //             IsJumping = false;
-    //         }
-
-    //         return;
-    //     }
-    //     if (isTouchingWallLeft && rb.linearVelocity.x < 0)
-    //     {
-    //         isWallJumping = false;
-    //         canMove = true;
-    //         rb.linearVelocityY = 0;  // ✨ Y 속도 제거 (벽에 붙게 함)
-    //         // ✨ Y 속도가 음수면 IsJumping을 false로
-    //         if (rb.linearVelocity.y < 0)
-    //         {
-    //             IsJumping = false;
-    //         }
-
-    //         return;
-    //     }
-    // }
 
     // ???
     private void Move()
@@ -420,6 +405,16 @@ public class SquareController : MonoBehaviour, IPlayerController
 
     }
 
+    private void DashActive()
+    {
+        rb.excludeLayers = LayerMask.GetMask("Breakable");
+    }
+
+    private void DashDeActive()
+    {
+        rb.excludeLayers = 0;
+    }
+
     // // ??? ???? (BoxCast)
     // private void DetectGround()
     // {
@@ -463,11 +458,17 @@ public class SquareController : MonoBehaviour, IPlayerController
         //     IsGrounded = false;
         // else
         IsGrounded = grounded;
+        // Debug.Log("IsGrounded: " + IsGrounded);
 
         // 점프 중 상태 해제
         if (IsJumping && rb.linearVelocity.y <= 0)
         {
             IsJumping = false;
+            currentGravity = jumpDcceleration;
+        }
+        if (isWallJumping && rb.linearVelocity.y <= 0)
+        {
+            isWallJumping = false;
             currentGravity = jumpDcceleration;
         }
     }
@@ -479,6 +480,10 @@ public class SquareController : MonoBehaviour, IPlayerController
         if (IsJumping)
         {
             // ???? ?? ???(??? ??)
+            newY = rb.linearVelocity.y - jumpDcceleration * Time.fixedDeltaTime;
+        }
+        else if (isWallJumping)
+        {
             newY = rb.linearVelocity.y - jumpDcceleration * Time.fixedDeltaTime;
         }
         else
@@ -580,10 +585,11 @@ public class SquareController : MonoBehaviour, IPlayerController
         if (dashCooldownCounter > 0) return;
         isDashing = true;
         dashCount -= 1;
+        ChangeColor();
         dashTimeCounter = dashTime;
         dashCooldownCounter = dashCooldown;
         playerDataLog.OnPlayerUseAbility();
-
+        rb.excludeLayers = LayerMask.GetMask("Breakable");
         // ?��?�� 바라보는 방향?���? ????��
         if (moveInput == Vector2.zero)
             rb.linearVelocity = new Vector2(facingDirection * dashSpeed, 0);
@@ -596,6 +602,7 @@ public class SquareController : MonoBehaviour, IPlayerController
     {
         float dampedSpeedX = rb.linearVelocity.x;
         float dampedSpeedY = rb.linearVelocity.y;
+        rb.excludeLayers = 0;
         dampedSpeedX = Mathf.Clamp(dampedSpeedX, -maxSpeedAfterDashX, maxSpeedAfterDashX);
         dampedSpeedY = Mathf.Min(dampedSpeedY, maxSpeedAfterDashUp);
         rb.linearVelocity = new Vector2(dampedSpeedX, dampedSpeedY);
@@ -608,13 +615,33 @@ public class SquareController : MonoBehaviour, IPlayerController
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = currentDashCount;
-
+        ChangeColor();
         // Rigidbody ????
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = 0f; // ????? ???? ???
 
-        rb.linearVelocity = new Vector2(newVelX, newVelY);
+        if (isDashing)
+            rb.linearVelocity = Vector2.zero;
+        else
+            rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
+
+
+    private void ChangeColor()
+    {
+        if (spriteRenderer != null)
+        {
+            if (dashCount <= 0)
+            {
+                spriteRenderer.color = noDashColor;
+            }
+            else
+            {
+                spriteRenderer.color = defaultColor;
+            }
+        }
+    }
+
 
     #region 잔상 효과
     private void CreateAfterImage()

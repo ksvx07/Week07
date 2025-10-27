@@ -62,6 +62,8 @@ MonoBehaviour:
   selectPlayerPanel: {fileID: 0}
   _selectPanelSpeed: 0.02
   transformTimeScale: 0.05
+  slowTimeScale: 0.05
+  timeScaleSpeed: 1
 --- !u!114 &1888020421528319932
 MonoBehaviour:
   m_ObjectHideFlags: 0
