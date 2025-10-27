@@ -74537,7 +74537,7 @@ MonoBehaviour:
   enableFileLogging: 1
   minimumLogLevel: 0
   setFileName: 1
-  logFileName: "\uC815"
+  logFileName: 
 --- !u!1001 &1676733501
 PrefabInstance:
   m_ObjectHideFlags: 0
