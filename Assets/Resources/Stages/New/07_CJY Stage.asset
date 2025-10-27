@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3be35d7407d4eb545885102775eb30e6, type: 3}
-  m_Name: Circle Stage 2
+  m_Name: 07_CJY Stage
   m_EditorClassIdentifier: 
-  Id: 101
-  minX: 11.9
-  maxX: 153.88
-  minY: -27.2
-  maxY: -0.8
+  Id: 304
+  minX: 521.7531
+  maxX: 562.0925
+  minY: 66.53327
+  maxY: 126.03327
   isShapeLockStage: 0
   initailizeShape: 0
-  unlockAll: 0
+  unlockAll: 1
