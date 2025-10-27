@@ -93,6 +93,8 @@ public class RespawnManager : MonoBehaviour
         if (!ValidatePlayer()) return;
         PlayerManager.Instance.PlayerSetActive(false);
         PlayerManager.Instance.OnPlayerDead();
+        PlayerManager.Instance.SetCanChangeTimeScale(false);
+        PlayerManager.Instance.OriginalTimeScaleImmediate();
         if (playerParticleEffect != null)
         {
             Instantiate(playerParticleEffect, player.position, Quaternion.identity);
@@ -102,6 +104,7 @@ public class RespawnManager : MonoBehaviour
 
     private void RespawnPlayer()
     {
+        PlayerManager.Instance.SetCanChangeTimeScale(true);
         ResetPlayerPhysics();
         SpawnPlayerAtCheckpoint();
         PlayerManager.Instance.PlayerSetActive(true);

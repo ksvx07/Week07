@@ -101,8 +101,9 @@ public class StageManager : MonoBehaviour
         if (CurrentStageData.unlockAll)
         {
             ShapeUnlockSystem.UnLockAllShape();
+            unlockAll = true;
         }
 
     }
+    public bool unlockAll = false;
 }
- 
