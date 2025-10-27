@@ -158,7 +158,6 @@ public class PlayerDataLog : MonoBehaviour
         if (newShape == currentShape) return;
 
         PlayerShape oldShape = currentShape;
-        GameLog.Info($"모양 변경: {oldShape} -> {newShape} / {oldShape} 유지시간: {Time.time - currentShapeStartTime:F2}");
 
         UpdateMaxStayTime(oldShape);
 
@@ -186,7 +185,6 @@ public class PlayerDataLog : MonoBehaviour
     {
         // --- 전역 데이터 기록 ---
         deadAmount++;
-        GameLog.Log($"플레이어 죽음 횟수: {deadAmount}번");
 
         // --- 스테이지/체크포인트 데이터 기록 ---
         if (currentStageLog != null)
@@ -205,7 +203,6 @@ public class PlayerDataLog : MonoBehaviour
     {
         // --- 전역 데이터 기록 ---
         shapeAbilityCounts[currentShape]++;
-        GameLog.Log($"{currentShape}의 능력 사용 횟수: {shapeAbilityCounts[currentShape]}번");
 
         // --- 스테이지/체크포인트 데이터 기록 ---
         if (currentStageLog != null)
