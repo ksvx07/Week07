@@ -117,6 +117,7 @@ MonoBehaviour:
   respawnDelay: 3
   respawnCheckInterval: 0.05
   respawnAfterClearDelay: 0.2
+  respawnWhenPlayerRespawns: 1
 --- !u!1 &8204215853723154551
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,7 +195,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 616c003b56a968142a3f0463c8008a6e, type: 3}
-  m_Color: {r: 0.2735849, g: 0.117102094, b: 0, a: 1}
+  m_Color: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
