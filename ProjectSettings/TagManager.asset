@@ -8,6 +8,8 @@ TagManager:
   - Enemy
   - Wall
   - CheckPoint
+  - CantSwing
+  - CurveGround
   layers:
   - Default
   - TransparentFX

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 87065496145314423}
   - component: {fileID: 2143235623335957623}
+  - component: {fileID: 1888020421528319932}
   m_Layer: 0
   m_Name: PlayerManager
   m_TagString: Untagged
@@ -44,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc317dc937f7cab45948b6612edf966a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startPlayer: 2
-  players:
+  startShape: 2
+  shapes:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -59,4 +60,19 @@ MonoBehaviour:
   highLightColor: {r: 1, g: 0, b: 0, a: 1}
   camControlelr: {fileID: 0}
   selectPlayerPanel: {fileID: 0}
-  _selectPanelSpeed: 0.02
+  _selectPanelSpeed: 0.01
+  transformTimeScale: 0.05
+  slowTimeScale: 0.05
+  timeScaleSpeed: 1
+--- !u!114 &1888020421528319932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7826722241867851921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f22dd52b0dcb7b84fb9b532a953bb389, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

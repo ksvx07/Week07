@@ -99,9 +99,14 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 .vscode
 
-/[Aa]ssets/vFavorites/
-/[Aa]ssets/vFolders/
-/[Aa]ssets/vHierarchy/
-/[Aa]ssets/vInspector/
-/[Aa]ssets/vRuler/
-/[Aa]ssets/vTabs/
+
+/Assets/vFavorites/
+/Assets/vFolders/
+/Assets/vHierarchy
+/Assets/vInspector/
+/Assets/vRuler/
+/Assets/vTabs/
+/Assets/Plugins/CodeStage/
+/Assets/Plugins.meta
+/Assets/Plugins/*.meta
+/ProjectSettings/

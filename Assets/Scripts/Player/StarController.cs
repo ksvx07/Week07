@@ -40,6 +40,7 @@ public class StarController : MonoBehaviour, IPlayerController
     [SerializeField] private Transform starPivotTransform;
     [SerializeField] private float starWallGravity = 2f;
     [SerializeField] private float starMaxWallGravityDistance = 0.34f;
+    [SerializeField] private float wallClimbDisableTime = 0.2f; // 점프 후 벽 등반 비활성화 시간
     // [SerializeField] private float starNormalMaxSpeed = 8f;
 
 
@@ -61,6 +62,7 @@ public class StarController : MonoBehaviour, IPlayerController
     private bool isActiveAbility = true;
     private bool isStarClimbing;
     private bool isFastFalling;
+    private float wallClimbDisableCounter = 0f; // 벽 등반 비활성화 타이머
 
     Vector2 avgNormal;
 
@@ -99,6 +101,7 @@ public class StarController : MonoBehaviour, IPlayerController
         inputActions.Player.Dash.performed -= OnDash;
         inputActions.Player.Disable();
         moveInput = Vector2.zero;
+        jumpBufferCounter = -1;
         isGrounded = false;
     }
 
@@ -121,19 +124,19 @@ public class StarController : MonoBehaviour, IPlayerController
 
     private void OnDash(InputAction.CallbackContext ctx)
     {
-        // if (isActiveAbility)
-        // {
-        //     isActiveAbility = false;
-        //     abilityOffObject.SetActive(true);
-        //     abilityOnObject.SetActive(false);
-        // }
+        if (abilityOnObject.activeSelf)
+        {
+            // isActiveAbility = false;
+            abilityOffObject.SetActive(true);
+            abilityOnObject.SetActive(false);
+        }
 
-        // else
-        // {
-        //     isActiveAbility = true;
-        //     abilityOffObject.SetActive(false);
-        //     abilityOnObject.SetActive(true);
-        // }
+        else
+        {
+            // isActiveAbility = true;
+            abilityOffObject.SetActive(false);
+            abilityOnObject.SetActive(true);
+        }
 
     }
 
@@ -142,21 +145,26 @@ public class StarController : MonoBehaviour, IPlayerController
         TimeCounters();
     }
 
-    // �ð� ī���͵�
+    // 시간 카운터들
     private void TimeCounters()
     {
-        // ���� ���� (����) & �ڿ��� Ÿ��
+        // 점프 버퍼 (입력) & 코요테 타임
         jumpBufferCounter -= Time.deltaTime;
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
+            dashCount = maxDashCount;
 
         }
 
         else
             coyoteTimeCounter -= Time.deltaTime;
 
-        // ���� �ð� �����, ��� ������ Damping ��
+        // 벽 등반 비활성화 타이머
+        if (wallClimbDisableCounter > 0)
+            wallClimbDisableCounter -= Time.deltaTime;
+
+        // 대시 시간 타이머, 쿨이 들어가면 Damping 등
 
     }
 
@@ -180,7 +188,7 @@ public class StarController : MonoBehaviour, IPlayerController
     {
         if (isJumping) return;
 
-        // �浹 ������ ����
+        // 충돌 여부에 따라
         if (!isStarClimbing)
             return;
 
@@ -232,7 +240,11 @@ public class StarController : MonoBehaviour, IPlayerController
         // �� ������ ���� �� ����
         if (closestDistance > starMaxWallGravityDistance)
         {
-            newVel -= avgNormal * starWallGravity;
+            if (!(wallClimbDisableCounter > 0))
+            {
+                newVel -= avgNormal * starWallGravity;
+
+            }
         }
 
         rb.linearVelocity = newVel;
@@ -428,7 +440,7 @@ public class StarController : MonoBehaviour, IPlayerController
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, newY);
     }
 
-    // ����
+    // 점프
     private void StarJump()
     {
         if (isActiveAbility)
@@ -438,9 +450,10 @@ public class StarController : MonoBehaviour, IPlayerController
                 if (avgNormal != Vector2.zero)
                 {
                     //if (selectedWallNormal != null)
-                    // +y�� linearVelocity ����
+                    // +y로 linearVelocity 설정
                     // Debug.Log("Jump!");
                     isJumping = true;
+                    wallClimbDisableCounter = wallClimbDisableTime; // 벽 등반 비활성화
 
                     //rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
                     rb.linearVelocity = avgNormal * maxJumpSpeed;
@@ -457,6 +470,7 @@ public class StarController : MonoBehaviour, IPlayerController
             {
                 // Debug.Log("Jump!");
                 isJumping = true;
+                wallClimbDisableCounter = wallClimbDisableTime; // 벽 등반 비활성화
 
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
                 jumpBufferCounter = 0;
@@ -480,7 +494,7 @@ public class StarController : MonoBehaviour, IPlayerController
     }
 
 
-    // ������ Ű �Է� �ݴ� ���� linearVelocity ����
+    // 점프할때 키 입력 반대 방향 linearVelocity 설정
     private void StarWallJump()
     {
 
@@ -488,6 +502,7 @@ public class StarController : MonoBehaviour, IPlayerController
         if (isStarClimbing && jumpBufferCounter > 0 && !isGrounded && avgNormal != Vector2.zero)
         {
             isJumping = true;
+            wallClimbDisableCounter = wallClimbDisableTime; // 벽 등반 비활성화
             rb.linearVelocity = avgNormal * starWallJumpSpeed;
             jumpBufferCounter = 0;
             // Debug.Log("Wall Jump");
@@ -507,8 +522,9 @@ public class StarController : MonoBehaviour, IPlayerController
 
     // ��� �� ����, ��� ������ �ִ�ӵ� ����
 
-
-    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    private int maxDashCount = 1;
+    public int dashCount { get; set; }
+    public void OnEnableSetVelocity(float newVelX, float newVelY, int currentDashCount)
     {
         col = GetComponent<CircleCollider2D>();
         rb = GetComponent<Rigidbody2D>();
@@ -517,6 +533,7 @@ public class StarController : MonoBehaviour, IPlayerController
 
         hitWalls = new RaycastHit2D[rayCount];
         rayDirs = new Vector2[rayCount];
+        dashCount = currentDashCount;
 
         // Rigidbody ����
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;

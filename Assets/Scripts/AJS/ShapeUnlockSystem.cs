@@ -37,7 +37,7 @@ public class ShapeUnlockSystem : MonoBehaviour
         {
             Debug.Log($"잠금: {shape}");
             // 이미 해당 도형이면
-            if(PlayerManager.Instance.CurrentPlayer == shape)
+            if(PlayerManager.Instance.CurrentShape == shape)
             {
                 // 강제로 변경
                 PlayerManager.Instance.ForceToChangeShape(unlockedShapes.FirstOrDefault());

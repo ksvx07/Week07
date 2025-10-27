@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Data.Common;
 
 [RequireComponent(typeof(DistanceJoint2D))]
 [RequireComponent(typeof(LineRenderer))]
@@ -42,6 +43,8 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private float airDecelMulti = 0.65f;
 
     [Header("Rope Swing")]
+    [SerializeField] private bool toggleSwing = true;
+    [SerializeField] private GameObject swingPointIndicator;
     [SerializeField] private LayerMask swingableLayer;
     [SerializeField] private float swingTangentialForce = 5f;
     [SerializeField] private float swingBrakeForceMultiplier = 2.0f;
@@ -57,10 +60,12 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     [SerializeField] private float groundDashForce = 10f;
     [SerializeField] private float groundDashDuration = 0.2f;
 
+
     [Header("Rope Visuals")] // [새로 추가]
     [SerializeField] private int ropeSegments = 20; // 로프를 그릴 포인트 수 (부드러움)
     [SerializeField] private float ropeSagMultiplier = 0.5f; // 로프가 처지는 정도
-    private string cantSwingTag = "CantSwing"; // 로프가 처지는 정도
+    [SerializeField] private float indicatorStabilityThreshold = 0.5f; // 인디케이터 위치 변경 최소 거리
+    private string cantSwingTag = "CantSwing";
 
 
     private LayerMask wallLayer;
@@ -82,6 +87,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     private DistanceJoint2D swingJoint;
     private LineRenderer lineRenderer;
+    private Vector2? cachedSwingPoint = null; // 캐시된 스윙 포인트
     [Header("Game Log 용")]
     [SerializeField] PlayerDataLog playerDataLog;
 
@@ -117,6 +123,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         inputActions.Player.Jump.started += OnJump;
         inputActions.Player.Jump.canceled += OffJump;
         inputActions.Player.Dash.performed += OnSwing;
+        inputActions.Player.Dash.canceled += OffSwing;
     }
 
     private void OnDisable()
@@ -126,8 +133,9 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         inputActions.Player.Jump.started -= OnJump;
         inputActions.Player.Jump.canceled -= OffJump;
         inputActions.Player.Dash.performed -= OnSwing;
+        inputActions.Player.Dash.canceled -= OffSwing;
         inputActions.Player.Disable();
-
+        jumpBufferCounter = -1;
         moveInput = Vector2.zero;
         IsGrounded = false;
 
@@ -175,23 +183,46 @@ public class NewTriangle : MonoBehaviour, IPlayerController
 
     private void OnSwing(InputAction.CallbackContext ctx)
     {
+        if (!toggleSwing)
+        {
+            if (isSwinging)
+            {
+                StopSwing();
+
+                if (rb.linearVelocity.y > 0)
+                {
+                    IsJumping = true;
+                    currentJumpDcceleration = swingJumpDcceleration;
+                }
+                else
+                {
+                    IsJumping = false;
+                }
+            }
+            else
+            {
+                StartSwing();
+            }
+        }
+        else
+        {
+            if (!isSwinging)
+                StartSwing();
+        }
+
+    }
+
+    private void OffSwing(InputAction.CallbackContext ctx)
+    {
+        if (!toggleSwing) return;
         if (isSwinging)
         {
             StopSwing();
-
             if (rb.linearVelocity.y > 0)
             {
                 IsJumping = true;
                 currentJumpDcceleration = swingJumpDcceleration;
             }
-            else
-            {
-                IsJumping = false;
-            }
-        }
-        else
-        {
-            StartSwing();
         }
     }
 
@@ -203,6 +234,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         TimeCounters();
         // DrawRope(); // LateUpdate에서 처리
         HandleRotation();
+        UpdateSwingPointIndicator();
 
         if (swingHitCollider != null && isSwinging)
         {
@@ -210,6 +242,47 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             {
                 StopSwing();
             }
+        }
+    }
+    private void UpdateSwingPointIndicator()
+    {
+        if (swingPointIndicator == null) return;
+
+        // 스윙 중일 때는 인디케이터 숨김
+        if (isSwinging)
+        {
+            if (swingPointIndicator.activeSelf)
+                swingPointIndicator.SetActive(false);
+            cachedSwingPoint = null; // 캐시 초기화
+            return;
+        }
+
+        // 스윙 포인트 찾기
+        RaycastHit2D hit = FindBestSwingPoint();
+
+        if (hit.collider != null)
+        {
+            Vector2 newSwingPoint = hit.point;
+
+            // 캐시된 포인트가 없거나, 새 포인트가 충분히 멀리 있을 때만 업데이트
+            if (cachedSwingPoint == null ||
+                Vector2.Distance(cachedSwingPoint.Value, newSwingPoint) > indicatorStabilityThreshold)
+            {
+                cachedSwingPoint = newSwingPoint;
+            }
+            // 스윙 포인트가 있으면 해당 위치에 표시
+            if (!swingPointIndicator.activeSelf)
+                swingPointIndicator.SetActive(true);
+
+            swingPointIndicator.transform.position = cachedSwingPoint.Value;
+
+        }
+        else
+        {
+            // 스윙 포인트가 없으면 숨김
+            if (swingPointIndicator.activeSelf)
+                swingPointIndicator.SetActive(false);
+            cachedSwingPoint = null; // 캐시 초기화
         }
     }
 
@@ -229,6 +302,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         if (IsGrounded)
         {
             coyoteTimeCounter = coyoteTime;
+            dashCount = maxDashCount;
         }
         else
             coyoteTimeCounter -= Time.deltaTime;
@@ -464,8 +538,9 @@ public class NewTriangle : MonoBehaviour, IPlayerController
             // Debug.Log("Wall Jump");
         }
     }
-
-    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    private int maxDashCount = 1;
+    public int dashCount { get; set; }
+    public void OnEnableSetVelocity(float newVelX, float newVelY, int currentDashCount)
     {
         // Debug.Log("Set Velocity Called");
         col = GetComponent<PolygonCollider2D>();
@@ -476,6 +551,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = 0f;
         rb.linearVelocity = new Vector2(newVelX, newVelY);
+        dashCount = currentDashCount;
     }
 
 
@@ -497,38 +573,77 @@ public class NewTriangle : MonoBehaviour, IPlayerController
     {
         if (isDashingToSwing) return;
         swingHitCollider = null;
-        RaycastHit2D hit = FindBestSwingPoint();
 
-        if (hit.collider != null)
+        // 인디케이터가 활성화되어 있고 캐시된 스윙 포인트가 있으면 그것을 사용
+        Vector2 swingPoint = Vector2.zero;
+        bool hasValidSwingPoint = false;
+
+        if (swingPointIndicator != null && swingPointIndicator.activeSelf && cachedSwingPoint.HasValue)
         {
+            // 인디케이터 위치를 스윙 포인트로 사용
+            swingPoint = cachedSwingPoint.Value;
+
+            // 해당 위치에 실제로 스윙 가능한 오브젝트가 있는지 확인
+            RaycastHit2D verifyHit = Physics2D.Raycast(transform.position,
+                (swingPoint - (Vector2)transform.position).normalized,
+                swingRayDistance,
+                swingableLayer);
+
+            if (verifyHit.collider != null)
+            {
+                hasValidSwingPoint = true;
+
+                if (verifyHit.collider.TryGetComponent<BreakablePlatform>(out BreakablePlatform crumbleTile))
+                {
+                    crumbleTile.TriggerBreak();
+                    swingHitCollider = verifyHit.collider;
+                }
+            }
+        }
+
+        // 유효한 스윙 포인트가 없으면 기존 방식으로 찾기
+        if (!hasValidSwingPoint)
+        {
+            RaycastHit2D hit = FindBestSwingPoint();
+
+            if (hit.collider == null) return;
+
+            swingPoint = hit.point;
+
             if (hit.collider.TryGetComponent<BreakablePlatform>(out BreakablePlatform crumbleTile))
             {
                 crumbleTile.TriggerBreak();
                 swingHitCollider = hit.collider;
             }
-            playerDataLog.OnPlayerUseAbility();
-            Vector2 bestPoint = hit.point;
-            isSwinging = true;
-            swingJoint.connectedAnchor = bestPoint;
-            lineRenderer.enabled = true;
+        }
 
-            Bounds bounds = col.bounds;
-            RaycastHit2D groundHit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
-                groundDashCheckDistance, wallLayer);
+        // 스윙 시작 시 인디케이터 숨김
+        if (swingPointIndicator != null && swingPointIndicator.activeSelf)
+            swingPointIndicator.SetActive(false);
 
-            if (groundHit.collider != null)
-            {
-                StartCoroutine(GroundDashSwing(bestPoint));
-            }
-            else
-            {
-                AttachSwingJoint(bestPoint);
-            }
+        playerDataLog.OnPlayerUseAbility();
+        isSwinging = true;
+        swingJoint.connectedAnchor = swingPoint;
+        lineRenderer.enabled = true;
+
+        Bounds bounds = col.bounds;
+        RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down,
+            groundDashCheckDistance, wallLayer);
+        Debug.DrawRay(transform.position, Vector2.down * groundDashCheckDistance, Color.blue);
+
+        if (groundHit.collider != null)
+        {
+            StartCoroutine(GroundDashSwing(swingPoint));
+        }
+        else
+        {
+            AttachSwingJoint(swingPoint);
         }
     }
 
     private IEnumerator GroundDashSwing(Vector2 anchorPoint)
     {
+        Debug.Log("Ground Dash Swing");
         isDashingToSwing = true;
 
         Vector2 dashDir = (anchorPoint - (Vector2)transform.position).normalized;

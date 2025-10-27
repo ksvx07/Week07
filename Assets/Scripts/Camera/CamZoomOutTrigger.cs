@@ -1,4 +1,4 @@
-using Unity.VisualScripting;
+/*using Unity.VisualScripting;
 using UnityEngine;
 
 public class CamZoomOutTrigger : MonoBehaviour
@@ -21,3 +21,4 @@ public class CamZoomOutTrigger : MonoBehaviour
         }
     }
 }
+*/

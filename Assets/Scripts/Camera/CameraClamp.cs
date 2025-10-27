@@ -11,14 +11,9 @@ public class CameraClamp : MonoBehaviour
     [SerializeField] public float _minY;
     [SerializeField] public float _maxY;
 
-    [SerializeField] private int _defaultStageId = 1;
     private float _targetMinX, _targetMinY, _targetMaxX, _targetMaxY;
-
-    private void Start()
-    {
-        SetMapBounds(_defaultStageId);
-        SetInitMapBounds();
-    }
+    private float _targetZoom = 6f;
+    private float _initialZoom = 9f;
 
     private void Update()
     {
@@ -33,21 +28,28 @@ public class CameraClamp : MonoBehaviour
         float camHeight = cam.orthographicSize;
         float camWidth = camHeight * cam.aspect;
 
-        float clampX = Mathf.Clamp(desiredPos.x, _minX +  camWidth, _maxX - camWidth);
+        // 카메라 중심이 맵 경계를 벗어나지 않도록 제한
+        float clampX = Mathf.Clamp(desiredPos.x, _minX + camWidth, _maxX - camWidth);
         float clampY = Mathf.Clamp(desiredPos.y, _minY + camHeight, _maxY - camHeight);
 
         return new Vector3(clampX, clampY, desiredPos.z);
     }
 
-    public void SetMapBounds(int Id)
+    public void SetMapBounds(StageScriptableObject stageData)
     {
-        if(GameManager.Instance.StageDics.TryGetValue(Id, out var mapDefinition))
-        {
-            _targetMinX = mapDefinition.minX;
-            _targetMaxX = mapDefinition.maxX;
-            _targetMinY = mapDefinition.minY;
-            _targetMaxY = mapDefinition.maxY;
-        }
+        // stage Data 에 있는 값 가져오기
+        _targetMinX = stageData.minX;
+        _targetMaxX = stageData.maxX;
+        _targetMinY = stageData.minY;
+        _targetMaxY = stageData.maxY;
+
+
+        var mapBoundsWidth = _targetMaxX - _targetMinX;
+        float camWidth = cam.orthographicSize * 2 * cam.aspect;
+
+        var zoom = mapBoundsWidth < camWidth ? _targetZoom : _initialZoom;
+
+        cam.GetComponent<CameraController>().TriggerZoom(zoom);
     }
 
     public List<float> GetMapBounds()
@@ -61,17 +63,6 @@ public class CameraClamp : MonoBehaviour
         };
 
         return bounds;
-    }
-
-    private void SetInitMapBounds()
-    {
-        if (GameManager.Instance.StageDics.TryGetValue(_defaultStageId, out var mapDefinition))
-        {
-            _minX = mapDefinition.minX;
-            _maxX = mapDefinition.maxX;
-            _minY = mapDefinition.minY;
-            _maxY = mapDefinition.maxY;
-        }
     }
 
     private void OnDrawGizmos()
