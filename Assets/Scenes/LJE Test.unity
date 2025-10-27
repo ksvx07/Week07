@@ -501,6 +501,7 @@ MonoBehaviour:
   stages:
   - {fileID: 11400000, guid: 258c5693d70dcc74aa535e7cb8fba509, type: 2}
   cameraClamp: {fileID: 1318149767}
+  unlockAll: 0
 --- !u!4 &554717745
 Transform:
   m_ObjectHideFlags: 0
