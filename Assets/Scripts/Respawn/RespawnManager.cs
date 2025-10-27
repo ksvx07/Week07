@@ -83,7 +83,6 @@ public class RespawnManager : MonoBehaviour
             {
                 Instantiate(checkPointparticleEffect, player.position, Quaternion.identity);
             }
-            Debug.Log($"[RespawnManager] Checkpoint {checkpointId} activated at {currentSpawnPosition}");
         }
 
     }
