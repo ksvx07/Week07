@@ -77,6 +77,13 @@ public class PlayerManager : MonoBehaviour
         inputActions.UI.QuickSwitch.canceled += OffNewSwitch;
     }
 
+    private void OnDisable()
+    {
+        inputActions.UI.QuickSwitch.performed -= OnNewSwitch;
+        inputActions.UI.QuickSwitch.canceled -= OffNewSwitch;
+        inputActions.UI.Disable();
+    }
+
 
     #region InputAction 콜백 함수
 
@@ -131,6 +138,7 @@ public class PlayerManager : MonoBehaviour
                 return;
             }
         }
+        if (!canChangeTimeScale) return;
         if (changingShape)
         {
             changingShape = false;
@@ -220,20 +228,20 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void OnSwitchModeEnd()
-    {
-        if (isSelectUIActive)
-        {
-            DeActiveSelectUI();
-            ActiveSelectShape(CurrentShape, selectShape);
+    // public void OnSwitchModeEnd()
+    // {
+    //     if (isSelectUIActive)
+    //     {
+    //         DeActiveSelectUI();
+    //         ActiveSelectShape(CurrentShape, selectShape);
 
-            // 잠금된 도형이 아니면 로그 기록
-            if (ShapeUnlockSystem.IsUnlocked(selectShape) == true)
-            {
-                playerDataLog.OnPlayerModeSwitch(selectShape); // Hack : 게임 Log 용
-            }
-        }
-    }
+    //         // 잠금된 도형이 아니면 로그 기록
+    //         if (ShapeUnlockSystem.IsUnlocked(selectShape) == true)
+    //         {
+    //             playerDataLog.OnPlayerModeSwitch(selectShape); // Hack : 게임 Log 용
+    //         }
+    //     }
+    // }
 
     public void OnPlayerDead()
     {
@@ -338,7 +346,7 @@ public class PlayerManager : MonoBehaviour
 
         if (pannelActive != null)
         {
-            StopCoroutine(pannelActive);
+            ScaleDownOverTime();
         }
         pannelActive = StartCoroutine(ScaleOverTime());
         selectPlayerPanel.SetActive(true);
@@ -349,7 +357,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (pannelActive != null)
         {
-            StopCoroutine(pannelActive);
+            ScaleDownOverTime();
         }
         // IsHold = false;
         selectPlayerPanel.SetActive(false);
@@ -393,6 +401,7 @@ public class PlayerManager : MonoBehaviour
     private void Update()
     {
         ToOriginalTimeScale();
+        ScaleDownOverTime();
     }
 
     private void ToOriginalTimeScale()
@@ -415,7 +424,7 @@ public class PlayerManager : MonoBehaviour
     private IEnumerator ScaleOverTime()
     {
         selectPlayerPanel.SetActive(true);
-        selectPlayerPanel.transform.localScale = Vector3.zero;
+        // selectPlayerPanel.transform.localScale = Vector3.zero;
 
         Vector3 initialScale = selectPlayerPanel.transform.localScale;
         float elapsedTime = 0f;
@@ -435,8 +444,27 @@ public class PlayerManager : MonoBehaviour
         while (true)
         {
             selectPlayerPanel.transform.position = _currentPlayerPrefab.transform.position;
+            scaleDownDelayTimerCounter = scaleDownDelay;
             yield return null;
         }
+    }
+
+    [SerializeField] private float scaleDownDelay = 0.1f;
+    private float scaleDownDelayTimerCounter = 0f;
+
+    private void ScaleDownOverTime()
+    {
+        if (scaleDownDelayTimerCounter > 0f)
+        {
+            scaleDownDelayTimerCounter -= Time.deltaTime;
+            return;
+        }
+        if (pannelActive != null)
+        {
+            StopCoroutine(pannelActive);
+        }
+        selectPlayerPanel.transform.localScale = Vector3.zero;
+
     }
 
     #endregion
