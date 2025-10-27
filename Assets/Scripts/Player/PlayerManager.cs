@@ -77,13 +77,6 @@ public class PlayerManager : MonoBehaviour
         inputActions.UI.QuickSwitch.canceled += OffNewSwitch;
     }
 
-    private void OnDisable()
-    {
-        inputActions.UI.QuickSwitch.performed -= OnNewSwitch;
-        inputActions.UI.QuickSwitch.canceled -= OffNewSwitch;
-        inputActions.UI.Disable();
-    }
-
 
     #region InputAction 콜백 함수
 
