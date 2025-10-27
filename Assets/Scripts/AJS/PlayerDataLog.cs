@@ -14,6 +14,8 @@ public class LogStats
     public int modeSwitchAmount = 0;
     public int quickSwitchAmount = 0;
 
+    public float totalPlayTime = 0f;
+
     public Dictionary<PlayerShape, ShapeLogDetail> shapeDetails = new Dictionary<PlayerShape, ShapeLogDetail>();
 
     public LogStats()
@@ -75,17 +77,19 @@ public class PlayerDataLog : MonoBehaviour
         // currentShape가 초기화된 후에만 실행
         if (shapePlayTimes.ContainsKey(currentShape))
         {
-            float deltaTime = Time.deltaTime;
+            float deltaTime = Time.unscaledDeltaTime;
             shapePlayTimes[currentShape] += deltaTime;
 
             // 현재 스테이지/체크포인트의 모양별 유지 시간을 누적
             if (currentStageLog != null)
             {
                 currentStageLog.stageTotalStats.shapeDetails[currentShape].playTime += deltaTime;
+                currentStageLog.stageTotalStats.totalPlayTime += deltaTime;
             }
             if (currentCheckpointLog != null)
             {
                 currentCheckpointLog.shapeDetails[currentShape].playTime += deltaTime;
+                currentCheckpointLog.totalPlayTime += deltaTime;
             }
         }
     }
@@ -158,7 +162,6 @@ public class PlayerDataLog : MonoBehaviour
         if (newShape == currentShape) return;
 
         PlayerShape oldShape = currentShape;
-        GameLog.Info($"모양 변경: {oldShape} -> {newShape} / {oldShape} 유지시간: {Time.time - currentShapeStartTime:F2}");
 
         UpdateMaxStayTime(oldShape);
 
@@ -186,7 +189,6 @@ public class PlayerDataLog : MonoBehaviour
     {
         // --- 전역 데이터 기록 ---
         deadAmount++;
-        GameLog.Log($"플레이어 죽음 횟수: {deadAmount}번");
 
         // --- 스테이지/체크포인트 데이터 기록 ---
         if (currentStageLog != null)
@@ -205,7 +207,6 @@ public class PlayerDataLog : MonoBehaviour
     {
         // --- 전역 데이터 기록 ---
         shapeAbilityCounts[currentShape]++;
-        GameLog.Log($"{currentShape}의 능력 사용 횟수: {shapeAbilityCounts[currentShape]}번");
 
         // --- 스테이지/체크포인트 데이터 기록 ---
         if (currentStageLog != null)
@@ -313,7 +314,7 @@ public class PlayerDataLog : MonoBehaviour
                 report.AppendLine($"---------- [🧊 스테이지: {stageData.stageName}] ----------");
 
                 // 스테이지 전체 기록 출력
-                report.Append(GenerateScopeReport("📝 스테이지 요약", stageData.stageTotalStats));
+                report.Append(GenerateScopeReport("\n📝 스테이지 요약", stageData.stageTotalStats));
 
                 // 해당 스테이지의 체크포인트별 기록 출력
                 if (stageData.checkpointStats.Count > 0)
@@ -322,7 +323,7 @@ public class PlayerDataLog : MonoBehaviour
                     report.AppendLine("    --- [체크포인트별 기록] ---");
                     foreach (var checkpointPair in stageData.checkpointStats)
                     {
-                        report.Append(GenerateScopeReport("✅ 체크포인트 " + checkpointPair.Key, checkpointPair.Value, "      "));
+                        report.Append(GenerateScopeReport("\n✅ 체크포인트 " + checkpointPair.Key, checkpointPair.Value, "      "));
                     }
                 }
             }
@@ -338,6 +339,9 @@ public class PlayerDataLog : MonoBehaviour
     private string GenerateScopeReport(string title, LogStats stats, string indentation = "  ")
     {
         StringBuilder sb = new StringBuilder();
+
+        TimeSpan totalTimeSpan = TimeSpan.FromSeconds(stats.totalPlayTime);
+        string formattedTotalTime = $"[{totalTimeSpan.Minutes:D2}:{totalTimeSpan.Seconds:D2}]";
 
         string shapeChangeDetail = "(";
         if (stats.shapeChangeAmount > 0)
@@ -360,7 +364,7 @@ public class PlayerDataLog : MonoBehaviour
             shapeChangeDetail = string.Empty;
         }
 
-            sb.AppendLine($"{indentation} {title}: 💀 죽음 {stats.deadAmount} | ✨ 능력 {stats.abilityUseAmount} | 🔄 변신 {stats.shapeChangeAmount} {shapeChangeDetail}");
+        sb.AppendLine($"{indentation}{title}: 🕒 시간 {formattedTotalTime} | 💀 죽음 {stats.deadAmount} | ✨ 능력 {stats.abilityUseAmount} | 🔄 변신 {stats.shapeChangeAmount} {shapeChangeDetail}");
         // 변신 횟수가 0보다 클 때만 세부 정보 표시
 
         // 변신한 모양이 있을 경우에만 상세 내역 출력 (shapeDetails.changeCount > 0)
@@ -370,7 +374,7 @@ public class PlayerDataLog : MonoBehaviour
 
         if (changedShapesDetails.Any())
         {
-            sb.AppendLine($"{indentation}  ⏳ 모양별 상세 내역 (유지 시간 순)");
+            sb.AppendLine($"{indentation}    ⏳ 모양별 상세 내역 (유지 시간 순)");
             foreach (var pair in changedShapesDetails)
             {
                 PlayerShape shape = pair.Key;
@@ -381,18 +385,39 @@ public class PlayerDataLog : MonoBehaviour
 
                 // 각 항목이 0이 아닐 경우에만 문자열에 추가하여 간결하게 표시
                 List<string> details = new List<string>();
-                if (detail.deadCount > 0) details.Add($"💀 죽음 {detail.deadCount} ");
-                if (detail.abilityUseCount > 0) details.Add($"✨ 능력 {detail.abilityUseCount} ");
-                if (detail.changeCount > 0) details.Add($"🔄 변신 {detail.changeCount} ");
+                details.Add($"💀 죽음 {detail.deadCount,2} ");
+                details.Add($"✨ 능력 {detail.abilityUseCount,2} ");
+                details.Add($"🔄 변신 {detail.changeCount,2} ");
 
                 string detailString = details.Any() ? $" {string.Join("| ", details)}" : "";
 
-                sb.AppendLine($"{indentation}      ➡️ {($"{shape}").PadRight(10)}{formattedTime.PadRight(10)}{detailString.PadRight(10)}");
+                sb.AppendLine($"{indentation}         ➡️ {GetShapeIcon(shape).PadRight(2)}{formattedTime.PadRight(10)}{detailString.PadRight(10)}");
             }
         }
         return sb.ToString();
     }
 
+    /// <summary>
+    /// PlayerShape에 해당하는 아이콘 문자열을 반환합니다.
+    /// 실제 게임의 PlayerShape enum에 맞게 아이콘을 추가/변경하세요.
+    /// </summary>
+    private string GetShapeIcon(PlayerShape shape)
+    {
+
+        switch (shape)
+        {
+            case PlayerShape.Circle:
+                return "⏺️ "; // 원
+            case PlayerShape.Star:
+                return "⭐"; // 별
+            case PlayerShape.Square:
+                return "⏹️ "; // 네모
+            case PlayerShape.Triangle:
+                return "🔼 "; // 세모
+            default:
+                return "❓"; // 알 수 없는 모양
+        }
+    }
 
     private void OnApplicationQuit()
     {
