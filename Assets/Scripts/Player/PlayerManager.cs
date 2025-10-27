@@ -330,6 +330,8 @@ public class PlayerManager : MonoBehaviour
     #region Switch Mode UI 함수
     private void AcitveSelectUI()
     {
+        if (!StageManager.Instance.unlockAll)
+            return;
         HighLightSelectShape(selectShape);
         Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
         selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
@@ -356,19 +358,37 @@ public class PlayerManager : MonoBehaviour
     // 게임 시간 느리게 하기
     private void SlowTimeScale()
     {
+        if (!StageManager.Instance.unlockAll)
+            return;
+        if (!canChangeTimeScale) return;
         if (IsTimeSlow) return;
         IsTimeSlow = true;
         Time.timeScale = slowTimeScale;
         Time.fixedDeltaTime = 0.02f * Time.timeScale;
     }
 
+    private bool canChangeTimeScale = true;
+
+    public void SetCanChangeTimeScale(bool canChange)
+    {
+        canChangeTimeScale = canChange;
+    }
+
     // 게임 시간 원래대로 되돌리기
     private void OriginalTimeScale()
     {
+        if (!canChangeTimeScale) return;
         IsTimeSlow = false;
     }
     [SerializeField] float slowTimeScale = 0.05f;
     [SerializeField] float timeScaleSpeed = 2f;
+
+    public void OriginalTimeScaleImmediate()
+    {
+        IsTimeSlow = false;
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+    }
 
     private void Update()
     {
@@ -418,5 +438,6 @@ public class PlayerManager : MonoBehaviour
             yield return null;
         }
     }
+
     #endregion
 }

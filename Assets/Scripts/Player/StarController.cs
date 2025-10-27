@@ -101,6 +101,7 @@ public class StarController : MonoBehaviour, IPlayerController
         inputActions.Player.Dash.performed -= OnDash;
         inputActions.Player.Disable();
         moveInput = Vector2.zero;
+        jumpBufferCounter = -1;
         isGrounded = false;
     }
 

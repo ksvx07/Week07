@@ -60,7 +60,7 @@ MonoBehaviour:
   highLightColor: {r: 1, g: 0, b: 0, a: 1}
   camControlelr: {fileID: 0}
   selectPlayerPanel: {fileID: 0}
-  _selectPanelSpeed: 0.02
+  _selectPanelSpeed: 0.01
   transformTimeScale: 0.05
   slowTimeScale: 0.05
   timeScaleSpeed: 1

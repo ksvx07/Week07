@@ -135,7 +135,7 @@ public class NewTriangle : MonoBehaviour, IPlayerController
         inputActions.Player.Dash.performed -= OnSwing;
         inputActions.Player.Dash.canceled -= OffSwing;
         inputActions.Player.Disable();
-
+        jumpBufferCounter = -1;
         moveInput = Vector2.zero;
         IsGrounded = false;
 

@@ -2461,7 +2461,7 @@ MonoBehaviour:
   wallJumpXSpeed: 10
   wallJumpYSpeed: 8
   wallSlideMaxSpeed: 2
-  wallDetachTime: 0.3
+  wallDetachTime: 0.25
   dashSpeed: 20
   dashTime: 0.15
   dashCooldown: 0.3
