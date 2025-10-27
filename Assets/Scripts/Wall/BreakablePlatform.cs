@@ -54,6 +54,7 @@ public class BreakablePlatform : MonoBehaviour
     [SerializeField] private float respawnDelay = 3f;
     [SerializeField] private float respawnCheckInterval = 0.05f;
     [SerializeField] private float respawnAfterClearDelay = 0.2f;
+    [SerializeField] private bool respawnWhenPlayerRespawns = true;
 
     private Vector3 originalWorldPos;
     private float originalAngleZ;
@@ -137,6 +138,8 @@ public class BreakablePlatform : MonoBehaviour
     /// </summary>
     private void OnPlayerRespawned(Vector3 spawnPosition)
     {
+        if (!respawnWhenPlayerRespawns)
+            return;
         StopAllCoroutines();
         ResetPlatformImmediate();
     }
@@ -239,6 +242,10 @@ public class BreakablePlatform : MonoBehaviour
     /// </summary>
     public void TriggerBreak()
     {
+        // 이미 트리거되었거나 현재 떨어지고 있으면 다시 실행하지 않음
+        if (isTriggered || isFalling)
+            return;
+        
         StartCoroutine(BreakRoutine());
     }
 
