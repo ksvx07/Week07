@@ -134,6 +134,7 @@ public class SquareController : MonoBehaviour, IPlayerController
         inputActions.Player.Dash.performed -= OnDash;
         inputActions.Player.Disable();
         moveInput = Vector2.zero;
+        jumpBufferCounter = -1;
         IsGrounded = false;
         rb.excludeLayers = 0;
     }
@@ -610,6 +611,7 @@ public class SquareController : MonoBehaviour, IPlayerController
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = 0f; // ????? ???? ???
 
+        // 이거필요없잖아 네모로 변신이 될때 적용되는건데 이거 왜만듦
         if (isDashing)
             rb.linearVelocity = Vector2.zero;
         else
