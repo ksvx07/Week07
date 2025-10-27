@@ -4428,7 +4428,7 @@ PrefabInstance:
     - target: {fileID: 7336791436471908265, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
       propertyPath: stageData
       value: 
-      objectReference: {fileID: 11400000, guid: 483dc87b23e8c0643a433c6c529acf39, type: 2}
+      objectReference: {fileID: 11400000, guid: 29f0cd5a0ded1ac4cb314d429d758490, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
