@@ -50676,11 +50676,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1574965063123007506, guid: c4811bb9873a2a74ebf1bc02c2271305, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 289.5
+      value: 288.55
       objectReference: {fileID: 0}
     - target: {fileID: 1574965063123007506, guid: c4811bb9873a2a74ebf1bc02c2271305, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.97
+      value: -10.97
       objectReference: {fileID: 0}
     - target: {fileID: 1574965063123007506, guid: c4811bb9873a2a74ebf1bc02c2271305, type: 3}
       propertyPath: m_LocalPosition.z
@@ -98679,7 +98679,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3849097287846107235, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 17.16
+      value: 18.49
       objectReference: {fileID: 0}
     - target: {fileID: 3849097287846107235, guid: f2b10105235992545af3fa84d6bfae95, type: 3}
       propertyPath: m_LocalPosition.z
@@ -102502,7 +102502,7 @@ MonoBehaviour:
   enableFileLogging: 1
   minimumLogLevel: 0
   setFileName: 1
-  logFileName: "\uC2DC\uD2F0\uD604"
+  logFileName: "\uC9C4\uC131 \uC2A4\uD53C\uB4DC\uB7F0 2"
 --- !u!1001 &1676733501
 PrefabInstance:
   m_ObjectHideFlags: 0
