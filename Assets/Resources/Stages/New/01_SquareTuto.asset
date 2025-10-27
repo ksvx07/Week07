@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3be35d7407d4eb545885102775eb30e6, type: 3}
-  m_Name: Fall and Stay Stage
+  m_Name: 01_SquareTuto
   m_EditorClassIdentifier: 
-  Id: 101
-  minX: -16.79
-  maxX: 115.05
-  minY: -5.5
-  maxY: 14.89476
-  isShapeLockStage: 0
-  initailizeShape: 0
-  unlockAll: 1
+  Id: 1
+  minX: -64.145485
+  maxX: 25.854544
+  minY: 115.55429
+  maxY: 136.93431
+  isShapeLockStage: 1
+  initailizeShape: 2
+  unlockAll: 0

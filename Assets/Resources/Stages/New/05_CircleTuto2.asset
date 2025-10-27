@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3be35d7407d4eb545885102775eb30e6, type: 3}
-  m_Name: Stage5
+  m_Name: 05_CircleTuto2
   m_EditorClassIdentifier: 
-  Id: 5
-  minX: 347.6
-  maxX: 429
-  minY: -10.87
-  maxY: 17.4
+  Id: 101
+  minX: 245.4824
+  maxX: 387.5
+  minY: 70.2
+  maxY: 95.4
   isShapeLockStage: 0
   initailizeShape: 0
-  unlockAll: 1
+  unlockAll: 0
